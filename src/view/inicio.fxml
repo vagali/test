@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="372.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.InicioFXController">
+   <children>
+      <Label fx:id="lblNombreUsuario" layoutX="122.0" layoutY="118.0" text="Nombre de usuario:" />
+      <TextField fx:id="tfNombreUsuario" layoutX="119.0" layoutY="135.0" prefHeight="25.0" prefWidth="250" />
+      <Label fx:id="lblContra" layoutX="122.0" layoutY="171.0" text="Contraseña:" />
+      <PasswordField fx:id="tfContra" layoutX="119.0" layoutY="188.0" prefHeight="25.0" prefWidth="250" />
+      <Button fx:id="btnRegistrar" layoutX="77.0" layoutY="313.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" text="Registrar" />
+      <Button fx:id="btnAcceder" layoutX="246.0" layoutY="313.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #70C3FA;" text="Acceder" />
+      <Button fx:id="btnSalir" layoutX="408.0" layoutY="313.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" text="Salir" />
+   </children>
+</Pane>
