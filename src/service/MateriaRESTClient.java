@@ -20,13 +20,13 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Usuario
  */
 public class MateriaRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerApuntes4/webresources";
 
     public MateriaRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

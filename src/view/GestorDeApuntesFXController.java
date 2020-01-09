@@ -8,8 +8,15 @@ package view;
 import businessLogic.ApunteManager;
 import static businessLogic.ApunteManagerFactory.createApunteManager;
 import businessLogic.BusinessLogic;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,11 +35,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import service.MateriaRESTClient;
 import transferObjects.ApunteBean;
+import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
 import transferObjects.MateriaBean2;
 import transferObjects.UserBean;
@@ -47,8 +56,9 @@ public class GestorDeApuntesFXController {
     private UserBean user;
     private Stage stage;
     
-    private ApunteManager apunteLogic = createApunteManager("real"); 
+    private ApunteManager apunteLogic = createApunteManager("real");
     private Set<ApunteBean> apuntes=null;
+    private ObservableList<ApunteBean> apuntesData=null;
     @FXML
     private TableView tableApuntes;
     @FXML
@@ -66,7 +76,7 @@ public class GestorDeApuntesFXController {
     @FXML
     private TableColumn clCreador;
     @FXML
-    private TableColumn clVendidos;
+    private TableColumn clDislike;
     @FXML
     private TableColumn clMateria;
     @FXML
@@ -142,8 +152,19 @@ public class GestorDeApuntesFXController {
             //<-Menu
             
             //CARGAR DATOS
-            cargarApuntes();
             
+            
+            clId.setCellValueFactory(new PropertyValueFactory<>("idApunte"));
+            clTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
+            clDesc.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+            clFechaValidacion.setCellValueFactory(new PropertyValueFactory<>("fechaValidacion"));
+            clLikes.setCellValueFactory(new PropertyValueFactory<>("likeCont"));
+            clPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+            clCreador.setCellValueFactory(new PropertyValueFactory<ClienteBean,String>("creador"));
+            clDislike.setCellValueFactory(new PropertyValueFactory<>("dislikeCont"));
+            clMateria.setCellValueFactory(new PropertyValueFactory<MateriaBean,String>("materia"));
+            cargarApuntes();
+            tableApuntes.getSelectionModel().selectedItemProperty().addListener(this::handleApuntesTableSelectionChanged);
             stage.show();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -263,7 +284,7 @@ public class GestorDeApuntesFXController {
     }
     @FXML
     private void onActionAbrirGesstorMaterias(ActionEvent event){
-         try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("gestor_de_materias.fxml"));
             Parent root = (Parent)loader.load();
@@ -275,23 +296,46 @@ public class GestorDeApuntesFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
+    
     private void cargarApuntes() {
         try {
             apuntes=apunteLogic.findAll();
             //ApunteBean apunte=apunteLogic.find(4);
             //MateriaRESTClient mrc=new MateriaRESTClient();
             //MateriaBean materia=mrc.find(MateriaBean.class, "2");
-            btnInforme.setText(apuntes.size()+"asd");
+            
+            apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntes));
+            tableApuntes.setItems(apuntesData);
+            ArrayList <ApunteBean> apuntesInfo=new ArrayList<>(apuntes);
+            LOGGER.info("INf. "+apuntesInfo.get(0).getCreador().getNombreCompleto());
         } catch (BusinessLogic ex) {
-            LOGGER.severe("PRUEBA!"+ex.getMessage());
+            LOGGER.severe("Error al intentar cargar los apuntes :"+ex.getMessage());
+            showErrorAlert("No se ha podido cargar los apuntes");
         }
+        
+    }
+    private void handleApuntesTableSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
+        if(newValue!=null && newValue!=oldValue){
+            ApunteBean apunteProvisional =(ApunteBean) newValue;
+            this.textFieldTitulo.setText(apunteProvisional.getTitulo());
+            this.textFieldDesc.setText(apunteProvisional.getDescripcion());
+            this.datePickerFecha.setValue(dateToLocalDate(apunteProvisional.getFechaValidacion()));
+        }else{
+            this.textFieldTitulo.setText("");
+            this.textFieldDesc.setText("");
+            this.datePickerFecha.setValue(null);
+        }
+    }
+    public LocalDate dateToLocalDate(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
         
     }
 }

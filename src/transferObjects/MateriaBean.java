@@ -52,5 +52,10 @@ public class MateriaBean implements Serializable {
     public void setDescripcion(String descripcion) {
         this.descripcion.set(descripcion);
     }
+    
+    @Override
+    public String toString() {
+        return titulo.get();
+    }    
 }
 

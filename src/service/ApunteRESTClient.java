@@ -20,13 +20,13 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Usuario
  */
 public class ApunteRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerApuntes4/webresources";
 
     public ApunteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -43,14 +43,12 @@ public class ApunteRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    //public <T> T getApuntesByCreador(Class<T> responseType, String id) throws ClientErrorException {
     public <T> T getApuntesByCreador(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("creador/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    //public <T> T getApuntesByComprador(Class<T> responseType, String id) throws ClientErrorException {
     public <T> T getApuntesByComprador(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("cliente/{0}", new Object[]{id}));
@@ -61,7 +59,6 @@ public class ApunteRESTClient {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    //public <T> T findAll(Class<T> responseType) throws ClientErrorException {
     public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
