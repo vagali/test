@@ -5,6 +5,10 @@
 */
 package view;
 
+import businessLogic.ApunteManager;
+import static businessLogic.ApunteManagerFactory.createApunteManager;
+import businessLogic.BusinessLogic;
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,10 +28,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import service.MateriaRESTClient;
+import transferObjects.ApunteBean;
+import transferObjects.MateriaBean;
+import transferObjects.MateriaBean2;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
@@ -39,6 +46,9 @@ public class GestorDeApuntesFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeApuntesFXController");
     private UserBean user;
     private Stage stage;
+    
+    private ApunteManager apunteLogic = createApunteManager("real"); 
+    private Set<ApunteBean> apuntes=null;
     @FXML
     private TableView tableApuntes;
     @FXML
@@ -131,7 +141,8 @@ public class GestorDeApuntesFXController {
             menuHelp.setText("_Help");
             //<-Menu
             
-            
+            //CARGAR DATOS
+            cargarApuntes();
             
             stage.show();
         }catch(Exception e){
@@ -269,5 +280,18 @@ public class GestorDeApuntesFXController {
     }
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    private void cargarApuntes() {
+        try {
+            apuntes=apunteLogic.findAll();
+            //ApunteBean apunte=apunteLogic.find(4);
+            //MateriaRESTClient mrc=new MateriaRESTClient();
+            //MateriaBean materia=mrc.find(MateriaBean.class, "2");
+            btnInforme.setText(apuntes.size()+"asd");
+        } catch (BusinessLogic ex) {
+            LOGGER.severe("PRUEBA!"+ex.getMessage());
+        }
+        
     }
 }
