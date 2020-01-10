@@ -22,20 +22,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="apunte")
 public class ApunteBean implements Serializable {
-    private static final long serialVersionUID=1L;
+    //private static final long serialVersionUID=1L;
     
     private final SimpleIntegerProperty idApunte;
     private final SimpleStringProperty titulo;
     private final SimpleStringProperty descripcion;
-    private final SimpleObjectProperty<byte[]> archivo;
+    //private final SimpleObjectProperty<byte[]> archivo; //el archivo
+    private byte[] archivo;
     private final SimpleObjectProperty<Date> fechaValidacion;
     private final SimpleIntegerProperty likeCont;
     private final SimpleIntegerProperty dislikeCont;
-    private final SimpleSetProperty<ClienteBean> votantes;
     private final SimpleFloatProperty precio;
     private final SimpleObjectProperty<ClienteBean> creador;
-    private final SimpleSetProperty<CompraBean> compras;
-    private final SimpleSetProperty<PackBean> packs;
     private final SimpleObjectProperty<MateriaBean> materia;
 
     /**
@@ -84,14 +82,16 @@ public class ApunteBean implements Serializable {
      * @return the archivo
      */
     public byte[] getArchivo() {
-        return archivo.get();
+        //return archivo.get();
+        return archivo;
     }
 
     /**
      * @param archivo the archivo to set
      */
     public void setArchivo(byte[] archivo) {
-        this.archivo.set(archivo);
+        //this.archivo.set(archivo);
+        this.archivo=archivo;
     }
 
     /**
@@ -136,19 +136,7 @@ public class ApunteBean implements Serializable {
         this.dislikeCont.set(dislikeCont);
     }
 
-    /**
-     * @return the votantes
-     */
-    public ObservableSet<ClienteBean> getVotantes() {
-        return votantes.get();
-    }
-
-    /**
-     * @param votantes the votantes to set
-     */
-    public void setVotantes(ObservableSet<ClienteBean>votantes) {
-        this.votantes.set(votantes);
-    }
+    
 
     /**
      * @return the precio
@@ -178,33 +166,7 @@ public class ApunteBean implements Serializable {
         this.creador.set(creador);
     }
 
-    /**
-     * @return the compras
-     */
-    public ObservableSet<CompraBean> getCompras() {
-        return compras.get();
-    }
-
-    /**
-     * @param compras the compras to set
-     */
-    public void setCompras(ObservableSet<CompraBean> compras) {
-        this.compras.set(compras);
-    }
-
-    /**
-     * @return the packs
-     */
-    public ObservableSet<PackBean> getPacks() {
-        return packs.get();
-    }
-
-    /**
-     * @param packs the packs to set
-     */
-    public void setPacks(SetProperty<PackBean> packs) {
-        this.packs.set(packs);
-    }
+    
 
     /**
      * @return the materia
@@ -220,20 +182,32 @@ public class ApunteBean implements Serializable {
         this.materia.set(materia);
     }
 
-    public ApunteBean(int idApunte, String titulo, String descripcion, byte[] archivo, Date fechaValidacion, int likeCont, int dislikeCont, ObservableSet<ClienteBean> votantes, Float precio, ClienteBean creador,ObservableSet<CompraBean> compras, ObservableSet<PackBean> packs, MateriaBean materia) {
+    public ApunteBean(int idApunte, String titulo, String descripcion, byte[] archivo, Date fechaValidacion, int likeCont, int dislikeCont, Float precio, ClienteBean creador, MateriaBean materia) {
         this.idApunte = new SimpleIntegerProperty(idApunte);
         this.titulo = new SimpleStringProperty(titulo);
         this.descripcion = new SimpleStringProperty(descripcion);
-        this.archivo = new SimpleObjectProperty(archivo);
+        // this.archivo = new SimpleObjectProperty(archivo);
+        this.archivo=archivo;
         this.fechaValidacion = new SimpleObjectProperty(fechaValidacion);
         this.likeCont = new SimpleIntegerProperty(likeCont);
         this.dislikeCont = new SimpleIntegerProperty(dislikeCont);
-        this.votantes = new SimpleSetProperty(votantes);
         this.precio = new SimpleFloatProperty(precio);
         this.creador = new SimpleObjectProperty(creador);
-        this.compras = new SimpleSetProperty(compras);
-        this.packs = new SimpleSetProperty(packs);
         this.materia = new SimpleObjectProperty(materia);
+    }
+
+    public ApunteBean() {
+        this.idApunte = new SimpleIntegerProperty();
+        this.titulo = new SimpleStringProperty();
+        this.descripcion = new SimpleStringProperty();
+        // this.archivo = new SimpleObjectProperty(archivo);
+        
+        this.fechaValidacion = new SimpleObjectProperty();
+        this.likeCont = new SimpleIntegerProperty();
+        this.dislikeCont = new SimpleIntegerProperty();
+        this.precio = new SimpleFloatProperty();
+        this.creador = new SimpleObjectProperty();
+        this.materia = new SimpleObjectProperty();
     }
     
     

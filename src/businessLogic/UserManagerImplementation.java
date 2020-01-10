@@ -30,27 +30,27 @@ public class UserManagerImplementation implements UserManager {
     }
     
     @Override
-    public void createUser(UserBean user) throws BusinessLogic{
+    public void createUser(UserBean user) throws BusinessLogicException{
         try{
             webClient.createUser(user);
         }catch(Exception e){
             LOGGER.severe("ERROR! UserManagerImpl -> CreateUser: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
         
     }
     @Override
-    public void updateUser(UserBean user) throws BusinessLogic{
+    public void updateUser(UserBean user) throws BusinessLogicException{
         try{
             webClient.updateUser(user);
         }catch(Exception e){
             LOGGER.severe("ERROR! UserManagerImpl -> updateUser: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
         
     }
     @Override
-    public Object iniciarSesion(String login,String contrasenia)throws BusinessLogic, PasswordWrongException, LoginNotFoundException, NoEsUserException{
+    public Object iniciarSesion(String login,String contrasenia)throws BusinessLogicException, PasswordWrongException, LoginNotFoundException, NoEsUserException{
         Object elUsuario=null;
         try{
             elUsuario=webClient.iniciarSesion(UserBean.class, login, contrasenia);
@@ -65,7 +65,7 @@ public class UserManagerImplementation implements UserManager {
             throw new NoEsUserException(e.getMessage());
         }catch(Exception e){
             LOGGER.severe("ERROR! UserManagerImpl -> iniciarSesion: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
         return elUsuario;
     }

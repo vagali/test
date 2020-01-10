@@ -380,7 +380,7 @@ public class InicioFXController extends ControladorGeneral{
             ClienteBean cliente=new ClienteBean();
             cliente=(ClienteBean) user;
             showErrorAlert(cliente.getLogin()+" "+cliente.getSaldo());
-        } catch (BusinessLogic ex1) {
+        } catch (BusinessLogicException ex1) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         } catch (PasswordWrongException ex1) {
             showErrorAlert("Contraseña incorrecta.");
@@ -399,7 +399,7 @@ public class InicioFXController extends ControladorGeneral{
             lblNombreUsuario.setTextFill(Color.web("red"));
             lblContra.setTextFill(Color.web("red"));
         }
-    } catch (BusinessLogic ex) {
+    } catch (BusinessLogicException ex) {
         showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
     }
     }
