@@ -13,11 +13,11 @@ import javax.ws.rs.client.WebTarget;
  * Jersey REST client generated for REST resource:UserFacadeREST [user]<br>
  * USAGE:
  * <pre>
-        UserRESTClient client = new UserRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ *        UserRESTClient client = new UserRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
+ * </pre>
  *
  * @author 2dam
  */
@@ -25,7 +25,7 @@ public class UserRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:1747/ServerA4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

@@ -26,7 +26,7 @@ public class ClienteRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:1747/ServerA4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
 
     public ClienteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -76,12 +76,11 @@ public class ClienteRESTClient {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> boolean passwordForgot(Class<T> responseType, String login) throws ClientErrorException {
+     public <T> boolean passwordForgot(Class<T> responseType, String login) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("passwordForgot/{0}", new Object[]{login}));
         return true;
     }
-
     public void close() {
         client.close();
     }
