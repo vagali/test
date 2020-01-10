@@ -13,12 +13,13 @@ import transferObjects.ApunteBean;
  * @author 2dam
  */
 public interface ApunteManager {
-    public void create(ApunteBean apunte) throws BusinessLogic;
-    public void edit( ApunteBean apunte) throws BusinessLogic;
-    public void remove(Integer id) throws BusinessLogic;
-    public ApunteBean find(Integer id) throws BusinessLogic;
-    public Set<ApunteBean> findAll()throws BusinessLogic;
-    public Set<ApunteBean> getApuntesByCreador(Integer id) throws BusinessLogic;
-    public Set<ApunteBean> getApuntesByComprador(Integer id) throws BusinessLogic;
-    public void votacion(Integer idCliente,Integer like, ApunteBean apunte) throws BusinessLogic;
+    public void create(ApunteBean apunte) throws BusinessLogicException;
+    public void edit( ApunteBean apunte) throws BusinessLogicException;
+    public void remove(Integer id) throws BusinessLogicException;
+    public ApunteBean find(Integer id) throws BusinessLogicException;
+    public Set<ApunteBean> findAll()throws BusinessLogicException;
+    public Set<ApunteBean> getApuntesByCreador(Integer id) throws BusinessLogicException;
+    public Set<ApunteBean> getApuntesByComprador(Integer id) throws BusinessLogicException;
+    public void votacion(Integer idCliente,Integer like, ApunteBean apunte) throws BusinessLogicException;
+    public int cuantasCompras(Integer id) throws BusinessLogicException;
 }

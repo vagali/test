@@ -7,12 +7,16 @@ package view;
 
 import businessLogic.ApunteManager;
 import static businessLogic.ApunteManagerFactory.createApunteManager;
-import businessLogic.BusinessLogic;
+import businessLogic.BusinessLogicException;
+import businessLogic.MateriaManager;
+import static businessLogic.MateriaManagerFactory.createMateriaManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -23,6 +27,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -36,14 +41,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import service.MateriaRESTClient;
 import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
-import transferObjects.MateriaBean2;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
@@ -57,8 +61,11 @@ public class GestorDeApuntesFXController {
     private Stage stage;
     
     private ApunteManager apunteLogic = createApunteManager("real");
+    private MateriaManager materiaLogic = createMateriaManager("real");
     private Set<ApunteBean> apuntes=null;
     private ObservableList<ApunteBean> apuntesData=null;
+    private ObservableList<MateriaBean> materiasData=null;
+    private ApunteBean apunteProvisional;
     @FXML
     private TableView tableApuntes;
     @FXML
@@ -164,7 +171,10 @@ public class GestorDeApuntesFXController {
             clDislike.setCellValueFactory(new PropertyValueFactory<>("dislikeCont"));
             clMateria.setCellValueFactory(new PropertyValueFactory<MateriaBean,String>("materia"));
             cargarApuntes();
+            cargarMaterias();
             tableApuntes.getSelectionModel().selectedItemProperty().addListener(this::handleApuntesTableSelectionChanged);
+            this.btnModificar.setDisable(true);
+            this.btnBorrar.setDisable(true);
             stage.show();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -174,6 +184,7 @@ public class GestorDeApuntesFXController {
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> LogOut");
+            
             
             
         }catch(Exception e){
@@ -225,7 +236,109 @@ public class GestorDeApuntesFXController {
     }
     
     //Inicio de los metodos de navegación de la aplicación
-    
+    @FXML
+    private void onActionBorrar(ActionEvent event){
+        if(this.apunteProvisional!=null){
+            try{
+                boolean sePuedeBorrar=true;
+                int cuantasCompras=this.apunteLogic.cuantasCompras(this.apunteProvisional.getIdApunte());
+                if(cuantasCompras==0){
+                    try{
+                        //Creamos la alerta del tipo confirmación.
+                        Alert alertCerrarSesion = new Alert(AlertType.CONFIRMATION);
+                        //Ponemos titulo de la ventana como titulo para la alerta.
+                        alertCerrarSesion.setTitle("Borrar apunte");
+                        alertCerrarSesion.setHeaderText("¿Estas seguro de borrar el apunte "+this.apunteProvisional.getTitulo()+"?");
+                        //Si acepta se cerrara esta ventana.
+                        alertCerrarSesion.showAndWait().ifPresent(response -> {
+                            if (response == ButtonType.OK) {
+                                try {
+                                    apunteLogic.remove(apunteProvisional.getIdApunte());Alert alert=new Alert(Alert.AlertType.INFORMATION,
+                                            "El apunte "+this.apunteProvisional.getTitulo()+" fue eliminado",
+                                            ButtonType.OK);
+                                    alert.showAndWait();
+                                    this.tableApuntes.getItems().remove(this.tableApuntes.getSelectionModel().getSelectedItem());
+                                    this.tableApuntes.refresh();
+                                    vaciar();
+                                } catch (BusinessLogicException ex) {
+                                    Logger.getLogger(GestorDeApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
+                            }
+                        });
+                    }catch(Exception e){
+                        LOGGER.severe(e.getMessage());
+                    }
+                }else{
+                    showErrorAlert("Lo sentimos, no se puede borrar el apunte, ya que tiene una o más de una venta.");
+                }
+            }catch(BusinessLogicException ex){
+                Logger.getLogger(GestorDeApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            showErrorAlert("Para borrar un apunte seleccione en la tabla el apunte correspondient porfavor.");
+        }
+    }
+    @FXML
+    private void onActionRefrescar(ActionEvent event){
+        cargarApuntes();
+        cargarMaterias();
+        vaciar();
+    }
+    @FXML
+    private void onActionModificar(ActionEvent event){
+        if(this.apunteProvisional!=null){
+            boolean todoBien = true;
+            if(!esValido(this.textFieldTitulo.getText().trim(),3,250)){
+                this.labelTitulo.setText("Titulo (Min 3 car. | Max 250 car.)");
+                this.labelTitulo.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.labelTitulo.setText("Titulo");
+                this.labelTitulo.setTextFill(Color.web("black"));
+            }
+            if(!esValido(this.textFieldDesc.getText().trim(),3,250)){
+                this.labelDesc.setText("Descripción (Min 3 car. | Max 250 car.)");
+                this.labelDesc.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.labelDesc.setText("Descripción");
+                this.labelDesc.setTextFill(Color.web("black"));
+            }
+            if(this.datePickerFecha.getValue()==null){
+                this.labelFecha.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.labelFecha.setTextFill(Color.web("black"));
+            }
+            if(this.comboBoxMaterias.getSelectionModel().getSelectedItem()==null){
+                this.labelMateria.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.labelMateria.setTextFill(Color.web("black"));
+            }
+            if(todoBien){
+                apunteProvisional.setTitulo(this.textFieldTitulo.getText().trim());
+                apunteProvisional.setDescripcion(this.textFieldDesc.getText().trim());//Poner maximo!!!!!! y Minimo!!!!!
+                apunteProvisional.setFechaValidacion(localDateToDate(this.datePickerFecha.getValue()));
+                apunteProvisional.setMateria((MateriaBean) this.comboBoxMaterias.getSelectionModel().getSelectedItem());
+                showErrorAlert("Titulo: "+apunteProvisional.getTitulo()+"\n Descripción"+apunteProvisional.getDescripcion()+"\n Fecha "+apunteProvisional.getFechaValidacion().toString()+"\n Materia: "+apunteProvisional.getMateria().getTitulo());
+                
+                try {
+                    apunteLogic.edit(apunteProvisional);
+                    apuntesData.set(this.tableApuntes.getSelectionModel().getFocusedIndex(), apunteProvisional);
+                    this.tableApuntes.getSelectionModel().clearSelection();
+                    this.tableApuntes.refresh();
+                    vaciar();
+                    
+                } catch (BusinessLogicException ex) {
+                    LOGGER.severe("Error enviar la modificación del apunte: "+ex.getMessage());
+                }
+            }
+        }else{
+            showErrorAlert("Para modificar primero seleccione un apunte.");
+        }
+    }
     
     @FXML
     private void onActionAbout(ActionEvent event){
@@ -314,7 +427,7 @@ public class GestorDeApuntesFXController {
             tableApuntes.setItems(apuntesData);
             ArrayList <ApunteBean> apuntesInfo=new ArrayList<>(apuntes);
             LOGGER.info("INf. "+apuntesInfo.get(0).getCreador().getNombreCompleto());
-        } catch (BusinessLogic ex) {
+        } catch (BusinessLogicException ex) {
             LOGGER.severe("Error al intentar cargar los apuntes :"+ex.getMessage());
             showErrorAlert("No se ha podido cargar los apuntes");
         }
@@ -322,20 +435,53 @@ public class GestorDeApuntesFXController {
     }
     private void handleApuntesTableSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
         if(newValue!=null && newValue!=oldValue){
-            ApunteBean apunteProvisional =(ApunteBean) newValue;
+            apunteProvisional =(ApunteBean) newValue;
             this.textFieldTitulo.setText(apunteProvisional.getTitulo());
             this.textFieldDesc.setText(apunteProvisional.getDescripcion());
             this.datePickerFecha.setValue(dateToLocalDate(apunteProvisional.getFechaValidacion()));
+            this.comboBoxMaterias.getSelectionModel().select(apunteProvisional.getMateria());
+            this.btnModificar.setDisable(false);
+            this.btnBorrar.setDisable(false);
         }else{
-            this.textFieldTitulo.setText("");
-            this.textFieldDesc.setText("");
-            this.datePickerFecha.setValue(null);
+            vaciar();
+            
         }
     }
+    
+    //Metodos utiles de la clase
     public LocalDate dateToLocalDate(Date date) {
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
-        
+    }
+    public Date localDateToDate(LocalDate date) {
+        return java.util.Date.from(date.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
+    public boolean esValido(String frase,int minimo, int maximo){
+        boolean resultado=true;
+        if(frase.length()>maximo || frase.length()<minimo)
+            resultado=false;
+        return resultado;
+    }
+    public void vaciar(){
+        this.textFieldTitulo.setText("");
+        this.textFieldDesc.setText("");
+        this.datePickerFecha.setValue(null);
+        this.apunteProvisional=null;
+        this.comboBoxMaterias.getSelectionModel().select(null);
+        this.btnModificar.setDisable(true);
+        this.btnBorrar.setDisable(true);
+    }
+    
+    private void cargarMaterias() {
+        try {
+            Set<MateriaBean> materias = materiaLogic.findAllMateria();
+            materiasData=FXCollections.observableArrayList(new ArrayList<>(materias));
+            this.comboBoxMaterias.setItems(materiasData);
+        } catch (BusinessLogicException ex) {
+            LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
+        }
     }
 }

@@ -20,13 +20,13 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author Usuario
+ * @author 2dam
  */
 public class ApunteRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/ServerApuntes4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
 
     public ApunteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -57,6 +57,12 @@ public class ApunteRESTClient {
 
     public void create(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    }
+
+    public <T> T cuantasCompras(Class<T> responseType, String id) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("cuantasCompras/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
     }
 
     public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
