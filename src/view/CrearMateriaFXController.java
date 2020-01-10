@@ -44,7 +44,7 @@ public class CrearMateriaFXController {
             stage.setTitle("Crear Materia");
             stage.setResizable(false);
             stage.setMaximized(false);
-            stage.show();
+            stage.showAndWait();
         }catch(Exception e){
             e.printStackTrace();
         }

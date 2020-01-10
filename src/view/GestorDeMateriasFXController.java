@@ -279,9 +279,11 @@ public class GestorDeMateriasFXController {
             Parent root = (Parent)loader.load();
             CrearMateriaFXController controller =
                     ((CrearMateriaFXController)loader.getController());
-            controller.initStage(root);
             controller.setMateria(materia);
             controller.setManager(manager);
+            controller.initStage(root);
+            materiasObv.add(materia);
+            tablaMateria.refresh();
         }catch(Exception e){
             e.printStackTrace();
             showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
