@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="259.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ModificarApunteFXController">
+   <children>
+      <Label fx:id="labelTitulo" layoutX="43.0" layoutY="14.0" text="Titulo" />
+      <Label fx:id="labelMateria" layoutX="43.0" layoutY="79.0" text="Materia" />
+      <Label fx:id="labelPrecio" layoutX="47.0" layoutY="140.0" text="Precio" />
+      <TextField fx:id="textFieldTitulo" layoutX="134.0" layoutY="40.0" prefHeight="25.0" prefWidth="346.0" />
+      <TextField fx:id="textFieldPrecio" layoutX="132.0" layoutY="168.0" />
+      <ComboBox fx:id="comboBoxMateriaMod" layoutX="132.0" layoutY="103.0" prefHeight="25.0" prefWidth="237.0" />
+      <Text fill="#8d8d8d" layoutX="290.0" layoutY="174.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Un 55% de las ganancias seran de la empresa 2DAM2CURIOUS" wrappingWidth="237.13671875">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Text>
+      <Button fx:id="btnCancelar" layoutX="252.0" layoutY="221.0" mnemonicParsing="false" onAction="#onActionCancelar" prefHeight="25.0" prefWidth="85.0" text="Cancelar" />
+      <Button fx:id="btnModificarMod" layoutX="355.0" layoutY="221.0" mnemonicParsing="false" onAction="#onActionModificar" prefHeight="25.0" prefWidth="85.0" text="Modificar" />
+      <Button fx:id="btnEliminar" layoutX="454.0" layoutY="221.0" mnemonicParsing="false" onAction="#onActionEliminar" prefHeight="25.0" prefWidth="85.0" style="-fx-background-color: red;" text="Eliminar" />
+   </children>
+</Pane>

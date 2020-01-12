@@ -379,7 +379,23 @@ public class InicioFXController extends ControladorGeneral{
             user=clienteLogic.iniciarSesion(nombre, contra);
             ClienteBean cliente=new ClienteBean();
             cliente=(ClienteBean) user;
-            showErrorAlert(cliente.getLogin()+" "+cliente.getSaldo());
+            
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("tienda_apuntes.fxml"));
+
+                Parent root = (Parent)loader.load();
+
+                TiendaApuntesFXController controller =
+                ((TiendaApuntesFXController)loader.getController());
+                controller.setCliente(cliente);
+                controller.initStage(root);
+                tfContra.setText("");
+            }catch(IOException e){
+                 showErrorAlert("Error al cargar la ventana de Login.");
+                 LOGGER.severe("Error "+e.getMessage());
+                 
+            }
         } catch (BusinessLogicException ex1) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         } catch (PasswordWrongException ex1) {

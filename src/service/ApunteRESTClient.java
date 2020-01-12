@@ -20,13 +20,13 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Usuario
  */
 public class ApunteRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
+    private static final String BASE_URI = "http://localhost:8080/ServerApuntes4/webresources";
 
     public ApunteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

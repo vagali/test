@@ -29,6 +29,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -46,18 +47,16 @@ import javafx.stage.WindowEvent;
 import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
-import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
  *
  * @author Usuario
  */
-public class MisApuntesClienteFXController {
-    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.MisApuntesClienteFXController");
+public class TiendaApuntesFXController {
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.TiedaApuntesFXController");
     private ClienteBean cliente;
     private Stage stage;
-    
     
     private ApunteManager apunteLogic = createApunteManager("real");
     private MateriaManager materiaLogic = createMateriaManager("real");
@@ -75,15 +74,12 @@ public class MisApuntesClienteFXController {
     private String [] opciones={"Sin filtro","ABC...","ZYZ...","Precio asc.","Precio desc."};
     private String tipoFiltrado="Sin filtro";
     private MateriaBean materiaFiltrada = null;
-    
     @FXML
     private Button btnRefrescar;
     @FXML
     private Button btnBuscar;
     @FXML
-    private Button btnModificar;
-    @FXML
-    private Button btnSubirApunte;
+    private Button btnComprar;
     @FXML
     private TextField textFieldBuscar;
     @FXML
@@ -121,17 +117,17 @@ public class MisApuntesClienteFXController {
     private Menu menuHelp;
     @FXML
     private MenuItem menuHelpAbout;
+    
     @FXML
     public void initStage(Parent root) {
         try{
-            
+            LOGGER.info("Iniciando la TiendaApuntesFXController");
             Scene scene=new Scene(root);
             stage=new Stage();
-            stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Mis apuntes");
+            stage.setScene(scene);
+            stage.setTitle("Tienda de apuntes");
             stage.setResizable(true);
-            
             stage.setMaximized(true);
             //Vamos a rellenar los datos en la ventana.
             stage.setOnShowing(this::handleWindowShowing);
@@ -147,25 +143,20 @@ public class MisApuntesClienteFXController {
             //<-Menu
             btnRefrescar.setMnemonicParsing(true);
             btnRefrescar.setText("_Refrescar");
-            btnBuscar.setMnemonicParsing(true);
-            btnBuscar.setText("_Buscar");
-            btnModificar.setMnemonicParsing(true);
-            btnModificar.setText("_Modificar");
-            btnSubirApunte.setMnemonicParsing(true);
-            btnSubirApunte.setText("_Subir apunte");
-            
+            btnComprar.setMnemonicParsing(true);
+            btnComprar.setText("C_omprar");
             
             //CARGAR MATERIAS
             cargarMaterias();
             //DEJARLO EN TODAS LAS MATERIAS
             
-            //CARGAR LISTVIEW DE APUNTES
+            //CARGAR LISTVIEW DE PAUNTES
             cargarApuntes();
             //CARGAR EL COMBO BOX
             cargarComboBox();
             //DEJARLO EN EL PRIMERO
             
-            
+            //Pulsación de enter funcionando
             textFieldBuscar.setOnKeyPressed(this::keyPressBuscar);
             btnBuscar.setOnKeyPressed(this::keyPressBuscar);
             this.listViewMateria.getSelectionModel().selectedItemProperty().addListener(this::handleMateriaListSelectionChanged);
@@ -193,6 +184,8 @@ public class MisApuntesClienteFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    
+    
     @FXML
     private void onActionRefrescar(ActionEvent event){
         cargarMaterias();
@@ -208,190 +201,37 @@ public class MisApuntesClienteFXController {
         filtrarLosApuntes();
     }
     @FXML
-    private void onActionSubirApunte(ActionEvent event){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("subir_apunte.fxml"));
-            
-            Parent root = (Parent)loader.load();
-            
-            SubirApunteFXController controller =
-                    ((SubirApunteFXController)loader.getController());
-            controller.setCliente(cliente);
-            controller.initStage(root);
-        }catch(IOException e){
-            showErrorAlert("Error al cargar la ventana subir apunte.");
-            LOGGER.severe("Error "+e.getMessage());
-            
-        }
-    }
-    @FXML
-    private void onActionModificar(ActionEvent event){
+    private void onActionComprar(ActionEvent event){
         if(!this.listViewApuntes.getSelectionModel().isEmpty()){
+            ApunteBean apunte=(ApunteBean)this.listViewApuntes.getSelectionModel().getSelectedItem();
             try{
                 FXMLLoader loader = new FXMLLoader(getClass()
-                        .getResource("modificar_apunte.fxml"));
+                        .getResource("compra_apunte.fxml"));
                 
                 Parent root = (Parent)loader.load();
                 
-                ModificarApunteFXController controller =
-                        ((ModificarApunteFXController)loader.getController());
-                controller.setApunte((ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem());
+                CompraApunteFXController controller =
+                        ((CompraApunteFXController)loader.getController());
+                controller.setDatos(cliente, apunte);
                 controller.initStage(root);
             }catch(IOException e){
-                showErrorAlert("Error al cargar la ventana subir apunte.");
+                showErrorAlert("Error al cargar la ventana de Login.");
                 LOGGER.severe("Error "+e.getMessage());
                 
             }
-        }else{
-            showErrorAlert("Primero selecciona un apunte.");
-        }
-    }
-    private void cargarApuntes() {
-        try {
-            //CAMBIAR EL NOMBRE DE APUNTES DE TIENDA POR APUNTES CREADOS
-            //POR EL CLIENTE O ALGO ASI
-            apuntesDeTienda=apunteLogic.getApuntesByCreador(cliente.getId());
-            
-            
-            apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntesDeTienda));
-            this.listViewApuntes.setItems(apuntesData);
-            this.listViewApuntes.setCellFactory(param -> new CellTiendaApunte());
-            
-        } catch (BusinessLogicException ex) {
-            LOGGER.severe("Error al intentar cargar los apuntes :"+ex.getMessage());
-            showErrorAlert("No se ha podido cargar los apuntes");
-        }
-    }
-    private void cargarComboBox() {
-        opcionesData=FXCollections.observableArrayList(Arrays.asList(this.opciones));
-        this.comboBoxOrdenar.setItems(opcionesData);
-        
-    }
-    private void cargarMaterias() {
-        try {
-            Set<MateriaBean> materias = materiaLogic.findAllMateria();
-            List <MateriaBean> materiasList = Lists.newArrayList(materias);
-            //El titulo es 0 ya que siempre va a ser el primero ya que todos los
-            // apuntes minimo tienen que tener 3 caracteres y al ser este un
-            // apunte con el titulo 0 siempre va a ser el primero al ordenarlo.
-            materiasList.add(new MateriaBean(-1,"0","Todas las materias"));
-            materiasList=materiasList.stream().sorted(Comparator.comparing(MateriaBean::getTitulo)).collect(Collectors.toList());
-            materiasData=FXCollections.observableArrayList(new ArrayList<>(materiasList));
-            materiasData.get(0).setTitulo("Todas las materias");
-            this.listViewMateria.setItems(materiasData);
-            
-        } catch (BusinessLogicException ex) {
-            LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
-        }
-    }
-    private void handleMateriaListSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
-        if(newValue!=null && newValue!=oldValue){
-            MateriaBean materia=(MateriaBean) newValue;
-            if(materia.getIdMateria()!=-1){
-                //Filtrar
-                //this.filtrarMateria=true;
-                this.materiaFiltrada=materia;
-            }else{
-                //this.filtrarMateria=false;
-                this.materiaFiltrada=null;
-                //quitar filtrado por materia
-            }
-            filtrarLosApuntes();
-        }else{
-            //No filtrar
-            //PROVISIONAL
-            this.listViewMateria.getSelectionModel().select(0);
-            
-        }
-        
-    }
-    private void handleOpcionesComboBoxSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
-        if(newValue!=null && newValue!=oldValue){
-            this.tipoFiltrado=(String) newValue;
-            ordenarApuntes();
-        }
-    }
-    private void ordenarApuntes() {
-        List <ApunteBean> apuntesParaOrdenar=null;
-        if(this.filtrado)
-            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTiendaFiltrado);
-        else
-            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTienda);
-        switch(this.tipoFiltrado){
-            case "Sin filtro":
-                
-                break;
-            case "ABC...":
-                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getTitulo)).collect(Collectors.toList());
-                break;
-            case "ZYZ...":
-                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getTitulo, Comparator.reverseOrder())).collect(Collectors.toList());
-                break;
-            case "Precio asc.":
-                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getPrecio)).collect(Collectors.toList());
-                break;
-            case "Precio desc.":
-                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getPrecio, Comparator.reverseOrder())).collect(Collectors.toList());
-                break;
-        }
-        this.listViewApuntes.setItems(FXCollections.observableArrayList(new ArrayList<>(apuntesParaOrdenar)));
-    }
-    private void filtrarLosApuntes(){
-        
-        this.filtrado=false;
-        //Para coger los apuntes de una materia
-        Set <ApunteBean> apuntesDeLaMateria = new HashSet <ApunteBean>();
-        if(this.materiaFiltrada!=null){
-            this.filtrado=true;
-            this.apuntesDeTienda.forEach(apunte ->{
-                if(this.materiaFiltrada.getIdMateria()==apunte.getMateria().getIdMateria()){
-                    apuntesDeLaMateria.add(apunte);
-                }
-            });
-        }else{
-            this.apuntesDeTienda.forEach(apunte ->{
-                apuntesDeLaMateria.add(apunte);
-            });
-        }
-        //Para coger los apuntes con el nombre
-        Set <ApunteBean> apuntesConElNombre = new HashSet <ApunteBean>();
-        if(this.textFieldBuscar.getText().trim()!=""){
-            this.filtrado=true;
-            apuntesDeLaMateria.stream().forEach(apunte ->{
-                if(apunte.getTitulo().toLowerCase().contains(this.textFieldBuscar.getText().trim().toLowerCase())){
-                    apuntesConElNombre.add(apunte);
-                }
-            });
-        }else{
-            apuntesDeLaMateria.stream().forEach(apunte ->{
-                apuntesConElNombre.add(apunte);
-            });
-        }
-        //ESTA PARTE SE CAMBIA  Y LO QUE HARA SERA LLAMAR AL METODO ORDENAR
-        if(this.filtrado){
-            
-            this.apuntesDeTiendaFiltrado=apuntesConElNombre;//quizas quitar
-            /*
-            this.apuntesDataFiltrado=FXCollections.observableArrayList(new ArrayList<>(apuntesConElNombre));
-            this.listViewApuntes.setItems(this.apuntesDataFiltrado);
-            */
-            ordenarApuntes();
             
         }else{
-            //this.listViewApuntes.setItems(apuntesData);
-            ordenarApuntes();
+            showErrorAlert("No has seleccionado ninguna apunte para comprar.");
         }
         
     }
     
-    //Inicio de los metodos de navegación de la aplicación
     //Parte comun
     @FXML
     private void onActionCerrarSesion(ActionEvent event){
         try{
             //Creamos la alerta del tipo confirmación.
-            Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alertCerrarSesion = new Alert(AlertType.CONFIRMATION);
             //Ponemos titulo de la ventana como titulo para la alerta.
             alertCerrarSesion.setTitle("Cerrar sesión");
             alertCerrarSesion.setHeaderText("¿Quieres cerrar sesión?");
@@ -411,7 +251,7 @@ public class MisApuntesClienteFXController {
         try{
             //Creamos la alerta con el tipo confirmación, con su texto y botones de
             //aceptar y cancelar.
-            Alert alertCerrarAplicacion = new Alert(Alert.AlertType.CONFIRMATION,"Si sale de la aplicación cerrara\nautomáticamente la sesión.",ButtonType.NO,ButtonType.YES);
+            Alert alertCerrarAplicacion = new Alert(AlertType.CONFIRMATION,"Si sale de la aplicación cerrara\nautomáticamente la sesión.",ButtonType.NO,ButtonType.YES);
             //Añadimos titulo a la ventana como el alert.
             alertCerrarAplicacion.setTitle("Cerrar la aplicación");
             alertCerrarAplicacion.setHeaderText("¿Quieres salir de la aplicación?");
@@ -483,4 +323,172 @@ public class MisApuntesClienteFXController {
         this.cliente=cliente;
     }
     
+    private void cargarMaterias() {
+        try {
+            Set<MateriaBean> materias = materiaLogic.findAllMateria();
+            List <MateriaBean> materiasList = Lists.newArrayList(materias);
+            //El titulo es 0 ya que siempre va a ser el primero ya que todos los
+            // apuntes minimo tienen que tener 3 caracteres y al ser este un
+            // apunte con el titulo 0 siempre va a ser el primero al ordenarlo.
+            materiasList.add(new MateriaBean(-1,"0","Todas las materias"));
+            materiasList=materiasList.stream().sorted(Comparator.comparing(MateriaBean::getTitulo)).collect(Collectors.toList());
+            materiasData=FXCollections.observableArrayList(new ArrayList<>(materiasList));
+            materiasData.get(0).setTitulo("Todas las materias");
+            this.listViewMateria.setItems(materiasData);
+            
+        } catch (BusinessLogicException ex) {
+            LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
+        }
+    }
+    
+    private void cargarApuntes() {
+        try {
+            apuntes=apunteLogic.findAll();//SE PUDE BAJAR
+            
+            //List <ApunteBean> apuntesList = Lists.newArrayList(apuntes);
+            Set <ApunteBean> apuntesNoCreadosPorMi = new HashSet <ApunteBean>();
+            Set <ApunteBean> apuntesComprados = apunteLogic.getApuntesByComprador(cliente.getId());
+            apuntesDeTienda = new HashSet <ApunteBean>(); //PASARLO A GLOBAL
+            //apuntesList=apuntesList.stream().filter(apunte -> apunte.getIdApunte()==)
+            
+            apuntes.stream().forEach(apunte ->{
+                if(apunte.getCreador().getId()!=cliente.getId()){
+                    apuntesNoCreadosPorMi.add(apunte);
+                }
+            });
+            apuntesNoCreadosPorMi.stream().forEach(apunte ->{
+                boolean comprado=false;
+                for(ApunteBean apunteComprado:apuntesComprados){
+                    if(apunte==apunteComprado){
+                        comprado=true;
+                        break;
+                    }
+                }
+                if(!comprado)
+                    apuntesDeTienda.add(apunte);
+            });
+            
+            //ApunteBean apunte=apunteLogic.find(4);
+            //MateriaRESTClient mrc=new MateriaRESTClient();
+            //MateriaBean materia=mrc.find(MateriaBean.class, "2");
+            
+            apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntesDeTienda));
+            this.listViewApuntes.setItems(apuntesData);
+            this.listViewApuntes.setCellFactory(param -> new CellTiendaApunte());
+            //ArrayList <ApunteBean> apuntesInfo=new ArrayList<>(apuntes);
+            //LOGGER.info("INf. "+apuntesInfo.get(0).getCreador().getNombreCompleto());
+        } catch (BusinessLogicException ex) {
+            LOGGER.severe("Error al intentar cargar los apuntes :"+ex.getMessage());
+            showErrorAlert("No se ha podido cargar los apuntes");
+        }
+    }
+    
+    private void cargarComboBox() {
+        opcionesData=FXCollections.observableArrayList(Arrays.asList(this.opciones));
+        this.comboBoxOrdenar.setItems(opcionesData);
+        
+    }
+    
+    private void handleMateriaListSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
+        if(newValue!=null && newValue!=oldValue){
+            MateriaBean materia=(MateriaBean) newValue;
+            if(materia.getIdMateria()!=-1){
+                //Filtrar
+                //this.filtrarMateria=true;
+                this.materiaFiltrada=materia;
+            }else{
+                //this.filtrarMateria=false;
+                this.materiaFiltrada=null;
+                //quitar filtrado por materia
+            }
+            filtrarLosApuntes();
+        }else{
+            //No filtrar
+            //PROVISIONAL
+            this.listViewMateria.getSelectionModel().select(0);
+            
+        }
+        
+    }
+    
+    private void handleOpcionesComboBoxSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
+        if(newValue!=null && newValue!=oldValue){
+            this.tipoFiltrado=(String) newValue;
+            ordenarApuntes();
+        }
+    }
+    
+    private void filtrarLosApuntes(){
+        
+        this.filtrado=false;
+        //Para coger los apuntes de una materia
+        Set <ApunteBean> apuntesDeLaMateria = new HashSet <ApunteBean>();
+        if(this.materiaFiltrada!=null){
+            this.filtrado=true;
+            this.apuntesDeTienda.forEach(apunte ->{
+                if(this.materiaFiltrada.getIdMateria()==apunte.getMateria().getIdMateria()){
+                    apuntesDeLaMateria.add(apunte);
+                }
+            });
+        }else{
+            this.apuntesDeTienda.forEach(apunte ->{
+                apuntesDeLaMateria.add(apunte);
+            });
+        }
+        //Para coger los apuntes con el nombre
+        Set <ApunteBean> apuntesConElNombre = new HashSet <ApunteBean>();
+        if(this.textFieldBuscar.getText().trim()!=""){
+            this.filtrado=true;
+            apuntesDeLaMateria.stream().forEach(apunte ->{
+                if(apunte.getTitulo().toLowerCase().contains(this.textFieldBuscar.getText().trim().toLowerCase())){
+                    apuntesConElNombre.add(apunte);
+                }
+            });
+        }else{
+            apuntesDeLaMateria.stream().forEach(apunte ->{
+                apuntesConElNombre.add(apunte);
+            });
+        }
+        //ESTA PARTE SE CAMBIA  Y LO QUE HARA SERA LLAMAR AL METODO ORDENAR
+        if(this.filtrado){
+            
+            this.apuntesDeTiendaFiltrado=apuntesConElNombre;//quizas quitar
+            /*
+            this.apuntesDataFiltrado=FXCollections.observableArrayList(new ArrayList<>(apuntesConElNombre));
+            this.listViewApuntes.setItems(this.apuntesDataFiltrado);
+            */
+            ordenarApuntes();
+            
+        }else{
+            //this.listViewApuntes.setItems(apuntesData);
+            ordenarApuntes();
+        }
+        
+    }
+    
+    private void ordenarApuntes() {
+        List <ApunteBean> apuntesParaOrdenar=null;
+        if(this.filtrado)
+            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTiendaFiltrado);
+        else
+            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTienda);
+        switch(this.tipoFiltrado){
+            case "Sin filtro":
+                
+                break;
+            case "ABC...":
+                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getTitulo)).collect(Collectors.toList());
+                break;
+            case "ZYZ...":
+                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getTitulo, Comparator.reverseOrder())).collect(Collectors.toList());
+                break;
+            case "Precio asc.":
+                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getPrecio)).collect(Collectors.toList());
+                break;
+            case "Precio desc.":
+                apuntesParaOrdenar=apuntesParaOrdenar.stream().sorted(Comparator.comparing(ApunteBean::getPrecio, Comparator.reverseOrder())).collect(Collectors.toList());
+                break;
+        }
+        this.listViewApuntes.setItems(FXCollections.observableArrayList(new ArrayList<>(apuntesParaOrdenar)));
+    }
 }
