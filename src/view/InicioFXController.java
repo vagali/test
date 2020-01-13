@@ -8,6 +8,7 @@ import exceptions.NoEsUserException;
 import exceptions.PasswordWrongException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -284,21 +285,23 @@ public class InicioFXController extends ControladorGeneral{
      * @param event El propio evento. / The current event.
      */
     private void btnRegistrarOnClick(ActionEvent event) {
-        /*
+        
+        
         try {
-        FXMLLoader loader = new FXMLLoader(getClass()
-        .getResource("Registrarse.fxml"));
-        
-        Parent root = (Parent) loader.load();
-        
-        RegistrarseFXMLController controller
-        = ((RegistrarseFXMLController) loader.getController());
-        
-        controller.initStage(root);
-        } catch (IOException e) {
-        showErrorAlert("Error al cargar la ventana de Registrar.");
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("Registrarse.fxml"));
+            
+            Parent root = (Parent) loader.load();
+            
+            RegistrarseFXMLController controller
+                    = ((RegistrarseFXMLController) loader.getController());
+            
+            controller.initStage(root);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(InicioFXController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
+        
     }
     /**
      * Comprobación de Login y Password y inicio de sesión.

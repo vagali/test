@@ -36,7 +36,7 @@ public class OfertaManagerImplementation implements OfertaManager {
 
 
     @Override
-    public void borrarOferta(String idOferta) throws BusinessLogic {
+    public void borrarOferta(Integer idOferta) throws BusinessLogic {
         try{
             webClient.deleteOferta(idOferta);
         }catch(Exception e){

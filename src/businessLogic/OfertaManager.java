@@ -15,6 +15,6 @@ import transferObjects.OfertaBean;
 public interface OfertaManager {
     public void createOferta(OfertaBean oferta) throws BusinessLogic;
     public Collection todasOfertas() throws BusinessLogic;
-    public void borrarOferta(String idOferta) throws BusinessLogic;
+    public void borrarOferta(Integer idOferta) throws BusinessLogic;
     public void actualizarOferta(OfertaBean oferta) throws BusinessLogic;
 }

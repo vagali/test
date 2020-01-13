@@ -52,7 +52,7 @@ public class OfertaRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void deleteOferta(String idOferta) throws ClientErrorException {
+    public void deleteOferta(Integer idOferta) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{idOferta})).request().delete();
     }
 

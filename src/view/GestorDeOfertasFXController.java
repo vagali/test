@@ -1,8 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package view;
 
 import businessLogic.BusinessLogic;
@@ -14,7 +14,6 @@ import java.util.Date;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -34,8 +33,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.swing.text.TabableView;
 import transferObjects.OfertaBean;
-import transferObjects.PackBean;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
@@ -46,6 +45,7 @@ import static view.ControladorGeneral.showErrorAlert;
 public class GestorDeOfertasFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeOfertasFXController");
     public OfertaManager ofertaLogic = createOfertaManager("real");
+    private int opcion=0;
     private UserBean user;
     private Stage stage;
     
@@ -72,10 +72,10 @@ public class GestorDeOfertasFXController {
     @FXML private TextField txtDescuento;
     @FXML private ComboBox<String> comboPacks;
     @FXML private Button btnAceptar;
-
+    
     
     public void initStage(Parent root) {
-    
+        
         try{
             LOGGER.info("Iniciando la ventana LogOut");
             Scene scene=new Scene(root);
@@ -94,7 +94,7 @@ public class GestorDeOfertasFXController {
             columnaDescuento.setCellValueFactory(new PropertyValueFactory<>("rebaja"));
             ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
             tablaGestorOfertas.setItems(ofertas);
-
+            
             //Mnemonicos
             //Menu->
             menuCuenta.setMnemonicParsing(true);
@@ -131,19 +131,19 @@ public class GestorDeOfertasFXController {
                 .toInstant());
     }
     @FXML public void modificar(){
-       
+        opcion = 1;
         LOGGER.info("he clicado remplazar fila");
         int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
-
+        
         if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
             txtOfertaNombre.setText(ofertas.get(indiceFilaSeleccionada).getTitulo());
             txtDescuento.setText(Float.toString(ofertas.get(indiceFilaSeleccionada).getRebaja()));
-           
+            
             dateInicio.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaInicio()));
             dateFin.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaFin()));
             
             /*for(PackBean pack:ofertas.get(indiceFilaSeleccionada).getPacks()){
-                comboPacks.setItems(FXCollections.observableArrayList(pack.getNombre));
+            comboPacks.setItems(FXCollections.observableArrayList(pack.getNombre));
             }*/
             txtOfertaNombre.setVisible(true);
             txtDescuento.setVisible(true);
@@ -154,54 +154,83 @@ public class GestorDeOfertasFXController {
         
     }
     @FXML public void insertar() throws BusinessLogic{
+        opcion =2;
         txtOfertaNombre.setVisible(true);
         txtDescuento.setVisible(true);
         dateInicio.setVisible(true);
         dateFin.setVisible(true);
         btnAceptar.setVisible(true);
         
-        OfertaBean nuevaOferta = null;
-        Date fFin  = localDateToDate(dateInicio.getValue());
-        Date fInicio  = localDateToDate(dateFin.getValue());
-        String oofertaNombre  = txtOfertaNombre.getText();
-        Float descuento  = Float.valueOf(txtDescuento.getText());
-        //ObservableSet<PackBean> comboPacks = null;
-       
-        nuevaOferta = new OfertaBean(null, oofertaNombre, fInicio, fFin, null, descuento);
-        ofertaLogic.createOferta(nuevaOferta);
-        ofertas.add(nuevaOferta);
-        txtOfertaNombre.setText("");
-        txtDescuento.setText("");
-        dateInicio.setValue(null);
-        dateFin.setValue(null);
-    }
-    @FXML public void borrar(){
         
+    }
+    @FXML public void borrar() throws BusinessLogic{
+        OfertaBean ofertaBorrar = null;
+        LOGGER.info("he clicado remplazar fila");
+        int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
+        
+        if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
+            ofertaBorrar = ofertas.get(indiceFilaSeleccionada);
+            ofertaLogic.borrarOferta(ofertaBorrar.getIdOferta());
+            tablaGestorOfertas.getItems().remove(tablaGestorOfertas.getSelectionModel().getSelectedItem());
+            tablaGestorOfertas.refresh();
+
+        }
     }
     @FXML public void aceptar() throws BusinessLogic{
-        
-        OfertaBean ofertaMOdificada = null;
         Date fFin  = localDateToDate(dateInicio.getValue());
         Date fInicio  = localDateToDate(dateFin.getValue());
         String oofertaNombre  = txtOfertaNombre.getText();
         Float descuento  = Float.valueOf(txtDescuento.getText());
-        //ObservableSet<PackBean> comboPacks = null;
-        
-        int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
-        ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
-       //ofertaMOdificada = new OfertaBean(null, oofertaNombre, fInicio, fFin, comboPacks, descuento);
-       ofertaMOdificada.setFechaFin(fFin);
-       ofertaMOdificada.setFechaInicio(fInicio);
-       ofertaMOdificada.setRebaja(descuento);
-       ofertaMOdificada.setTitulo(oofertaNombre);
-       
-       ofertaLogic.actualizarOferta(ofertaMOdificada);
-        ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
-        txtOfertaNombre.setText("");
-        txtDescuento.setText("");
-        dateInicio.setValue(null);
-        dateFin.setValue(null);
-      //  btnAceptar.setVisible(false);
+        LOGGER.info(Float.valueOf(txtDescuento.getText()).toString());
+        switch(opcion){
+            case 1:
+                OfertaBean ofertaMOdificada = null;
+                //ObservableSet<PackBean> comboPacks = null;
+                
+                
+                int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
+                ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
+                ofertaMOdificada.setFechaFin(fFin);
+                ofertaMOdificada.setFechaInicio(fInicio);
+                ofertaMOdificada.setRebaja(descuento);
+                ofertaMOdificada.setTitulo(oofertaNombre);
+                
+                ofertaLogic.actualizarOferta(ofertaMOdificada);
+                ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
+                txtOfertaNombre.setText("");
+                txtDescuento.setText("");
+                dateInicio.setValue(null);
+                dateFin.setValue(null);
+                //  btnAceptar.setVisible(false);
+                tablaGestorOfertas.refresh();
+                opcion = 0;
+                break;
+            case 2:
+                OfertaBean nuevaOferta = new OfertaBean();
+               //nuevaOferta.setIdOferta(null);
+                LOGGER.info("-------------------------"+nuevaOferta.getIdOferta().toString());
+                // nuevaOferta = new OfertaBean(, oofertaNombre, fInicio, fFin, null, descuento);
+                //ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
+                //nuevaOferta.setIdOferta(null);
+                nuevaOferta.setFechaFin(fFin);
+                nuevaOferta.setFechaInicio(fInicio);
+                nuevaOferta.setRebaja(descuento);
+                nuevaOferta.setTitulo(oofertaNombre);
+                LOGGER.info(nuevaOferta.getIdOferta().toString());
+                ofertaLogic.createOferta(nuevaOferta);
+                //ofertas.add(nuevaOferta);
+                ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
+                tablaGestorOfertas.setItems(ofertas);
+                tablaGestorOfertas.refresh();
+                txtOfertaNombre.setText("");
+                txtDescuento.setText("");
+                dateInicio.setValue(null);
+                dateFin.setValue(null);
+                opcion = 0;
+                
+                break;
+                
+        }
     }
     //Parte comun
     @FXML
@@ -304,7 +333,7 @@ public class GestorDeOfertasFXController {
     }
     @FXML
     private void onActionAbrirGesstorMaterias(ActionEvent event){
-         try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("gestor_de_materias.fxml"));
             Parent root = (Parent)loader.load();
@@ -322,6 +351,6 @@ public class GestorDeOfertasFXController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
-   
+    
+    
 }
