@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -23,10 +24,10 @@ import javax.ws.rs.core.GenericType;
  * @author Usuario
  */
 public class ApunteRESTClient {
-
+    private static ResourceBundle configFile=ResourceBundle.getBundle("service.configService");
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/ServerApuntes4/webresources";
+    private static final String BASE_URI = configFile.getString("base_uri");
 
     public ApunteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
