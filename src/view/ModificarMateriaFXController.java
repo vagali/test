@@ -15,19 +15,21 @@ import transferObjects.MateriaBean;
  *
  * @author Luis
  */
-public class CrearMateriaFXController {
+public class ModificarMateriaFXController {
     private Stage stage;
     private MateriaBean materia;
     private int opcion;
     
     @FXML
-    public Button btnCrearCrearMateria;
+    public Button btnModificarModificarMateria;
     @FXML
-    private Button btnSalirCrearMateria;
+    private Button btnSalirModificarMateria;
     @FXML
-    private TextField tfTituloCrearMateria;
+    private TextField tfTituloModificarMateria;
     @FXML
-    private TextArea taDescripcionCrearMateria;
+    private TextArea taDescripcionModificarMateria;
+    @FXML
+    private Button btnEliminarModificarMateria;
     
     @FXML
     public void initStage(Parent root) {
@@ -36,9 +38,11 @@ public class CrearMateriaFXController {
             stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
-            stage.setTitle("Crear Materia");
+            stage.setTitle("Modificar Materia");
             stage.setResizable(false);
             stage.setMaximized(false);
+            tfTituloModificarMateria.setText(materia.getTitulo());
+            taDescripcionModificarMateria.setText(materia.getDescripcion());
             stage.showAndWait();
         }catch(Exception e){
             ControladorGeneral.showErrorAlert("Ha ocurrido un error.");
@@ -54,11 +58,11 @@ public class CrearMateriaFXController {
     }
     
     @FXML
-    public void onActionBtnCrearCrearMateria(ActionEvent event){
-        if(!tfTituloCrearMateria.getText().isEmpty() || !taDescripcionCrearMateria.getText().isEmpty()){
-            materia.setTitulo(tfTituloCrearMateria.getText());
-            materia.setDescripcion(taDescripcionCrearMateria.getText());
-            opcion = 1;
+    public void onActionBtnModificarModificarMateria(ActionEvent event){
+        if(!tfTituloModificarMateria.getText().isEmpty() || !taDescripcionModificarMateria.getText().isEmpty()){
+            materia.setTitulo(tfTituloModificarMateria.getText());
+            materia.setDescripcion(taDescripcionModificarMateria.getText());
+            opcion = 2;
             stage.hide();
         }else{
             ControladorGeneral.showErrorAlert("Debes rellenar todos los campos.");
@@ -66,7 +70,13 @@ public class CrearMateriaFXController {
     }
     
     @FXML
-    public void onActionBtnSalirCrearMateria(ActionEvent event){
+    public void onActionBtnEliminarModificarMateria(ActionEvent event){
+        opcion = 1;
+        stage.hide();
+    }
+    
+    @FXML
+    public void onActionBtnSalirModificarMateria(ActionEvent event){
         opcion = 0;
         stage.hide();
     }
