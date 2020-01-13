@@ -438,7 +438,8 @@ public class GestorDeApuntesFXController {
             apunteProvisional =(ApunteBean) newValue;
             this.textFieldTitulo.setText(apunteProvisional.getTitulo());
             this.textFieldDesc.setText(apunteProvisional.getDescripcion());
-            this.datePickerFecha.setValue(dateToLocalDate(apunteProvisional.getFechaValidacion()));
+            if(apunteProvisional!=null)
+                this.datePickerFecha.setValue(dateToLocalDate(apunteProvisional.getFechaValidacion()));
             this.comboBoxMaterias.getSelectionModel().select(apunteProvisional.getMateria());
             this.btnModificar.setDisable(false);
             this.btnBorrar.setDisable(false);
