@@ -33,7 +33,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javax.swing.text.TabableView;
 import transferObjects.OfertaBean;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;

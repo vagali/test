@@ -335,26 +335,27 @@ public class InicioFXController extends ControladorGeneral{
             lblContra.setTextFill(Color.web("black"));
             UserBean usuario= new UserBean();
             usuario=(UserBean) user;
+            
+            LOGGER.info("-----------------------------"+usuario.getPrivilegio().toString());
             //abrir admin
             showErrorAlert("admin");
-            
-            
             try{
                 FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("gestor_de_apuntes.fxml"));
-
+                        .getResource("gestor_de_apuntes.fxml"));
+                
                 Parent root = (Parent)loader.load();
-
+                
                 GestorDeApuntesFXController controller =
-                ((GestorDeApuntesFXController)loader.getController());
+                        ((GestorDeApuntesFXController)loader.getController());
                 controller.setUser(usuario);
                 controller.initStage(root);
                 tfContra.setText("");
             }catch(IOException e){
-                 showErrorAlert("Error al cargar la ventana de Login.");
-                 LOGGER.severe("Error "+e.getMessage());
-                 
+                showErrorAlert("Error al cargar la ventana de Login.");
+                LOGGER.severe("Error "+e.getMessage());
+                
             }
+            
             
         }else{
             showErrorAlert("Nombre de usuario o contraseña incorrecto.");
@@ -379,10 +380,26 @@ public class InicioFXController extends ControladorGeneral{
         lblContra.setTextFill(Color.web("red"));
     } catch (NoEsUserException ex) {
         try {
-            user=clienteLogic.iniciarSesion(nombre, contra);
-            ClienteBean cliente=new ClienteBean();
-            cliente=(ClienteBean) user;
-            showErrorAlert(cliente.getLogin()+" "+cliente.getSaldo());
+            //user=
+            ClienteBean cliente=clienteLogic.iniciarSesion(nombre, contra);
+            //showErrorAlert(cliente.getLogin()+" "+cliente.getSaldo());
+            showErrorAlert("cliente");
+                try{
+                    FXMLLoader loader = new FXMLLoader(getClass()
+                            .getResource("perfil.fxml"));
+                    
+                    Parent root = (Parent)loader.load();
+                    
+                    PerfilFXMLController controller =
+                            ((PerfilFXMLController)loader.getController());
+                    controller.setUser(cliente);
+                    controller.initStage(root);
+                    tfContra.setText("");
+                }catch(IOException e){
+                    showErrorAlert("Error al cargar la ventana de Login.");
+                    LOGGER.severe("Error "+e.getMessage());
+                    
+                }
         } catch (BusinessLogic ex1) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         } catch (PasswordWrongException ex1) {
