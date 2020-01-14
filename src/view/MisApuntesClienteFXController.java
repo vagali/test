@@ -67,8 +67,6 @@ public class MisApuntesClienteFXController {
     private ObservableList<String> opcionesData=null;
     private Set <ApunteBean> apuntesDeMisApunteCliente = null;
     private Set <ApunteBean> apuntesDeTiendaFiltrado = null;
-    //private boolean filtrarMateria=false;
-    // private boolean filtrarNombre=false;
     private boolean filtrado=false;
     private boolean ordenado=false;
     private Set<ApunteBean> apuntes=null;
@@ -77,6 +75,7 @@ public class MisApuntesClienteFXController {
     private String [] opciones={"Sin filtro","ABC...","ZYZ...","Precio asc.","Precio desc."};
     private String tipoFiltrado="Sin filtro";
     private MateriaBean materiaFiltrada = null;
+    private static int resultado=0; /////////////////////////////////////////
     
     @FXML
     private Button btnRefrescar;
@@ -176,7 +175,7 @@ public class MisApuntesClienteFXController {
             this.listViewMateria.getSelectionModel().select(0);
             stage.show();
         }catch(Exception e){
-            LOGGER.severe(e.getMessage());
+            LOGGER.severe("Error al iniacializar la ventana: "+e.getMessage());
         }
         
     }
@@ -201,15 +200,21 @@ public class MisApuntesClienteFXController {
             textFieldBuscar.requestFocus();
             
         }catch(Exception e){
-            LOGGER.severe(e.getMessage());
+            LOGGER.severe("Error al enseñar la ventana: "+e.getMessage());
         }
     }
     /**
-     * Refresca todos los datos de Apuntes & materias.
-     * @param event 
+     * Ejecuta el metodo refrescar.
+     * @param event El evento de pulsación.
      */
     @FXML
     private void onActionRefrescar(ActionEvent event){
+        refrescar();
+    }
+    /**
+     * Refresca todos los datos de Apuntes & materias y quita todos los filtros.
+     */
+    public void refrescar(){
         cargarMaterias();
         cargarApuntes();
         cargarComboBox();
@@ -232,15 +237,20 @@ public class MisApuntesClienteFXController {
      */
     @FXML
     private void onActionDescargarElApunte(ActionEvent event){
-        if(!this.listViewApuntes.getSelectionModel().isEmpty()){
-        FileChooser fileChooser = new FileChooser();
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
-            fileChooser.getExtensionFilters().add(extFilter);
-            File fileC = fileChooser.showSaveDialog(stage);
-            ApunteBean elApunte =(ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem();
-            writeBytesToFile(elApunte.getArchivo(),fileC);
+        try{
+            if(!this.listViewApuntes.getSelectionModel().isEmpty()){
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
+                fileChooser.getExtensionFilters().add(extFilter);
+                File fileC = fileChooser.showSaveDialog(stage);
+                ApunteBean elApunte =(ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem();
+                writeBytesToFile(elApunte.getArchivo(),fileC);
             }else{
-            showErrorAlert("Primero selecciona un apunte.");
+                showErrorAlert("Primero selecciona un apunte.");
+            }
+        }catch(Exception e){
+            LOGGER.severe("ERROR Al descargar el archivo: "+e.getMessage());
+            showErrorAlert("Hubo un error al descargar el fichero.");
         }
     }
     /**
@@ -259,6 +269,10 @@ public class MisApuntesClienteFXController {
                     ((SubirApunteFXController)loader.getController());
             controller.setCliente(cliente);
             controller.initStage(root);
+            if(resultado!=0){
+                refrescar();
+                resultado=0;
+            }
         }catch(IOException e){
             showErrorAlert("Error al cargar la ventana subir apunte.");
             LOGGER.severe("Error "+e.getMessage());
@@ -282,10 +296,14 @@ public class MisApuntesClienteFXController {
                         ((ModificarApunteFXController)loader.getController());
                 controller.setApunte((ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem());
                 controller.initStage(root);
+                if(resultado!=0){
+                    refrescar();
+                    resultado=0;
+                }
+                
             }catch(IOException e){
                 showErrorAlert("Error al cargar la ventana subir apunte.");
-                LOGGER.severe("Error "+e.getMessage());
-                
+                LOGGER.severe("Error abrir la ventana de modificar apunte."+e.getMessage());
             }
         }else{
             showErrorAlert("Primero selecciona un apunte.");
@@ -332,6 +350,7 @@ public class MisApuntesClienteFXController {
             this.listViewMateria.setItems(materiasData);
             
         } catch (BusinessLogicException ex) {
+            showErrorAlert("No se pudo cargar las materias");
             LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
         }
     }
@@ -358,16 +377,23 @@ public class MisApuntesClienteFXController {
             //No filtrar
             //PROVISIONAL
             this.listViewMateria.getSelectionModel().select(0);
-            
         }
-        
     }
+    /**
+     * El manejador del comboBox de los tipos de ordenes que existen.
+     * @param obvservable El valor observable.
+     * @param oldValue El antiguo valor.
+     * @param newValue El valor nuevo.
+     */
     private void handleOpcionesComboBoxSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
         if(newValue!=null && newValue!=oldValue){
             this.tipoFiltrado=(String) newValue;
             ordenarApuntes();
         }
     }
+    /**
+     * Ordena la lista de apuntes.
+     */
     private void ordenarApuntes() {
         List <ApunteBean> apuntesParaOrdenar=null;
         if(this.filtrado)
@@ -393,6 +419,9 @@ public class MisApuntesClienteFXController {
         }
         this.listViewApuntes.setItems(FXCollections.observableArrayList(new ArrayList<>(apuntesParaOrdenar)));
     }
+    /**
+     * Filtra los apuntes.
+     */
     private void filtrarLosApuntes(){
         
         this.filtrado=false;
@@ -459,7 +488,8 @@ public class MisApuntesClienteFXController {
                 }
             });
         }catch(Exception e){
-            LOGGER.severe(e.getMessage());
+            LOGGER.severe("Error al cerrar sesion: "+e.getMessage());
+            showErrorAlert("Error al cerrar sesion.");
         }
     }
     @FXML
@@ -479,7 +509,8 @@ public class MisApuntesClienteFXController {
                 }
             });
         }catch(Exception e){
-            LOGGER.severe(e.getMessage());
+            LOGGER.severe("Error al cerrar la aplicación: "+e.getMessage());
+            showErrorAlert("Error al cerrar la aplicación");
         }
     }
     
@@ -498,6 +529,7 @@ public class MisApuntesClienteFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
+            LOGGER.severe("Error al abrir la ventana MisApuntes: "+e.getMessage());
             showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
         }
     }
@@ -515,6 +547,7 @@ public class MisApuntesClienteFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
+            LOGGER.severe("Error al abrir la ventana Tienda apuntes: "+e.getMessage());
             showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
         }
     }
@@ -531,29 +564,46 @@ public class MisApuntesClienteFXController {
     private void onActionAbout(ActionEvent event){
     }
     //Fin de los metodos de navegación de la aplicación
-    
+    /**
+     * Metodo para insertar el stage.
+     * @param stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    /**
+     * Metodo para insertar el cliente.
+     * @param cliente
+     */
     public void setCliente(ClienteBean cliente){
         this.cliente=cliente;
     }
+    public static void setResultadoApunteModificado(int resultado){/////////////////////////////////////
+        MisApuntesClienteFXController.resultado=resultado;
+    }
+    
+    //Metodos utiles
+    /**
+     * Escribe un array de bytes en un directorio y tipo de fichero especifico.
+     * @param bFile El array de bytes.
+     * @param fileC La ruta, el nombre y el tipo del archivo.
+     */
     private void writeBytesToFile(byte[] bFile, File fileC) {
         
         FileOutputStream fileOuputStream = null;
-
+        
         try {
             fileOuputStream = new FileOutputStream(fileC.getPath());
             fileOuputStream.write(bFile);
-
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.severe("Error al descargar el apunte en un fichero: "+e.getMessage());
         } finally {
             if (fileOuputStream != null) {
                 try {
                     fileOuputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.severe("Error al intentar cerrar el stream para descargar el fichero: "+e.getMessage());
                 }
             }
         }

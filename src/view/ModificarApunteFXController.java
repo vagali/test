@@ -13,8 +13,6 @@ import static businessLogic.MateriaManagerFactory.createMateriaManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,13 +30,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import transferObjects.ApunteBean;
-import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
 import static view.ControladorGeneral.showErrorAlert;
+import static view.MisApuntesClienteFXController.setResultadoApunteModificado;
 
 /**
- *
- * @author Usuario
+ * La clase controladora de la ventana ModificarApunte.
+ * @author Ricardo Peinado Lastra
  */
 public class ModificarApunteFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.ModificarApunteFXController");
@@ -69,7 +67,10 @@ public class ModificarApunteFXController {
     private Button btnModificarMod;
     @FXML
     private Button btnEliminar;
-    
+    /**
+     * El metodo que inicializa la ventana ModificarApunte.
+     * @param root El nodo raiz.
+     */
     @FXML
     public void initStage(Parent root) {
         try{
@@ -93,11 +94,16 @@ public class ModificarApunteFXController {
             comboBoxMateriaMod.getSelectionModel().select(apunte.getMateria());
             textFieldTitulo.setText(apunte.getTitulo());
             textFieldPrecio.setText(apunte.getPrecio()+"");
-            stage.show();
+            stage.showAndWait();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * El metodo que ejecuta el codigo al enseñar la ventana.
+     * Pone el foco al textFieldTitulo.
+     * @param event El propio evento.
+     */
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> LogOut");
@@ -107,9 +113,16 @@ public class ModificarApunteFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * Inserta el apunte a modificar.
+     * @param apunte El objeto ApunteBean con sus datos.
+     */
     public void setApunte(ApunteBean apunte){
         this.apunte=apunte;
     }
+    /**
+     * Carga las materias en el comboBox.
+     */
     private void cargarMaterias() {
         try {
             Set<MateriaBean> materias = materiaLogic.findAllMateria();
@@ -120,6 +133,10 @@ public class ModificarApunteFXController {
             LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
         }
     }
+    /**
+     * Metodo que cancela la operación de modificar un apunte.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionCancelar(ActionEvent event){
         Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
@@ -128,9 +145,14 @@ public class ModificarApunteFXController {
         alertCerrarSesion.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 stage.hide();
+                setResultadoApunteModificado(0);
             }
         });
     }
+    /**
+     * Metodo que realiza la modificación del evento.
+     * @param event El evento de pulsacioón del bot´ón.
+     */
     @FXML
     private void onActionModificar(ActionEvent event){
         Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
@@ -139,9 +161,14 @@ public class ModificarApunteFXController {
         alertCerrarSesion.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 modificarElApunte();
+                setResultadoApunteModificado(1);
             }
         });
     }
+    /**
+     * Metodo que elimina un apunte.
+     * @param event El evento de la pulsación del botón.
+     */
     @FXML
     private void onActionEliminar(ActionEvent event){
         Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
@@ -154,7 +181,7 @@ public class ModificarApunteFXController {
                         apunteLogic.remove(apunte.getIdApunte());
                         enseñarAlertaInfo("Apunte eliminado","El apunte a sido eliminado");
                         stage.hide();
-
+                        setResultadoApunteModificado(1);
                     }else{
                         showErrorAlert("Lo sentimos el apunte ya a sido comprado\npor un usuario, ya no puedes eliminar el apunte.");
                     }
@@ -165,6 +192,10 @@ public class ModificarApunteFXController {
         });
         
     }
+    /**
+     * Valida si el campo de precio es valido o no.
+     * @return TRUE si es un precio valido | False en los demñas casos.
+     */
     private boolean precioValido() {
         boolean resultado=true;
         this.labelPrecio.setText("Precio");
@@ -197,13 +228,22 @@ public class ModificarApunteFXController {
         }
         return resultado;
     }
+    /**
+     * Valida si entra en los valores minmos y maximo una cadena de caracteres.
+     * @param frase La cadena.
+     * @param minimo Minimo de caracteres.
+     * @param maximo Maximo de caracteres.
+     * @return 
+     */
     public boolean esValido(String frase,int minimo, int maximo){
         boolean resultado=true;
         if(frase.length()>maximo || frase.length()<minimo)
             resultado=false;
         return resultado;
     }
-    
+    /**
+     * Metodo para modificar el apunte.
+     */
     private void modificarElApunte() {
         boolean todoBien=true;
         if(!precioValido()){
@@ -242,7 +282,11 @@ public class ModificarApunteFXController {
             
         }
     }
-
+    /**
+     * Enseña una alerta de información por pantalla.
+     * @param titulo El titulo de la alerta.
+     * @param elMensaje El mensaje de la alerta.
+     */
     private void enseñarAlertaInfo(String titulo, String elMensaje) {
         Alert alertCerrarSesion = new Alert(Alert.AlertType.INFORMATION);
         alertCerrarSesion.setTitle(titulo);

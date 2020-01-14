@@ -42,10 +42,12 @@ import javafx.stage.WindowEvent;
 import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
+import static view.ControladorGeneral.showErrorAlert;
+import static view.MisApuntesClienteFXController.setResultadoApunteModificado;
 
 /**
- *
- * @author Usuario
+ * La clase controladora de subir apunte.
+ * @author Ricardo Peinado Lastra
  */
 public class SubirApunteFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.SubirApunteFXController");
@@ -86,8 +88,10 @@ public class SubirApunteFXController {
     @FXML
     private Button btnSubirElApunte;
     
-    
-    
+    /**
+     * Inicializa la ventana subir apunte.
+     * @param El nodo raiz.
+     */
     @FXML
     public void initStage(Parent root) {
         try{
@@ -110,11 +114,15 @@ public class SubirApunteFXController {
             btnSeleccionarArchivo.setText("S_eleccionar archivo");
             labelRuta.setText("");
             
-            stage.show();
+            stage.showAndWait();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * El metodo que se ejecuta al mostrar la ventana y selecciona el foco.
+     * @param event El propio evento.
+     */
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> LogOut");
@@ -124,98 +132,115 @@ public class SubirApunteFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * Inserta el cliente.
+     * @param cliente Un objeto ClienteBean con sus datos.
+     */
     public void setCliente(ClienteBean cliente){
         this.cliente=cliente;
     }
-    
+    /**
+     * Comprueba y sube el apunte.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionSubirElApunte(ActionEvent event){
-        boolean todoBien=true;
-        if(!precioValido()){
-            todoBien=false;
-        }
-        if(this.labelRuta.getText().trim().equals("")){
-            todoBien=false;
-            this.lblArchivo.setText("Archivo (Tienes que seleccionar algun pdf para subir un apunte)");
-            this.lblArchivo.setTextFill(Color.web("red"));
-        }else{
-            this.lblArchivo.setText("Archivo");
-            this.lblArchivo.setTextFill(Color.web("black"));
-        }
-        if(!esValido(this.textFieldTitulo.getText().trim(),3,250)){
-            this.lblTitulo.setText("Titulo (Min 3 car. | Max 250 car.)");
-            this.lblTitulo.setTextFill(Color.web("red"));
-            todoBien=false;
-        }else{
-            this.lblTitulo.setText("Titulo");
-            this.lblTitulo.setTextFill(Color.web("black"));
-        }
-        if(!esValido(this.textDesc.getText().trim(),3,250)){
-            this.lblDesc.setText("Descripción (Min 3 car. | Max 250 car.)");
-            this.lblDesc.setTextFill(Color.web("red"));
-            todoBien=false;
-        }else{
-            this.lblDesc.setText("Descripción");
-            this.lblDesc.setTextFill(Color.web("black"));
-        }
-        if(this.comboBoxMateria.getSelectionModel().getSelectedItem()==null){
-            this.lblMateria.setText("Materia (Tienes que seleccionar una materia)");
-            this.lblMateria.setTextFill(Color.web("red"));
-            todoBien=false;
-        }else{
-            this.lblMateria.setText("Materia (Materia)");
-            this.lblMateria.setTextFill(Color.web("black"));
-        }
-        if(todoBien){
-            ApunteBean nuevoApunte = new ApunteBean();
-            nuevoApunte.setTitulo(this.textFieldTitulo.getText().trim());
-            nuevoApunte.setDescripcion(this.textDesc.getText().trim());
-            String elPrecio =this.textFieldPrecio.getText();
-            elPrecio=elPrecio.replace(",", ".");
-            float precio=Float.parseFloat(elPrecio);
-            nuevoApunte.setPrecio(precio);
-            nuevoApunte.setMateria((MateriaBean) this.comboBoxMateria.getSelectionModel().getSelectedItem());
-            nuevoApunte.setCreador(cliente);
-            
-            FileInputStream fileInputStream = null;
-            try{
-                byte[] bFile = new byte[(int) selectedFile.length()];
-                fileInputStream = new FileInputStream(selectedFile);
-                fileInputStream.read(bFile);
-                nuevoApunte.setArchivo(bFile);
-            }catch(IOException e){
-                LOGGER.severe("Error al leer los bytes "+e.getMessage());
+        try{
+            boolean todoBien=true;
+            if(!precioValido()){
                 todoBien=false;
-            } finally {
-                if (fileInputStream != null) {
-                    try {
-                        fileInputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+            }
+            if(this.labelRuta.getText().trim().equals("")){
+                todoBien=false;
+                this.lblArchivo.setText("Archivo (Tienes que seleccionar algun pdf para subir un apunte)");
+                this.lblArchivo.setTextFill(Color.web("red"));
+            }else{
+                this.lblArchivo.setText("Archivo");
+                this.lblArchivo.setTextFill(Color.web("black"));
+            }
+            if(!esValido(this.textFieldTitulo.getText().trim(),3,250)){
+                this.lblTitulo.setText("Titulo (Min 3 car. | Max 250 car.)");
+                this.lblTitulo.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.lblTitulo.setText("Titulo");
+                this.lblTitulo.setTextFill(Color.web("black"));
+            }
+            if(!esValido(this.textDesc.getText().trim(),3,250)){
+                this.lblDesc.setText("Descripción (Min 3 car. | Max 250 car.)");
+                this.lblDesc.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.lblDesc.setText("Descripción");
+                this.lblDesc.setTextFill(Color.web("black"));
+            }
+            if(this.comboBoxMateria.getSelectionModel().getSelectedItem()==null){
+                this.lblMateria.setText("Materia (Tienes que seleccionar una materia)");
+                this.lblMateria.setTextFill(Color.web("red"));
+                todoBien=false;
+            }else{
+                this.lblMateria.setText("Materia (Materia)");
+                this.lblMateria.setTextFill(Color.web("black"));
             }
             if(todoBien){
-                Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
-                alertCerrarSesion.setTitle("Subir apunte");
-                alertCerrarSesion.setHeaderText("Una vez subido y comprado por alguna persona el apunte no se podra eliminarlo.\n ¿Estas segur@ de que todos los datos son correctos?");
-                //Si acepta se cerrara esta ventana.
-                alertCerrarSesion.showAndWait().ifPresent(response -> {
-                    if (response == ButtonType.OK) {
+                ApunteBean nuevoApunte = new ApunteBean();
+                nuevoApunte.setTitulo(this.textFieldTitulo.getText().trim());
+                nuevoApunte.setDescripcion(this.textDesc.getText().trim());
+                String elPrecio =this.textFieldPrecio.getText();
+                elPrecio=elPrecio.replace(",", ".");
+                float precio=Float.parseFloat(elPrecio);
+                nuevoApunte.setPrecio(precio);
+                nuevoApunte.setMateria((MateriaBean) this.comboBoxMateria.getSelectionModel().getSelectedItem());
+                nuevoApunte.setCreador(cliente);
+                
+                FileInputStream fileInputStream = null;
+                try{
+                    byte[] bFile = new byte[(int) selectedFile.length()];
+                    fileInputStream = new FileInputStream(selectedFile);
+                    fileInputStream.read(bFile);
+                    nuevoApunte.setArchivo(bFile);
+                }catch(IOException e){
+                    LOGGER.severe("Error al leer los bytes "+e.getMessage());
+                    todoBien=false;
+                } finally {
+                    if (fileInputStream != null) {
                         try {
-                            apunteLogic.create(nuevoApunte);
-                            stage.hide();
-                        } catch (BusinessLogicException e) {
-                            LOGGER.severe("Error al crear el apunte "+e.getMessage());
+                            fileInputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
-                });
+                }
+                if(todoBien){
+                    Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
+                    alertCerrarSesion.setTitle("Subir apunte");
+                    alertCerrarSesion.setHeaderText("Una vez subido y comprado por alguna persona el apunte no se podra eliminarlo.\n ¿Estas segur@ de que todos los datos son correctos?");
+                    //Si acepta se cerrara esta ventana.
+                    alertCerrarSesion.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            try {
+                                apunteLogic.create(nuevoApunte);
+                                stage.hide();
+                                setResultadoApunteModificado(1);
+                            } catch (BusinessLogicException e) {
+                                LOGGER.severe("Error al crear el apunte "+e.getMessage());
+                            }
+                        }
+                    });
+                    
+                }
                 
             }
-            
+        }catch(Exception e){
+            LOGGER.severe("Error al subir un apunte: "+e.getMessage());
+            showErrorAlert("A ocurrido un error al subir el apunte.");
         }
         
     }
+    /**
+     * El metodo que cancela la subida de un apunte.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionCancelar(ActionEvent event){
         Alert alertCerrarSesion = new Alert(Alert.AlertType.CONFIRMATION);
@@ -225,22 +250,34 @@ public class SubirApunteFXController {
         alertCerrarSesion.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 stage.hide();
+                setResultadoApunteModificado(0);
             }
         });
     }
+    /**
+     * El metodo que selecciona el archivo.
+     * @param event El evento de pulsaciónd del botón.
+     */
     @FXML
     private void onActionSeleccionarArchivo(ActionEvent event){
-        FileChooser fc=new FileChooser();
-        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos PDF","*.PDF"));
-        selectedFile = fc.showOpenDialog(null);
-        if(selectedFile!=null){
-            this.labelRuta.setText(selectedFile.getPath());
-            
-        }else{
-            this.labelRuta.setText("");
+        try{
+            FileChooser fc=new FileChooser();
+            fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Archivos PDF","*.PDF"));
+            selectedFile = fc.showOpenDialog(null);
+            if(selectedFile!=null){
+                this.labelRuta.setText(selectedFile.getPath());
+                
+            }else{
+                this.labelRuta.setText("");
+            }
+        }catch(Exception e){
+            LOGGER.severe("Error al seleccionar un apunte: "+e.getMessage());
+            showErrorAlert("A ocurrido un error al intentar leer el apunte.");
         }
     }
-    
+    /**
+     * Carga todas las materias en el comboBox.
+     */
     private void cargarMaterias() {
         try {
             Set<MateriaBean> materias = materiaLogic.findAllMateria();
@@ -251,7 +288,10 @@ public class SubirApunteFXController {
             LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
         }
     }
-    
+    /**
+     * Valida que el precio sea correcto.
+     * @return TRUE si es un precio valido | FALSE en los demas casos.
+     */
     private boolean precioValido() {
         boolean resultado=true;
         this.lblPrecio.setText("Precio");
@@ -284,6 +324,13 @@ public class SubirApunteFXController {
         }
         return resultado;
     }
+    /**
+     * Valida si es o no valido una cadena de caracteres.
+     * @param frase La cadena de caracteres.
+     * @param minimo El minimo de caracteres.
+     * @param maximo El maximo de caracteres.
+     * @return 
+     */
     public boolean esValido(String frase,int minimo, int maximo){
         boolean resultado=true;
         if(frase.length()>maximo || frase.length()<minimo)

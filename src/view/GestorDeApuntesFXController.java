@@ -267,7 +267,7 @@ public class GestorDeApuntesFXController {
                                 try {
                                     apunteLogic.remove(apunteProvisional.getIdApunte());
                                     Alert alert=new Alert(Alert.AlertType.INFORMATION,
-                                            "El apunte "+this.apunteProvisional.getTitulo()+" fue eliminado",
+                                            "El apunte "+this.apunteProvisional.getTitulo()+" fue eliminado.",
                                             ButtonType.OK);
                                     alert.showAndWait();
                                     this.tableApuntes.getItems().remove(this.tableApuntes.getSelectionModel().getSelectedItem());
@@ -370,15 +370,18 @@ public class GestorDeApuntesFXController {
                 apunteProvisional.setDescripcion(this.textFieldDesc.getText().trim());
                 apunteProvisional.setFechaValidacion(localDateToDate(this.datePickerFecha.getValue()));
                 apunteProvisional.setMateria((MateriaBean) this.comboBoxMaterias.getSelectionModel().getSelectedItem());
-                showErrorAlert("Titulo: "+apunteProvisional.getTitulo()+"\n Descripción"+apunteProvisional.getDescripcion()+"\n Fecha "+apunteProvisional.getFechaValidacion().toString()+"\n Materia: "+apunteProvisional.getMateria().getTitulo());
-                
+                               
                 try {
                     apunteLogic.edit(apunteProvisional);
+                    Alert alert=new Alert(Alert.AlertType.INFORMATION,
+                                            "El apunte "+this.apunteProvisional.getTitulo()+" fue modificado.",
+                                            ButtonType.OK);
+                                    alert.showAndWait();
                     apuntesData.set(this.tableApuntes.getSelectionModel().getFocusedIndex(), apunteProvisional);
                     this.tableApuntes.getSelectionModel().clearSelection();
                     this.tableApuntes.refresh();
                     vaciar();
-                    
+                     
                 } catch (BusinessLogicException ex) {
                     LOGGER.severe("Error enviar la modificación del apunte: "+ex.getMessage());
                     showErrorAlert("Hubo un error al modificar el apunte.");
