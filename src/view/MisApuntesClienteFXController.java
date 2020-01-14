@@ -11,6 +11,8 @@ import businessLogic.BusinessLogicException;
 import businessLogic.MateriaManager;
 import static businessLogic.MateriaManagerFactory.createMateriaManager;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,18 +42,18 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
-import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
- *
- * @author Usuario
+ * La clase controladora de la ventana mis apuntes.
+ * @author Ricardo Peinado Lastra.
  */
 public class MisApuntesClienteFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.MisApuntesClienteFXController");
@@ -63,7 +65,7 @@ public class MisApuntesClienteFXController {
     private MateriaManager materiaLogic = createMateriaManager("real");
     private ObservableList<MateriaBean> materiasData=null;
     private ObservableList<String> opcionesData=null;
-    private Set <ApunteBean> apuntesDeTienda = null;
+    private Set <ApunteBean> apuntesDeMisApunteCliente = null;
     private Set <ApunteBean> apuntesDeTiendaFiltrado = null;
     //private boolean filtrarMateria=false;
     // private boolean filtrarNombre=false;
@@ -84,6 +86,8 @@ public class MisApuntesClienteFXController {
     private Button btnModificar;
     @FXML
     private Button btnSubirApunte;
+    @FXML
+    private Button btnDescargarElApunte;
     @FXML
     private TextField textFieldBuscar;
     @FXML
@@ -121,19 +125,21 @@ public class MisApuntesClienteFXController {
     private Menu menuHelp;
     @FXML
     private MenuItem menuHelpAbout;
+    /**
+     * El metodo que inicializa la ventana MisApuntes.
+     * @param root El nodo raiz.
+     */
     @FXML
     public void initStage(Parent root) {
         try{
-            
+            LOGGER.info("Iniciando la ventna MisApunteClienteFXController");
             Scene scene=new Scene(root);
             stage=new Stage();
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Mis apuntes");
             stage.setResizable(true);
-            
             stage.setMaximized(true);
-            //Vamos a rellenar los datos en la ventana.
             stage.setOnShowing(this::handleWindowShowing);
             
             //Mnemonicos
@@ -145,6 +151,7 @@ public class MisApuntesClienteFXController {
             menuHelp.setMnemonicParsing(true);
             menuHelp.setText("_Help");
             //<-Menu
+            //Mnemonicos de la ventana
             btnRefrescar.setMnemonicParsing(true);
             btnRefrescar.setText("_Refrescar");
             btnBuscar.setMnemonicParsing(true);
@@ -154,22 +161,17 @@ public class MisApuntesClienteFXController {
             btnSubirApunte.setMnemonicParsing(true);
             btnSubirApunte.setText("_Subir apunte");
             
-            
-            //CARGAR MATERIAS
+            //CARGAR MATERIAS & APUNTES
             cargarMaterias();
-            //DEJARLO EN TODAS LAS MATERIAS
-            
-            //CARGAR LISTVIEW DE APUNTES
             cargarApuntes();
             //CARGAR EL COMBO BOX
             cargarComboBox();
-            //DEJARLO EN EL PRIMERO
-            
             
             textFieldBuscar.setOnKeyPressed(this::keyPressBuscar);
             btnBuscar.setOnKeyPressed(this::keyPressBuscar);
             this.listViewMateria.getSelectionModel().selectedItemProperty().addListener(this::handleMateriaListSelectionChanged);
             this.comboBoxOrdenar.getSelectionModel().selectedItemProperty().addListener(this::handleOpcionesComboBoxSelectionChanged);
+            //SELECCIONAR LAS OPCIONES DE INICIO
             this.comboBoxOrdenar.getSelectionModel().selectFirst();
             this.listViewMateria.getSelectionModel().select(0);
             stage.show();
@@ -178,12 +180,21 @@ public class MisApuntesClienteFXController {
         }
         
     }
+    /**
+     * Permite que al dar a ENTER minetras el foco este sobre el botón buscar,
+     * haga su acción.
+     * @param key La tecla pulsada.
+     */
     private void keyPressBuscar(KeyEvent key){
         if(key.getCode().equals(KeyCode.ENTER)) {
             btnBuscar.fire();
         }
-        
     }
+    /**
+     * Metodo que se ejecuta cuando se esta mostrando la venta.
+     * Permite dar el foco a textFieldBuscar.
+     * @param event El propio evevnto.
+     */
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> LogOut");
@@ -193,6 +204,10 @@ public class MisApuntesClienteFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * Refresca todos los datos de Apuntes & materias.
+     * @param event 
+     */
     @FXML
     private void onActionRefrescar(ActionEvent event){
         cargarMaterias();
@@ -203,10 +218,35 @@ public class MisApuntesClienteFXController {
         this.textFieldBuscar.setText("");
         filtrarLosApuntes();
     }
+    /**
+     * Aplica los filtros de busqueda.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionBuscar(ActionEvent event){
         filtrarLosApuntes();
     }
+    /**
+     * Abre una ventana para guardar el apunte en local.
+     * @param event El evento de pulsación.
+     */
+    @FXML
+    private void onActionDescargarElApunte(ActionEvent event){
+        if(!this.listViewApuntes.getSelectionModel().isEmpty()){
+        FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
+            fileChooser.getExtensionFilters().add(extFilter);
+            File fileC = fileChooser.showSaveDialog(stage);
+            ApunteBean elApunte =(ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem();
+            writeBytesToFile(elApunte.getArchivo(),fileC);
+            }else{
+            showErrorAlert("Primero selecciona un apunte.");
+        }
+    }
+    /**
+     * Permite subir el apunte abriendo la ventana correspondiente.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionSubirApunte(ActionEvent event){
         try{
@@ -225,6 +265,10 @@ public class MisApuntesClienteFXController {
             
         }
     }
+    /**
+     * Permite modificar el apunte, abriendo la ventana de modificación de apunte.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionModificar(ActionEvent event){
         if(!this.listViewApuntes.getSelectionModel().isEmpty()){
@@ -247,14 +291,14 @@ public class MisApuntesClienteFXController {
             showErrorAlert("Primero selecciona un apunte.");
         }
     }
+    /**
+     * Carga los apuntes creador por el cliente.
+     */
     private void cargarApuntes() {
         try {
-            //CAMBIAR EL NOMBRE DE APUNTES DE TIENDA POR APUNTES CREADOS
-            //POR EL CLIENTE O ALGO ASI
-            apuntesDeTienda=apunteLogic.getApuntesByCreador(cliente.getId());
+            apuntesDeMisApunteCliente=apunteLogic.getApuntesByCreador(cliente.getId());
             
-            
-            apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntesDeTienda));
+            apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntesDeMisApunteCliente));
             this.listViewApuntes.setItems(apuntesData);
             this.listViewApuntes.setCellFactory(param -> new CellTiendaApunte());
             
@@ -263,11 +307,17 @@ public class MisApuntesClienteFXController {
             showErrorAlert("No se ha podido cargar los apuntes");
         }
     }
+    /**
+     * Carga las opciones de ordenación.
+     */
     private void cargarComboBox() {
         opcionesData=FXCollections.observableArrayList(Arrays.asList(this.opciones));
         this.comboBoxOrdenar.setItems(opcionesData);
         
     }
+    /**
+     * Carga el listView de materias, con las materias existentes.
+     */
     private void cargarMaterias() {
         try {
             Set<MateriaBean> materias = materiaLogic.findAllMateria();
@@ -285,6 +335,12 @@ public class MisApuntesClienteFXController {
             LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
         }
     }
+    /**
+     * El manejador del cambio de seleccion de materias.
+     * @param obvservable El valor observable.
+     * @param oldValue El antiguo valor.
+     * @param newValue El nuevo valor.
+     */
     private void handleMateriaListSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
         if(newValue!=null && newValue!=oldValue){
             MateriaBean materia=(MateriaBean) newValue;
@@ -317,7 +373,7 @@ public class MisApuntesClienteFXController {
         if(this.filtrado)
             apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTiendaFiltrado);
         else
-            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeTienda);
+            apuntesParaOrdenar=Lists.newArrayList(this.apuntesDeMisApunteCliente);
         switch(this.tipoFiltrado){
             case "Sin filtro":
                 
@@ -344,13 +400,13 @@ public class MisApuntesClienteFXController {
         Set <ApunteBean> apuntesDeLaMateria = new HashSet <ApunteBean>();
         if(this.materiaFiltrada!=null){
             this.filtrado=true;
-            this.apuntesDeTienda.forEach(apunte ->{
+            this.apuntesDeMisApunteCliente.forEach(apunte ->{
                 if(this.materiaFiltrada.getIdMateria()==apunte.getMateria().getIdMateria()){
                     apuntesDeLaMateria.add(apunte);
                 }
             });
         }else{
-            this.apuntesDeTienda.forEach(apunte ->{
+            this.apuntesDeMisApunteCliente.forEach(apunte ->{
                 apuntesDeLaMateria.add(apunte);
             });
         }
@@ -481,6 +537,26 @@ public class MisApuntesClienteFXController {
     }
     public void setCliente(ClienteBean cliente){
         this.cliente=cliente;
+    }
+    private void writeBytesToFile(byte[] bFile, File fileC) {
+        
+        FileOutputStream fileOuputStream = null;
+
+        try {
+            fileOuputStream = new FileOutputStream(fileC.getPath());
+            fileOuputStream.write(bFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileOuputStream != null) {
+                try {
+                    fileOuputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
     
 }

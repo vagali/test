@@ -14,28 +14,28 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="769.0" prefWidth="1146.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MisApuntesClienteFXController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="769.0" prefWidth="1146.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MisApuntesClienteFXController">
    <top>
       <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
             <Menu fx:id="menuCuenta" mnemonicParsing="false" text="Cuenta">
               <items>
-                  <MenuItem fx:id="menuCuentaCerrarSesion" mnemonicParsing="false" text="Cerrar sesión" onAction="#onActionCerrarSesion"/>
-                <MenuItem fx:id="menuCuentaSalir" mnemonicParsing="false" text="Salir de la aplicación" onAction="#onActionSalir" />
+                  <MenuItem fx:id="menuCuentaCerrarSesion" mnemonicParsing="false" onAction="#onActionCerrarSesion" text="Cerrar sesión" />
+                <MenuItem fx:id="menuCuentaSalir" mnemonicParsing="false" onAction="#onActionSalir" text="Salir de la aplicación" />
               </items>
             </Menu>
             <Menu fx:id="menuVentanas" mnemonicParsing="false" text="Ventanas">
               <items>
-                  <MenuItem fx:id="menuVentanasMiBiblioteca" mnemonicParsing="false" text="Mi biblioteca" onAction="#onActionAbrirMiBiblioteca"/>
-                <MenuItem fx:id="menuVentanasTiendaApuntes" mnemonicParsing="false" text="Tienda de apuntes" onAction="#onActionAbrirTiendaApuntes" />
-                  <MenuItem fx:id="menuVentanasTiendaPacks" mnemonicParsing="false" text="Tienda de packs" onAction="#onActionAbrirTiendaPacks"/>
-                  <MenuItem fx:id="menuVentanasMiPerfil" mnemonicParsing="false" text="Mi perfil" onAction="#onActionAbrirMiPerfil"/>
-                  <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" text="Subir apuntes" onAction="#onActionAbrirMisApuntes"/>
+                  <MenuItem fx:id="menuVentanasMiBiblioteca" mnemonicParsing="false" onAction="#onActionAbrirMiBiblioteca" text="Mi biblioteca" />
+                <MenuItem fx:id="menuVentanasTiendaApuntes" mnemonicParsing="false" onAction="#onActionAbrirTiendaApuntes" text="Tienda de apuntes" />
+                  <MenuItem fx:id="menuVentanasTiendaPacks" mnemonicParsing="false" onAction="#onActionAbrirTiendaPacks" text="Tienda de packs" />
+                  <MenuItem fx:id="menuVentanasMiPerfil" mnemonicParsing="false" onAction="#onActionAbrirMiPerfil" text="Mi perfil" />
+                  <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" onAction="#onActionAbrirMisApuntes" text="Subir apuntes" />
               </items>
             </Menu>
           <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" text="About" onAction="#onActionAbout"/>
+              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" onAction="#onActionAbout" text="About" />
             </items>
           </Menu>
         </menus>
@@ -57,7 +57,7 @@
                <children>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="287.0">
                      <children>
-                        <Button fx:id="btnRefrescar" mnemonicParsing="false" text="Refrescar" onAction="#onActionRefrescar">
+                        <Button fx:id="btnRefrescar" mnemonicParsing="false" onAction="#onActionRefrescar" text="Refrescar">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
@@ -92,7 +92,7 @@
                   <HBox alignment="CENTER_RIGHT" prefHeight="28.0" prefWidth="706.0">
                      <children>
                         <TextField fx:id="textFieldBuscar" prefHeight="26.0" prefWidth="364.0" />
-                        <Button fx:id="btnBuscar" mnemonicParsing="false" text="Buscar" onAction="#onActionBuscar">
+                        <Button fx:id="btnBuscar" mnemonicParsing="false" onAction="#onActionBuscar" text="Buscar">
                            <HBox.margin>
                               <Insets left="2.0" />
                            </HBox.margin>
@@ -118,12 +118,17 @@
                </VBox.margin></ListView>
             <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="btnSubirApunte" mnemonicParsing="false" text="Subir apunte" onAction="#onActionSubirApunte">
+                  <Button fx:id="btnDescargarElApunte" mnemonicParsing="false" onAction="#onActionDescargarElApunte" prefHeight="26.0" prefWidth="131.0" text="Descargar el apunte">
                      <HBox.margin>
                         <Insets right="50.0" top="25.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnModificar" mnemonicParsing="false" text="Modificar" onAction="#onActionModificar">
+                  <Button fx:id="btnSubirApunte" mnemonicParsing="false" onAction="#onActionSubirApunte" prefHeight="26.0" prefWidth="89.0" text="Subir apunte">
+                     <HBox.margin>
+                        <Insets right="50.0" top="25.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnModificar" mnemonicParsing="false" onAction="#onActionModificar" text="Modificar">
                      <HBox.margin>
                         <Insets right="80.0" top="25.0" />
                      </HBox.margin>

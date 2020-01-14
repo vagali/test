@@ -132,11 +132,11 @@
                         <VBox alignment="TOP_RIGHT" prefHeight="261.0" prefWidth="136.0">
                            <children>
                               <Button fx:id="btnRefrescar" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Refrescar" onAction="#onActionRefrescar" />
-                              <Button fx:id="btnCargarDatos" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Cargar datos">
+                              <!--<Button fx:id="btnCargarDatos" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Cargar datos">
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
-                              </Button>
+                              </Button>-->
                               <Button fx:id="btnModificar" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Modificar" onAction="#onActionModificar">
                                  <VBox.margin>
                                     <Insets top="5.0" />
