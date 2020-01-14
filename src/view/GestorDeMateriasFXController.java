@@ -44,6 +44,8 @@ public class GestorDeMateriasFXController {
     private MateriaManager manager = MateriaManagerFactory.createMateriaManager("real");
     private Set<MateriaBean> materias = null;
     private ObservableList<MateriaBean> materiasObv = null;
+    private int opcion;
+    private int posicion;
     
     @FXML
     private Menu menuCuenta;
@@ -87,7 +89,16 @@ public class GestorDeMateriasFXController {
     }
     
     public void setUser(UserBean user){
-        this.user=user;
+        this.user = user;
+    }
+    
+    public void setOpc(int opcion){
+        this.opcion = opcion;
+    }
+    
+    public void setPos(int pos){
+        this.posicion = pos;
+        this.tablaMateria.getSelectionModel().select(null);
     }
     
     @FXML
@@ -115,7 +126,8 @@ public class GestorDeMateriasFXController {
             cTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
             cDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
             cargarDatos();
-            tablaMateria.getSelectionModel().selectedItemProperty().addListener(this::MateriaClicked);
+            tablaMateria.selectionModelProperty().addListener(this::MateriaClicked);
+            //tablaMateria.getSelectionModel().selectedItemProperty().addListener(this::MateriaClicked);
             stage.show();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -150,6 +162,7 @@ public class GestorDeMateriasFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    
     @FXML
     private void onActionSalir(ActionEvent event){
         try{
@@ -180,7 +193,6 @@ public class GestorDeMateriasFXController {
             Parent root = (Parent)loader.load();
             GestorDeApuntesFXController controller =
                     ((GestorDeApuntesFXController)loader.getController());
-            
             controller.setUser(user);
             controller.setStage(stage);
             controller.initStage(root);
@@ -198,7 +210,6 @@ public class GestorDeMateriasFXController {
             Parent root = (Parent)loader.load();
             GestorDePacksFXController controller =
                     ((GestorDePacksFXController)loader.getController());
-            
             controller.setUser(user);
             controller.setStage(stage);
             controller.initStage(root);
@@ -216,7 +227,6 @@ public class GestorDeMateriasFXController {
             Parent root = (Parent)loader.load();
             GestorDeOfertasFXController controller =
                     ((GestorDeOfertasFXController)loader.getController());
-            
             controller.setUser(user);
             controller.setStage(stage);
             controller.initStage(root);
@@ -234,7 +244,6 @@ public class GestorDeMateriasFXController {
             Parent root = (Parent)loader.load();
             GestorDeMateriasFXController controller =
                     ((GestorDeMateriasFXController)loader.getController());
-            
             controller.setUser(user);
             controller.setStage(stage);
             controller.initStage(root);
@@ -251,19 +260,18 @@ public class GestorDeMateriasFXController {
         
     }
     
-    
+    //Metodos de la escena.
     @FXML
     private void onActionCrearGestorMateria(ActionEvent event){
         MateriaBean materia = new MateriaBean();
-        int opcion = 0;
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("crear_materia.fxml"));
             Parent root = (Parent)loader.load();
             CrearMateriaFXController controller =
                     ((CrearMateriaFXController)loader.getController());
+            controller.setFXMateria(this);
             controller.setMateria(materia);
-            controller.setOpcion(opcion);
             controller.initStage(root);
             if(opcion == 1){
                 createMateria(materia);
@@ -299,29 +307,34 @@ public class GestorDeMateriasFXController {
     }
     
     private void MateriaClicked(ObservableValue obvservable, Object oldValue, Object newValue){
-        MateriaBean materia = (MateriaBean) newValue;
-        int opcion = 0;
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("modificar_materia.fxml"));
-            Parent root = (Parent)loader.load();
-            ModificarMateriaFXController controller =
-                    ((ModificarMateriaFXController)loader.getController());
-            controller.setMateria(materia);
-            controller.setOpcion(opcion);
-            controller.initStage(root);
-            if(opcion == 1){
-                manager.deleteMateria(materia);
-                cargarDatos();
-                tablaMateria.refresh();
-            }else if(opcion == 2){
-                manager.editMateria(materia);
-                cargarDatos();
-                tablaMateria.refresh();
+        if(newValue != null || newValue == oldValue){
+            MateriaBean materia = (MateriaBean) newValue;
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("modificar_materia.fxml"));
+                Parent root = (Parent)loader.load();
+                ModificarMateriaFXController controller =
+                        ((ModificarMateriaFXController)loader.getController());
+                controller.setMateria(materia);
+                controller.setFXMateria(this);
+                controller.initStage(root);
+                if(opcion == 1){
+                    //COMPROBAR QUE NO EXISTEN APUNTES EN ESTA MATERIA.
+                    manager.deleteMateria(materia);
+                    //Quitar solo del List??
+                    tablaMateria.getItems().remove(materia);
+                    //cargarDatos();
+                    tablaMateria.refresh();
+                }else if(opcion == 2){
+                    manager.editMateria(materia);
+                    //Modificar solo del List??
+                    cargarDatos();
+                    //tablaMateria.refresh();
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+                showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor. "+e.getMessage());
             }
-        }catch(Exception e){
-            e.printStackTrace();
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor. "+e.getMessage());
         }
     }
     

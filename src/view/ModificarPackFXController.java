@@ -9,25 +9,26 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import transferObjects.MateriaBean;
+import transferObjects.PackBean;
 
 /**
  *
  * @author Luis
  */
-public class CrearMateriaFXController {
-    GestorDeMateriasFXController fxMateria = null;
+public class ModificarPackFXController {
+    GestorDePacksFXController fxPack = null;
     private Stage stage;
-    private MateriaBean materia;
+    private PackBean pack;
+    private int opcion;
     
     @FXML
-    public Button btnCrearCrearMateria;
+    public Button btnCrearCrearPack;
     @FXML
-    private Button btnSalirCrearMateria;
+    private Button btnSalirCrearPack;
     @FXML
-    private TextField tfTituloCrearMateria;
+    private TextField tfTituloCrearPack;
     @FXML
-    private TextArea taDescripcionCrearMateria;
+    private TextArea taDescripcionCrearPack;
     
     @FXML
     public void initStage(Parent root) {
@@ -36,7 +37,7 @@ public class CrearMateriaFXController {
             stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(scene);
-            stage.setTitle("Crear Materia");
+            stage.setTitle("Crear Pack");
             stage.setResizable(false);
             stage.setMaximized(false);
             stage.showAndWait();
@@ -45,20 +46,24 @@ public class CrearMateriaFXController {
         }
     }
     
-    public void setMateria(MateriaBean materia){
-        this.materia = materia;
+    public void setPack(PackBean pack){
+        this.pack = pack;
     }
     
-    public void setFXMateria(GestorDeMateriasFXController fxController){
-        this.fxMateria = fxController;
+    public void setOpcion(int opc){
+        this.opcion = opc;
+    }
+    
+    public void setFXPack(GestorDePacksFXController fxController){
+        this.fxPack = fxController;
     }
     
     @FXML
-    public void onActionBtnCrearCrearMateria(ActionEvent event){
-        if(!tfTituloCrearMateria.getText().isEmpty() || !taDescripcionCrearMateria.getText().isEmpty()){
-            materia.setTitulo(tfTituloCrearMateria.getText());
-            materia.setDescripcion(taDescripcionCrearMateria.getText());
-            fxMateria.setOpc(1);
+    public void onActionBtnCrearCrearPack(ActionEvent event){
+        if(!tfTituloCrearPack.getText().isEmpty() || !taDescripcionCrearPack.getText().isEmpty()){
+            pack.setTitulo(tfTituloCrearPack.getText());
+            pack.setDescripcion(taDescripcionCrearPack.getText());
+            fxPack.setOpc(1);
             stage.hide();
         }else{
             ControladorGeneral.showErrorAlert("Debes rellenar todos los campos.");
@@ -66,8 +71,8 @@ public class CrearMateriaFXController {
     }
     
     @FXML
-    public void onActionBtnSalirCrearMateria(ActionEvent event){
-        fxMateria.setOpc(0);
+    public void onActionBtnSalirCrearPack(ActionEvent event){
+        fxPack.setOpc(0);
         stage.hide();
     }
 }

@@ -43,6 +43,7 @@ public class MateriaManagerImplementation implements MateriaManager{
         try{
             webClient.remove(materia.getIdMateria().toString());
         }catch(Exception e){
+            e.printStackTrace();
             LOGGER.severe("ERROR! MateriaManagerImpl -> DeleteMateria: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }

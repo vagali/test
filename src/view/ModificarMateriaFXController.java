@@ -16,9 +16,9 @@ import transferObjects.MateriaBean;
  * @author Luis
  */
 public class ModificarMateriaFXController {
+    GestorDeMateriasFXController fxMateria = null;
     private Stage stage;
     private MateriaBean materia;
-    private int opcion;
     
     @FXML
     public Button btnModificarModificarMateria;
@@ -53,8 +53,8 @@ public class ModificarMateriaFXController {
         this.materia = materia;
     }
     
-    public void setOpcion(int opc){
-        this.opcion = opc;
+    public void setFXMateria(GestorDeMateriasFXController fxController){
+        this.fxMateria = fxController;
     }
     
     @FXML
@@ -62,7 +62,7 @@ public class ModificarMateriaFXController {
         if(!tfTituloModificarMateria.getText().isEmpty() || !taDescripcionModificarMateria.getText().isEmpty()){
             materia.setTitulo(tfTituloModificarMateria.getText());
             materia.setDescripcion(taDescripcionModificarMateria.getText());
-            opcion = 2;
+            fxMateria.setOpc(2);
             stage.hide();
         }else{
             ControladorGeneral.showErrorAlert("Debes rellenar todos los campos.");
@@ -71,13 +71,14 @@ public class ModificarMateriaFXController {
     
     @FXML
     public void onActionBtnEliminarModificarMateria(ActionEvent event){
-        opcion = 1;
+        //PEDIR CONFIRMACIÓN
+        fxMateria.setOpc(1);
         stage.hide();
     }
     
     @FXML
     public void onActionBtnSalirModificarMateria(ActionEvent event){
-        opcion = 0;
+        fxMateria.setOpc(0);
         stage.hide();
     }
 }
