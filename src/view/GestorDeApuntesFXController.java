@@ -273,7 +273,7 @@ public class GestorDeApuntesFXController {
                                     this.tableApuntes.getItems().remove(this.tableApuntes.getSelectionModel().getSelectedItem());
                                     this.tableApuntes.refresh();
                                     vaciar();
-                                    
+                                    this.tableApuntes.getSelectionModel().select(null);
                                 } catch (BusinessLogicException ex) {
                                     Logger.getLogger(GestorDeApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
