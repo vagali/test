@@ -7,16 +7,16 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="319.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="319.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ModificarPackFXController">
    <children>
-      <Button layoutX="14.0" layoutY="341.0" mnemonicParsing="false" text="Modificar" />
-      <Button layoutX="265.0" layoutY="341.0" mnemonicParsing="false" text="Salir" />
+      <Button fx:id="btnModificarModificarPack" layoutX="14.0" layoutY="341.0" mnemonicParsing="false" onAction="#onActionBtnModificarModificarPack" text="Modificar" />
+      <Button fx:id="btnSalirModificarPack" layoutX="265.0" layoutY="341.0" mnemonicParsing="false" onAction="#onActionBtnSalirModificarPack" text="Salir" />
       <Label layoutX="36.0" layoutY="41.0" text="Título" />
       <Label layoutX="35.0" layoutY="135.0" text="Descripción" />
-      <TextField layoutX="36.0" layoutY="69.0" prefHeight="25.0" prefWidth="202.0" />
-      <TextArea layoutX="36.0" layoutY="164.0" prefHeight="82.0" prefWidth="248.0" />
-      <Button layoutX="93.0" layoutY="341.0" mnemonicParsing="false" text="Eliminar" />
-      <Button layoutX="35.0" layoutY="274.0" mnemonicParsing="false" text="Modificar Apuntes" />
-      <DatePicker layoutX="160.0" layoutY="274.0" prefHeight="25.0" prefWidth="127.0" />
+      <TextField fx:id="tfTituloModificarPack" layoutX="36.0" layoutY="69.0" prefHeight="25.0" prefWidth="202.0" />
+      <TextArea fx:id="taDescripcionModificarPack" layoutX="36.0" layoutY="164.0" prefHeight="82.0" prefWidth="248.0" />
+      <Button fx:id="btnEliminarModificarPack" layoutX="93.0" layoutY="341.0" mnemonicParsing="false" onAction="#onActionBtnEliminarModificarPack" text="Eliminar" />
+      <Button fx:id="btnModificarApunteModificarPack" layoutX="35.0" layoutY="274.0" mnemonicParsing="false" onAction="#onActionBtnModificarApuntesModificarPack" text="Modificar Apuntes" />
+      <DatePicker fx:id="dpModificarPack" layoutX="160.0" layoutY="274.0" prefHeight="25.0" prefWidth="127.0" />
    </children>
 </Pane>

@@ -265,6 +265,7 @@ public class GestorDePacksFXController {
             Parent root = (Parent)loader.load();
             CrearPackFXController controller =
                     ((CrearPackFXController)loader.getController());
+            controller.setFXPack(this);
             controller.setPack(pack);
             controller.setOpcion(opcion);
             controller.initStage(root);
@@ -310,12 +311,14 @@ public class GestorDePacksFXController {
                 Parent root = (Parent)loader.load();
                 ModificarPackFXController controller =
                         ((ModificarPackFXController)loader.getController());
+                controller.setFXPack(this);
                 controller.setPack(pack);
                 controller.initStage(root);
                 if(opcion == 1){
                     //COMPROBAR QUE NO EXISTEN APUNTES EN ESTA MATERIA.
-                    manager.deletePack(pack);
-                    cargarDatos();
+                    manager.removePack(pack);
+                    tablaPack.getItems().remove(pack);
+                    //cargarDatos();
                     tablaPack.refresh();
                 }else if(opcion == 2){
                     manager.editPack(pack);

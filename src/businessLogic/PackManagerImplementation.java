@@ -25,17 +25,33 @@ public class PackManagerImplementation implements PackManager{
     
     @Override
     public void createPack(PackBean pack) throws BusinessLogicException {
-        
+         try{
+            webClient.create(pack);
+        }catch(Exception e){
+            LOGGER.severe("ERROR! PackManagerImpl -> CreatePack: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
     }
 
     @Override
     public void editPack(PackBean pack) throws BusinessLogicException {
-        
+        try{
+            webClient.edit(pack);
+        }catch(Exception e){
+            LOGGER.severe("ERROR! PackManagerImpl -> EditPack: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
     }
 
     @Override
-    public void deletePack(PackBean pack) throws BusinessLogicException {
-        
+    public void removePack(PackBean pack) throws BusinessLogicException {
+        try{
+            webClient.remove(pack.getIdPack().toString());
+        }catch(Exception e){
+            e.printStackTrace();
+            LOGGER.severe("ERROR! PackManagerImpl -> DeletePack: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
     }
 
     @Override
@@ -60,6 +76,16 @@ public class PackManagerImplementation implements PackManager{
             throw new BusinessLogicException(e.getMessage());
         }
         return packs;
+    }
+
+    @Override
+    public void addApunte(PackBean pack, String idApunte) throws BusinessLogicException {
+        
+    }
+
+    @Override
+    public void removeApunte(PackBean pack, String idApunte) throws BusinessLogicException {
+        
     }
     
 }

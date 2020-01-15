@@ -126,8 +126,7 @@ public class GestorDeMateriasFXController {
             cTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
             cDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
             cargarDatos();
-            tablaMateria.selectionModelProperty().addListener(this::MateriaClicked);
-            //tablaMateria.getSelectionModel().selectedItemProperty().addListener(this::MateriaClicked);
+            tablaMateria.getSelectionModel().selectedItemProperty().addListener(this::MateriaClicked);
             stage.show();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -307,7 +306,7 @@ public class GestorDeMateriasFXController {
     }
     
     private void MateriaClicked(ObservableValue obvservable, Object oldValue, Object newValue){
-        if(newValue != null || newValue == oldValue){
+        if(newValue != null){
             MateriaBean materia = (MateriaBean) newValue;
             try{
                 FXMLLoader loader = new FXMLLoader(getClass()
@@ -320,8 +319,7 @@ public class GestorDeMateriasFXController {
                 controller.initStage(root);
                 if(opcion == 1){
                     //COMPROBAR QUE NO EXISTEN APUNTES EN ESTA MATERIA.
-                    manager.deleteMateria(materia);
-                    //Quitar solo del List??
+                    manager.removeMateria(materia);
                     tablaMateria.getItems().remove(materia);
                     //cargarDatos();
                     tablaMateria.refresh();
@@ -329,7 +327,7 @@ public class GestorDeMateriasFXController {
                     manager.editMateria(materia);
                     //Modificar solo del List??
                     cargarDatos();
-                    //tablaMateria.refresh();
+                    tablaMateria.refresh();
                 }
             }catch(Exception e){
                 e.printStackTrace();

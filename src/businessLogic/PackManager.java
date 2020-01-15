@@ -15,7 +15,9 @@ import transferObjects.PackBean;
 public interface PackManager {
     public void createPack(PackBean pack) throws BusinessLogicException;
     public void editPack(PackBean pack) throws BusinessLogicException;
-    public void deletePack(PackBean pack) throws BusinessLogicException;
+    public void removePack(PackBean pack) throws BusinessLogicException;
     public PackBean findPack(PackBean pack) throws BusinessLogicException;
     public Set<PackBean> findAllPack() throws BusinessLogicException;
+    public void addApunte(PackBean pack, String idApunte) throws BusinessLogicException;
+    public void removeApunte(PackBean pack, String idApunte) throws BusinessLogicException;
 }
