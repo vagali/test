@@ -5,12 +5,13 @@
 */
 package view;
 
-import businessLogic.BusinessLogic;
+import businessLogic.BusinessLogicException;
 import businessLogic.ClienteManager;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +44,7 @@ import static view.ControladorGeneral.showErrorAlert;
  */
 public class PerfilFXMLController{
     private static final Logger LOGGER = Logger.getLogger("escritorio.view.Perfil");
-    private ClienteManager logicCliente = createClienteManager("real");
+    private final ClienteManager logicCliente = createClienteManager("real");
     private Stage stage;
     private ClienteBean user;
     private final String CANCELAR_CONTRASENIA = "Cancelar modificacion de la contraseña";
@@ -129,7 +130,7 @@ public class PerfilFXMLController{
             LOGGER.log(Level.INFO, "------------------------------------------------file:///{0}", fileC.getPath());
             try {
                 logicCliente.edit(user);
-            } catch (BusinessLogic ex) {
+            } catch (BusinessLogicException ex) {
                 Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
             imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
@@ -181,7 +182,7 @@ public class PerfilFXMLController{
              txtEmail.setText(user.getEmail());
              btnAceptarPerfil.setVisible(false);
              btnCancelarPerfil.setVisible(false);
-        } catch (BusinessLogic ex) {
+        } catch (BusinessLogicException ex) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         }
         
@@ -191,7 +192,7 @@ public class PerfilFXMLController{
             /*user.setContrasenia(pswContrasenia.getText());
             try {
                 logicCliente.actualizarContrasenia(user);
-            } catch (BusinessLogic ex) {
+            } catch (BusinessLogicException ex) {
                 Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }*/
             pswContrasenia.setVisible(false);
@@ -303,19 +304,16 @@ public class PerfilFXMLController{
         }*/
     }
     @FXML
-    private void onActionAbrirMiBiblioteca(ActionEvent event) throws IOException, BusinessLogic{
-        /*    URL url = getClass()
-        .getResource("biblioteca.fxml");
-        LOGGER.info(url.toString());
+    private void onActionAbrirMiBiblioteca(ActionEvent event) throws IOException, BusinessLogicException{
         FXMLLoader loader = new FXMLLoader(getClass()
         .getResource("biblioteca.fxml"));
         
         Parent root = (Parent)loader.load();
-        BibliotecaClienteFXMLController controller =
-        ((BibliotecaClienteFXMLController)loader.getController());
-        
+        BibliotecaClienteFXController controller =
+        ((BibliotecaClienteFXController)loader.getController());
+        controller.setUser(user);
         controller.setStage(stage);
-        controller.initStage(root);*/
+        controller.initStage(root);
         //stage.hide();
     }
     @FXML

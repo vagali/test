@@ -15,7 +15,7 @@ import transferObjects.UserBean;
  * @author Usuario
  */
 public interface UserManager {
-    public void createUser(UserBean user) throws BusinessLogic;
-    public void updateUser(UserBean user) throws BusinessLogic;
-    public Object iniciarSesion(String login,String contrasenia)throws BusinessLogic, PasswordWrongException, LoginNotFoundException, NoEsUserException;
+    public void createUser(UserBean user) throws BusinessLogicException;
+    public void updateUser(UserBean user) throws BusinessLogicException;
+    public Object iniciarSesion(String login,String contrasenia)throws BusinessLogicException, PasswordWrongException, LoginNotFoundException, NoEsUserException;
 }

@@ -13,8 +13,8 @@ import transferObjects.OfertaBean;
  * @author 2dam
  */
 public interface OfertaManager {
-    public void createOferta(OfertaBean oferta) throws BusinessLogic;
-    public Collection todasOfertas() throws BusinessLogic;
-    public void borrarOferta(Integer idOferta) throws BusinessLogic;
-    public void actualizarOferta(OfertaBean oferta) throws BusinessLogic;
+    public void createOferta(OfertaBean oferta) throws BusinessLogicException;
+    public Collection todasOfertas() throws BusinessLogicException;
+    public void borrarOferta(Integer idOferta) throws BusinessLogicException;
+    public void actualizarOferta(OfertaBean oferta) throws BusinessLogicException;
 }

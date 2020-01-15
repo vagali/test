@@ -5,7 +5,7 @@
 */
 package view;
 
-import businessLogic.BusinessLogic;
+import businessLogic.BusinessLogicException;
 import businessLogic.ClienteManager;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
 import java.util.logging.Level;
@@ -56,7 +56,7 @@ public class perfil_saldoFXMLController{
                 try {
                     user.setSaldo(user.getSaldo()+Float.valueOf(txtSaldo.getText()));
                     clientLogic.edit(user);
-                } catch (BusinessLogic ex) {
+                } catch (BusinessLogicException ex) {
                     Logger.getLogger(perfil_saldoFXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

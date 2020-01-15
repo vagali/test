@@ -9,13 +9,13 @@ package businessLogic;
  *
  * @author Usuario
  */
-public class BusinessLogic extends Exception {
+public class BusinessLogicException extends Exception {
 
     /**
      * Creates a new instance of <code>BusinessLogic</code> without detail
      * message.
      */
-    public BusinessLogic() {
+    public BusinessLogicException() {
     }
 
     /**
@@ -24,7 +24,7 @@ public class BusinessLogic extends Exception {
      *
      * @param msg the detail message.
      */
-    public BusinessLogic(String msg) {
+    public BusinessLogicException(String msg) {
         super(msg);
     }
 }

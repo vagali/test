@@ -16,15 +16,15 @@ import transferObjects.ClienteBean;
  * @author Usuario
  */
 public interface ClienteManager {
-    public void create(ClienteBean cliente) throws BusinessLogic;
-    public void edit( ClienteBean cliente) throws BusinessLogic;
-    public void remove(Integer id) throws BusinessLogic;
-    public ClienteBean find( Integer id) throws BusinessLogic;
-    public Set<ClienteBean> findAll() throws BusinessLogic;
-    public List <ClienteBean> getVotantesId( Integer id) throws BusinessLogic;
-    public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogic;
-    public void comprarApunte(ClienteBean cliente, Integer idApunte) throws BusinessLogic;
-    public boolean passwordForgot( String login) throws BusinessLogic;
-    public ClienteBean iniciarSesion(String login,String contrasenia)throws BusinessLogic, PasswordWrongException, LoginNotFoundException;
+    public void create(ClienteBean cliente) throws BusinessLogicException;
+    public void edit( ClienteBean cliente) throws BusinessLogicException;
+    public void remove(Integer id) throws BusinessLogicException;
+    public ClienteBean find( Integer id) throws BusinessLogicException;
+    public Set<ClienteBean> findAll() throws BusinessLogicException;
+    public List <ClienteBean> getVotantesId( Integer id) throws BusinessLogicException;
+    public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogicException;
+    public void comprarApunte(ClienteBean cliente, Integer idApunte) throws BusinessLogicException;
+    public boolean passwordForgot( String login) throws BusinessLogicException;
+    public ClienteBean iniciarSesion(String login,String contrasenia)throws BusinessLogicException, PasswordWrongException, LoginNotFoundException;
     
 }

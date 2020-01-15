@@ -5,7 +5,7 @@
 */
 package view;
 
-import businessLogic.BusinessLogic;
+import businessLogic.BusinessLogicException;
 import businessLogic.OfertaManager;
 import static businessLogic.OfertaManagerFactory.createOfertaManager;
 import java.time.LocalDate;
@@ -39,7 +39,7 @@ import static view.ControladorGeneral.showErrorAlert;
 
 /**
  *
- * @author 2dam
+ * @author Sergio
  */
 public class GestorDeOfertasFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeOfertasFXController");
@@ -152,7 +152,7 @@ public class GestorDeOfertasFXController {
         }
         
     }
-    @FXML public void insertar() throws BusinessLogic{
+    @FXML public void insertar() throws BusinessLogicException{
         opcion =2;
         txtOfertaNombre.setVisible(true);
         txtDescuento.setVisible(true);
@@ -162,7 +162,7 @@ public class GestorDeOfertasFXController {
         
         
     }
-    @FXML public void borrar() throws BusinessLogic{
+    @FXML public void borrar() throws BusinessLogicException{
         OfertaBean ofertaBorrar = null;
         LOGGER.info("he clicado remplazar fila");
         int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
@@ -175,7 +175,7 @@ public class GestorDeOfertasFXController {
 
         }
     }
-    @FXML public void aceptar() throws BusinessLogic{
+    @FXML public void aceptar() throws BusinessLogicException{
         Date fFin  = localDateToDate(dateInicio.getValue());
         Date fInicio  = localDateToDate(dateFin.getValue());
         String oofertaNombre  = txtOfertaNombre.getText();

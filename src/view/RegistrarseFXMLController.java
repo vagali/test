@@ -2,7 +2,7 @@ package view;
 
 //dato curioso ctrl+shift+i importa todo, TODOO!!!
 
-import businessLogic.BusinessLogic;
+import businessLogic.BusinessLogicException;
 import businessLogic.ClienteManager;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
 import java.rmi.ServerException;
@@ -133,7 +133,7 @@ public class RegistrarseFXMLController{
                 alert.showAndWait();
                 stage.hide();
                 
-            }catch(BusinessLogic e){
+            }catch(BusinessLogicException e){
                 showErrorAlert("El nombre de usuario ya existe.");
                 lblNombreUsuario.setTextFill(Color.web("red"));
                 /* MODIFICACION DIN fecha: 13/11/2019 */

@@ -25,44 +25,44 @@ public class OfertaManagerImplementation implements OfertaManager {
     }
 
     @Override
-    public void createOferta(OfertaBean oferta) throws BusinessLogic {
+    public void createOferta(OfertaBean oferta) throws BusinessLogicException {
         try{
             webClient.createOferta(oferta);
         }catch(Exception e){
             LOGGER.severe("ERROR! OfertaManagerImplementation -> CreateOferta: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }    
     }
 
 
     @Override
-    public void borrarOferta(Integer idOferta) throws BusinessLogic {
+    public void borrarOferta(Integer idOferta) throws BusinessLogicException {
         try{
             webClient.deleteOferta(idOferta);
         }catch(Exception e){
             LOGGER.severe("ERROR! OfertaManagerImplementation -> CreateOferta: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
     }
 
     @Override
-    public void actualizarOferta(OfertaBean oferta) throws BusinessLogic {
+    public void actualizarOferta(OfertaBean oferta) throws BusinessLogicException {
         try{
             webClient.updateOferta(oferta);
         }catch(Exception e){
             LOGGER.severe("ERROR! OfertaManagerImplementation -> CreateOferta: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
     }
 
     @Override
-    public Collection todasOfertas() throws BusinessLogic {
+    public Collection todasOfertas() throws BusinessLogicException {
 
         try{
             return webClient.findAllOfertas(new GenericType<Set<OfertaBean>>() {} );
         }catch(Exception e){
             LOGGER.severe("ERROR! OfertaManagerImplementation -> CreateOferta: "+e.getMessage());
-            throw new BusinessLogic(e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
         }
 
     }

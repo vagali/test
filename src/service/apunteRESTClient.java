@@ -11,11 +11,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Jersey REST client generated for REST resource:ClienteFacadeREST
- * [cliente]<br>
+ * Jersey REST client generated for REST resource:ApunteFacadeREST [apunte]<br>
  * USAGE:
  * <pre>
- *        ClienteRESTClient client = new ClienteRESTClient();
+ *        apunteRESTClient client = new apunteRESTClient();
  *        Object response = client.XXX(...);
  *        // do whatever with response
  *        client.close();
@@ -23,20 +22,15 @@ import javax.ws.rs.core.GenericType;
  *
  * @author 2dam
  */
-public class ClienteRESTClient {
+public class apunteRESTClient {
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";
 
-    
-    public ClienteRESTClient() {
+    public apunteRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("cliente");
-    }
-
-    public void actualizarContrasenia(Object requestEntity) throws ClientErrorException {
-        webTarget.path("password").request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget = client.target(BASE_URI).path("apunte");
     }
 
     public void edit(Object requestEntity) throws ClientErrorException {
@@ -49,9 +43,15 @@ public class ClienteRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T getVotantesId(GenericType<T> responseType, String id) throws ClientErrorException {
+    public <T> T getApuntesByCreador(GenericType<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("votantes/{0}", new Object[]{id}));
+        resource = resource.path(java.text.MessageFormat.format("creador/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T getApuntesByComprador(GenericType<T> responseType, String id) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("cliente/{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -59,14 +59,10 @@ public class ClienteRESTClient {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T iniciarSesion(Class<T> responseType, String login, String contrasenia) throws ClientErrorException {
+    public <T> T cuantasCompras(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("iniciarSesion/{0}/{1}", new Object[]{login, contrasenia}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public void comprarApunte(Object requestEntity, String idApunte) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("comprar/{0}", new Object[]{idApunte})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        resource = resource.path(java.text.MessageFormat.format("cuantasCompras/{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
     }
 
     public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
@@ -74,14 +70,12 @@ public class ClienteRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void remove(String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+    public void votacion(Object requestEntity, String idCliente, String like) throws ClientErrorException {
+        webTarget.path(java.text.MessageFormat.format("votar/{0}/{1}", new Object[]{idCliente, like})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T passwordForgot(Class<T> responseType, String login) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("passwordForgot/{0}", new Object[]{login}));
-        return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
+    public void remove(String id) throws ClientErrorException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
     public void close() {
