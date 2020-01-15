@@ -50,8 +50,8 @@ import transferObjects.MateriaBean;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
- *
- * @author Usuario
+ * La clase controladora de la tienda de apuntes.
+ * @author Ricardo Peinado Lastra
  */
 public class TiendaApuntesFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.TiedaApuntesFXController");
@@ -74,6 +74,8 @@ public class TiendaApuntesFXController {
     private String [] opciones={"Sin filtro","ABC...","ZYZ...","Precio asc.","Precio desc."};
     private String tipoFiltrado="Sin filtro";
     private MateriaBean materiaFiltrada = null;
+    private static int resultado=0;
+    
     @FXML
     private Button btnRefrescar;
     @FXML
@@ -118,6 +120,10 @@ public class TiendaApuntesFXController {
     @FXML
     private MenuItem menuHelpAbout;
     
+    /**
+     * El metodo que inicializa la ventana.
+     * @param root El nodo raiz.
+     */
     @FXML
     public void initStage(Parent root) {
         try{
@@ -169,12 +175,20 @@ public class TiendaApuntesFXController {
         }
         
     }
+    /**
+     * Metodo que permimte al dar a enter a buscar ejecute el evento de busqueda.
+     * @param key La tecla pulsada.
+     */
     private void keyPressBuscar(KeyEvent key){
         if(key.getCode().equals(KeyCode.ENTER)) {
             btnBuscar.fire();
         }
         
     }
+    /**
+     * Metodo que se ejecuta al mostrar la ventana.
+     * @param event
+     */
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> LogOut");
@@ -185,9 +199,18 @@ public class TiendaApuntesFXController {
         }
     }
     
-    
+    /**
+     * Metodo que activa el refrescar la pagina.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionRefrescar(ActionEvent event){
+        refrescar();
+    }
+    /**
+     * Refresca todas las materias y apuntes.
+     */
+    public void refrescar(){
         cargarMaterias();
         cargarApuntes();
         cargarComboBox();
@@ -196,10 +219,18 @@ public class TiendaApuntesFXController {
         this.textFieldBuscar.setText("");
         filtrarLosApuntes();
     }
+    /**
+     * El metodo que activa el filtrado por nombre.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionBuscar(ActionEvent event){
         filtrarLosApuntes();
     }
+    /**
+     * El metodo que abre la ventana de compra de un apunte.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionComprar(ActionEvent event){
         if(!this.listViewApuntes.getSelectionModel().isEmpty()){
@@ -214,6 +245,10 @@ public class TiendaApuntesFXController {
                         ((CompraApunteFXController)loader.getController());
                 controller.setDatos(cliente, apunte);
                 controller.initStage(root);
+                if(resultado!=0){
+                    refrescar();
+                    resultado=0;
+                }
             }catch(IOException e){
                 showErrorAlert("Error al cargar la ventana de Login.");
                 LOGGER.severe("Error "+e.getMessage());
@@ -227,6 +262,10 @@ public class TiendaApuntesFXController {
     }
     
     //Parte comun
+    /**
+     * Metodo que permite cerrar sesión.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionCerrarSesion(ActionEvent event){
         try{
@@ -246,6 +285,10 @@ public class TiendaApuntesFXController {
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * Metodo que permite salirse de la aplicación.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionSalir(ActionEvent event){
         try{
@@ -268,6 +311,10 @@ public class TiendaApuntesFXController {
     }
     
     //Inicio de los metodos de navegación de la aplicación
+    /**
+     * Abre la ventana mis apuntes.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionAbrirMisApuntes(ActionEvent event){
         try{
@@ -285,6 +332,10 @@ public class TiendaApuntesFXController {
             showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
         }
     }
+    /**
+     * Metodo que abre la tienda de apuntes.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionAbrirTiendaApuntes(ActionEvent event){
         try{
@@ -315,14 +366,23 @@ public class TiendaApuntesFXController {
     private void onActionAbout(ActionEvent event){
     }
     //Fin de los metodos de navegación de la aplicación
-    
+    /**
+     * Metodo que inserta el escenario.
+     * @param stage El escenario.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    /**
+     * Metodo que inserta el cliente.
+     * @param cliente Los datos del cliente.
+     */
     public void setCliente(ClienteBean cliente){
         this.cliente=cliente;
     }
-    
+    /**
+     * Carga todas las materias existentes en el comboBox de materias.
+     */
     private void cargarMaterias() {
         try {
             Set<MateriaBean> materias = materiaLogic.findAllMateria();
@@ -340,7 +400,9 @@ public class TiendaApuntesFXController {
             LOGGER.severe("Error al cargar las materias: "+ex.getMessage());
         }
     }
-    
+    /**
+     * Carga todos los apuntes que no se haya comprado el cliente.
+     */
     private void cargarApuntes() {
         try {
             apuntes=apunteLogic.findAll();//SE PUDE BAJAR
@@ -359,7 +421,7 @@ public class TiendaApuntesFXController {
             apuntesNoCreadosPorMi.stream().forEach(apunte ->{
                 boolean comprado=false;
                 for(ApunteBean apunteComprado:apuntesComprados){
-                    if(apunte==apunteComprado){
+                    if(apunte.getIdApunte()==apunteComprado.getIdApunte()){
                         comprado=true;
                         break;
                     }
@@ -382,13 +444,20 @@ public class TiendaApuntesFXController {
             showErrorAlert("No se ha podido cargar los apuntes");
         }
     }
-    
+    /**
+     * Carga el comboBox de las opciones de filtrado.
+     */
     private void cargarComboBox() {
         opcionesData=FXCollections.observableArrayList(Arrays.asList(this.opciones));
         this.comboBoxOrdenar.setItems(opcionesData);
         
     }
-    
+    /**
+     * El manejador del cambio de selección de materias.
+     * @param obvservable El valor observable.
+     * @param oldValue El antiguo valor.
+     * @param newValue El nuevo valor.
+     */
     private void handleMateriaListSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
         if(newValue!=null && newValue!=oldValue){
             MateriaBean materia=(MateriaBean) newValue;
@@ -410,14 +479,21 @@ public class TiendaApuntesFXController {
         }
         
     }
-    
+    /**
+     * El manejador de las opciones del comboBox de los tipos de filtrado.
+     * @param obvservable El valor observable.
+     * @param oldValue El antiguo valor.
+     * @param newValue El nuevo valor.
+     */
     private void handleOpcionesComboBoxSelectionChanged(ObservableValue obvservable, Object oldValue, Object newValue){
         if(newValue!=null && newValue!=oldValue){
             this.tipoFiltrado=(String) newValue;
             ordenarApuntes();
         }
     }
-    
+    /**
+     * Filtra los apuntes.
+     */
     private void filtrarLosApuntes(){
         
         this.filtrado=false;
@@ -465,7 +541,9 @@ public class TiendaApuntesFXController {
         }
         
     }
-    
+    /**
+     * Ordena los apuntes.
+     */
     private void ordenarApuntes() {
         List <ApunteBean> apuntesParaOrdenar=null;
         if(this.filtrado)
@@ -490,5 +568,12 @@ public class TiendaApuntesFXController {
                 break;
         }
         this.listViewApuntes.setItems(FXCollections.observableArrayList(new ArrayList<>(apuntesParaOrdenar)));
+    }
+    /**
+     * Inserta el resultado de la ventana modal que abre esta ventana.
+     * @param resultado El resultado de la ventana modal.
+     */
+    public static void setResultadoTiendaApuntes(int resultado){/////////////////////////////////////
+        TiendaApuntesFXController.resultado=resultado;
     }
 }

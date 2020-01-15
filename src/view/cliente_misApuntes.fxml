@@ -118,17 +118,17 @@
                </VBox.margin></ListView>
             <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="btnDescargarElApunte" mnemonicParsing="false" onAction="#onActionDescargarElApunte" prefHeight="26.0" prefWidth="131.0" text="Descargar el apunte">
+                  <Button fx:id="btnDescargarElApunte" mnemonicParsing="false" onAction="#onActionDescargarElApunte" prefHeight="26.0" prefWidth="171.0" text="Descargar el apunte">
                      <HBox.margin>
                         <Insets right="50.0" top="25.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnSubirApunte" mnemonicParsing="false" onAction="#onActionSubirApunte" prefHeight="26.0" prefWidth="89.0" text="Subir apunte">
+                  <Button fx:id="btnSubirApunte" mnemonicParsing="false" onAction="#onActionSubirApunte" prefHeight="26.0" prefWidth="112.0" text="Subir apunte">
                      <HBox.margin>
                         <Insets right="50.0" top="25.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnModificar" mnemonicParsing="false" onAction="#onActionModificar" text="Modificar">
+                  <Button fx:id="btnModificar" mnemonicParsing="false" onAction="#onActionModificar" prefHeight="26.0" prefWidth="98.0" text="Modificar">
                      <HBox.margin>
                         <Insets right="80.0" top="25.0" />
                      </HBox.margin>

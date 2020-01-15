@@ -179,7 +179,7 @@ public class ModificarApunteFXController {
                 try{
                     if(apunteLogic.cuantasCompras(apunte.getIdApunte())==0){
                         apunteLogic.remove(apunte.getIdApunte());
-                        enseñarAlertaInfo("Apunte eliminado","El apunte a sido eliminado");
+                        ensenarAlertaInfo("Apunte eliminado","El apunte a sido eliminado");
                         stage.hide();
                         setResultadoApunteModificado(1);
                     }else{
@@ -274,7 +274,7 @@ public class ModificarApunteFXController {
             apunte.setPrecio(precio);
             try {
                 apunteLogic.edit(apunte);
-                enseñarAlertaInfo("Apunte modificado","El apunte a sido modificado");
+                ensenarAlertaInfo("Apunte modificado","El apunte a sido modificado");
                 stage.hide();
             } catch (BusinessLogicException e) {
                 LOGGER.severe("Error al modificar el apunte: "+e.getMessage());
@@ -287,7 +287,7 @@ public class ModificarApunteFXController {
      * @param titulo El titulo de la alerta.
      * @param elMensaje El mensaje de la alerta.
      */
-    private void enseñarAlertaInfo(String titulo, String elMensaje) {
+    private void ensenarAlertaInfo(String titulo, String elMensaje) {
         Alert alertCerrarSesion = new Alert(Alert.AlertType.INFORMATION);
         alertCerrarSesion.setTitle(titulo);
         alertCerrarSesion.setHeaderText(elMensaje);

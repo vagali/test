@@ -245,6 +245,7 @@ public class MisApuntesClienteFXController {
                 File fileC = fileChooser.showSaveDialog(stage);
                 ApunteBean elApunte =(ApunteBean) this.listViewApuntes.getSelectionModel().getSelectedItem();
                 writeBytesToFile(elApunte.getArchivo(),fileC);
+                ensenarAlertaInfo("Archivo descargado","Su apunte a sido descargado correctamente.");
             }else{
                 showErrorAlert("Primero selecciona un apunte.");
             }
@@ -607,6 +608,17 @@ public class MisApuntesClienteFXController {
                 }
             }
         }
+    }
+    /**
+     * Enseña una alerta de información por pantalla.
+     * @param titulo El titulo de la alerta.
+     * @param elMensaje El mensaje de la alerta.
+     */
+    private void ensenarAlertaInfo(String titulo, String elMensaje) {
+        Alert alertCerrarSesion = new Alert(Alert.AlertType.INFORMATION);
+        alertCerrarSesion.setTitle(titulo);
+        alertCerrarSesion.setHeaderText(elMensaje);
+        alertCerrarSesion.show();
     }
     
 }

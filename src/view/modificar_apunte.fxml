@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="259.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ModificarApunteFXController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="259.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ModificarApunteFXController">
    <children>
       <Label fx:id="labelTitulo" layoutX="43.0" layoutY="14.0" text="Titulo" />
       <Label fx:id="labelMateria" layoutX="43.0" layoutY="79.0" text="Materia" />
@@ -16,7 +16,7 @@
       <TextField fx:id="textFieldTitulo" layoutX="134.0" layoutY="40.0" prefHeight="25.0" prefWidth="346.0" />
       <TextField fx:id="textFieldPrecio" layoutX="132.0" layoutY="168.0" />
       <ComboBox fx:id="comboBoxMateriaMod" layoutX="132.0" layoutY="103.0" prefHeight="25.0" prefWidth="237.0" />
-      <Text fill="#8d8d8d" layoutX="290.0" layoutY="174.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Un 55% de las ganancias seran de la empresa 2DAM2CURIOUS" wrappingWidth="237.13671875">
+      <Text fill="#8d8d8d" layoutX="321.0" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Un 55% de las ganancias seran de la empresa 2DAM2CURIOUS" wrappingWidth="237.13671875">
          <font>
             <Font size="10.0" />
          </font>

@@ -11,20 +11,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="589.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SubirApunteFXController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="632.0" prefWidth="647.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SubirApunteFXController">
    <children>
       <Label fx:id="lblTitulo" layoutX="42.0" layoutY="14.0" text="Titulo" />
       <Label fx:id="lblDesc" layoutX="42.0" layoutY="177.0" text="Descripción" />
       <Label fx:id="lblMateria" layoutX="42.0" layoutY="77.0" text="Materia" />
       <Label fx:id="lblPrecio" layoutX="40.0" layoutY="531.0" text="Precio" />
       <Label fx:id="lblArchivo" layoutX="36.0" layoutY="446.0" text="Archivo" />
-      <TextArea fx:id="textDesc" layoutX="120.0" layoutY="207.0" prefHeight="200.0" prefWidth="360.0" />
-      <TextField fx:id="textFieldTitulo" layoutX="122.0" layoutY="41.0" prefHeight="25.0" prefWidth="360.0" />
+      <TextArea fx:id="textDesc" layoutX="120.0" layoutY="207.0" prefHeight="200.0" prefWidth="504.0" />
+      <TextField fx:id="textFieldTitulo" layoutX="122.0" layoutY="41.0" prefHeight="25.0" prefWidth="504.0" />
       <TextField fx:id="textFieldPrecio" layoutX="120.0" layoutY="557.0" prefHeight="25.0" prefWidth="154.0" />
       <ComboBox fx:id="comboBoxMateria" layoutX="122.0" layoutY="94.0" prefHeight="25.0" prefWidth="237.0" />
-      <HBox alignment="CENTER_RIGHT" layoutX="93.0" layoutY="473.0" prefHeight="27.0" prefWidth="494.0" style="-fx-border-color: #bdbdbd;">
+      <HBox alignment="CENTER_RIGHT" layoutX="35.0" layoutY="473.0" prefHeight="27.0" prefWidth="597.0" style="-fx-border-color: #bdbdbd;">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="375.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="399.0">
                <children>
                   <Label fx:id="labelRuta" prefHeight="17.0" prefWidth="371.0">
                      <HBox.margin>
@@ -33,7 +33,7 @@
                   </Label>
                </children>
             </HBox>
-            <Button fx:id="btnSeleccionarArchivo" mnemonicParsing="false" onAction="#onActionSeleccionarArchivo" text="Seleccionar archivo" />
+            <Button fx:id="btnSeleccionarArchivo" mnemonicParsing="false" onAction="#onActionSeleccionarArchivo" prefHeight="26.0" prefWidth="158.0" text="Seleccionar archivo" />
          </children>
       </HBox>
       <Text fill="#8d8d8d" layoutX="101.0" layoutY="601.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Un 55% de las ganancias seran de la empresa 2DAM2CURIOUS" wrappingWidth="237.13671875">
@@ -41,8 +41,8 @@
             <Font size="10.0" />
          </font>
       </Text>
-      <Button fx:id="btnCancelar" layoutX="379.0" layoutY="578.0" mnemonicParsing="false" onAction="#onActionCancelar" prefHeight="25.0" prefWidth="85.0" text="Cancelar" />
-      <Button fx:id="btnSubirElApunte" layoutX="480.0" layoutY="578.0" mnemonicParsing="false" onAction="#onActionSubirElApunte" text="Subir Apunte" />
+      <Button fx:id="btnCancelar" layoutX="354.0" layoutY="578.0" mnemonicParsing="false" onAction="#onActionCancelar" prefHeight="25.0" prefWidth="110.0" text="Cancelar" />
+      <Button fx:id="btnSubirElApunte" layoutX="480.0" layoutY="578.0" mnemonicParsing="false" onAction="#onActionSubirElApunte" prefHeight="25.0" prefWidth="110.0" text="Subir Apunte" />
       <Label layoutX="281.0" layoutY="561.0" text="€" />
    </children>
 </Pane>
