@@ -7,6 +7,7 @@ package businessLogic;
 
 import exceptions.LoginNotFoundException;
 import exceptions.PasswordWrongException;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.ws.rs.NotAuthorizedException;
@@ -80,7 +81,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         return resultado;
     }
 
-  /*  @Override
+    @Override
     public Set<ClienteBean> getVotantesId(Integer id) throws BusinessLogicException {
         Set<ClienteBean> resultado=null;
         try{
@@ -91,7 +92,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         }
         return resultado;
     }
-*/
+
     @Override
     public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogicException {
         try{

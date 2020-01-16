@@ -125,6 +125,7 @@ public class GestorDeOfertasFXController {
                 .toLocalDate();
     }
     public Date localDateToDate(LocalDate date) {
+        
         return java.util.Date.from(date.atStartOfDay()
                 .atZone(ZoneId.systemDefault())
                 .toInstant());

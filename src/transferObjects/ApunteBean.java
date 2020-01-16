@@ -34,6 +34,7 @@ public class ApunteBean implements Serializable {
     private final SimpleSetProperty<ClienteBean> votantes;
     private final SimpleFloatProperty precio;
     private final SimpleObjectProperty<ClienteBean> creador;
+    private final SimpleStringProperty nombreCreador;
     private final SimpleSetProperty<CompraBean> compras;
     private final SimpleSetProperty<PackBean> packs;
     private final SimpleObjectProperty<MateriaBean> materia;
@@ -49,6 +50,7 @@ public class ApunteBean implements Serializable {
         this.votantes = new SimpleSetProperty();
         this.precio = new SimpleFloatProperty();
         this.creador = new SimpleObjectProperty();
+        this.nombreCreador = new SimpleStringProperty();
         this.compras = new SimpleSetProperty();
         this.packs = new SimpleSetProperty();
         this.materia = new SimpleObjectProperty();
@@ -64,6 +66,7 @@ public class ApunteBean implements Serializable {
         this.votantes = new SimpleSetProperty(votantes);
         this.precio = new SimpleFloatProperty(precio);
         this.creador = new SimpleObjectProperty(creador);
+        this.nombreCreador = new SimpleStringProperty(creador.getNombreCompleto());
         this.compras = new SimpleSetProperty(compras);
         this.packs = new SimpleSetProperty(packs);
         this.materia = new SimpleObjectProperty(materia);
@@ -209,6 +212,18 @@ public class ApunteBean implements Serializable {
         this.creador.set(creador);
     }
 
+    /**
+     * @return El nombre del creador
+     */
+    public String getNombreCreador() {
+        return nombreCreador.get();
+    }/**
+     * 
+     * @param nombreCreador 
+     */
+    public void setNombreCreador(String nombreCreador) {
+        this.nombreCreador.set(nombreCreador);
+    }
     /**
      * @return the compras
      */
