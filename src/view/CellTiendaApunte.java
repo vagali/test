@@ -45,7 +45,7 @@ public class CellTiendaApunte extends ListCell<ApunteBean>{
             labelPrecio.setText(apunte.getPrecio()+"€");
             textDesc.setText(apunte.getDescripcion());
             labelMateria.setText("Materia:  "+apunte.getMateria().getTitulo());
-            labelCreador.setText("Creador: "+apunte.getCreador().getNombreCompleto());
+            labelCreador.setText("Creador: "+apunte.getCreador().getNombreCompleto()+"       Likes: "+apunte.getLikeCont()+"      Dislike: "+apunte.getDislikeCont());
             setGraphic(vbox);
         }
     }

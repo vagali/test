@@ -34,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -41,7 +42,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -124,6 +128,7 @@ public class MisApuntesClienteFXController {
     private Menu menuHelp;
     @FXML
     private MenuItem menuHelpAbout;
+    private ContextMenu contextMenu=new ContextMenu();
     /**
      * El metodo que inicializa la ventana MisApuntes.
      * @param root El nodo raiz.
@@ -149,6 +154,14 @@ public class MisApuntesClienteFXController {
             menuVentanas.setText("_Ventanas");
             menuHelp.setMnemonicParsing(true);
             menuHelp.setText("_Help");
+            menuHelpAbout.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+A"));
+            menuCuentaCerrarSesion.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+C"));
+            menuCuentaSalir.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
+            menuVentanasMiBiblioteca.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+B"));
+            menuVentanasMiPerfil.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+P"));
+            menuVentanasSubirApunte.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+            menuVentanasTiendaApuntes.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+A"));
+            menuVentanasTiendaPacks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
             //<-Menu
             //Mnemonicos de la ventana
             btnRefrescar.setMnemonicParsing(true);
@@ -173,6 +186,32 @@ public class MisApuntesClienteFXController {
             //SELECCIONAR LAS OPCIONES DE INICIO
             this.comboBoxOrdenar.getSelectionModel().selectFirst();
             this.listViewMateria.getSelectionModel().select(0);
+            //PREPARAR EL MENU DE CONTEXTO
+            MenuItem menuItemSubirApunte = new MenuItem("Subir Apunte");
+            MenuItem menuItemModificarApunte = new MenuItem("Modificar Apunte");
+            MenuItem menuItemDescargarApunte = new MenuItem("Descargar el apunte");
+            MenuItem menuItemRefrescar = new MenuItem("Refrescar");
+            menuItemSubirApunte.setOnAction((ActionEvent e )->{
+                onActionSubirApunte(e);
+            });
+            menuItemModificarApunte.setOnAction((ActionEvent e )->{
+                onActionModificar(e);
+            });
+            menuItemDescargarApunte.setOnAction((ActionEvent e )->{
+                onActionDescargarElApunte(e);
+            });
+            menuItemRefrescar.setOnAction((ActionEvent e )->{
+                onActionRefrescar(e);
+            });
+            contextMenu.getItems().add(menuItemSubirApunte);
+            contextMenu.getItems().add(menuItemModificarApunte);
+            contextMenu.getItems().add(menuItemDescargarApunte);
+            contextMenu.getItems().add(menuItemRefrescar);
+            listViewApuntes.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e)->{
+                if(e.getButton() == MouseButton.SECONDARY){
+                    contextMenu.show(listViewApuntes, e.getScreenX(), e.getScreenY());
+                }
+            });
             stage.show();
         }catch(Exception e){
             LOGGER.severe("Error al iniacializar la ventana: "+e.getMessage());

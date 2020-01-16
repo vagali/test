@@ -53,8 +53,8 @@
                 <TableColumn fx:id="clTitulo" prefWidth="75.0" text="Titulo" />
                   <TableColumn fx:id="clDesc" prefWidth="75.0" text="Descripción" />
                   <TableColumn fx:id="clFechaValidacion" prefWidth="75.0" text="F.Validación" />
-                  <TableColumn fx:id="clLikes" prefWidth="75.0" text="\%Likes" />
-                  <TableColumn fx:id="clDislike" prefWidth="75.0" text="Vendidas" />
+                  <TableColumn fx:id="clLikes" prefWidth="75.0" text="Likes" />
+                  <TableColumn fx:id="clDislike" prefWidth="75.0" text="Dislikes" />
                   <TableColumn fx:id="clPrecio" prefWidth="75.0" text="Precio" />
                   <TableColumn fx:id="clCreador" prefWidth="75.0" text="Creador" />                  
                   <TableColumn fx:id="clMateria" prefWidth="75.0" text="Materia" />

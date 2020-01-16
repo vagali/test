@@ -10,7 +10,9 @@ import static businessLogic.ApunteManagerFactory.createApunteManager;
 import businessLogic.BusinessLogicException;
 import businessLogic.MateriaManager;
 import static businessLogic.MateriaManagerFactory.createMateriaManager;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +33,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -40,7 +43,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -49,6 +56,8 @@ import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
 import transferObjects.UserBean;
+import static view.ControladorGeneral.MAX_CARACTERES;
+import static view.ControladorGeneral.MIN_CARACTERES;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
@@ -134,6 +143,7 @@ public class GestorDeApuntesFXController {
     private Menu menuHelp;
     @FXML
     private MenuItem menuHelpAbout;
+    private ContextMenu contextMenu=new ContextMenu();
     /**
      * El metodo que inicializa la ventana.
      * @param root El nodo raiz de la vista.
@@ -159,6 +169,13 @@ public class GestorDeApuntesFXController {
             menuVentanas.setText("_Ventanas");
             menuHelp.setMnemonicParsing(true);
             menuHelp.setText("_Help");
+            menuHelpAbout.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+A"));
+            menuCuentaCerrarSesion.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+C"));
+            menuCuentaSalir.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
+            menuVentanasGestorApuntes.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+A"));
+            menuVentanasGestorMaterias.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+M"));
+            menuVentanasGestorOfertas.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+O"));
+            menuVentanasGestorPacks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+P"));
             //<-Menu
             btnRefrescar.setMnemonicParsing(true);
             btnRefrescar.setText("_Refrescar");
@@ -168,6 +185,7 @@ public class GestorDeApuntesFXController {
             btnModificar.setText("_Modificar");
             btnBorrar.setMnemonicParsing(true);
             btnBorrar.setText("_Borrar");
+            
             
             //Preparar la tabla tableView
             clId.setCellValueFactory(new PropertyValueFactory<>("idApunte"));
@@ -183,9 +201,31 @@ public class GestorDeApuntesFXController {
             cargarApuntes();
             cargarMaterias();
             tableApuntes.getSelectionModel().selectedItemProperty().addListener(this::handleApuntesTableSelectionChanged);
+            //PREPARAR EL MENU DE CONTEXTO
+            MenuItem menuItemBorrar = new MenuItem("Borrar apunte");
+            MenuItem menuItemRefrescar = new MenuItem("Refrescar apuntes");
+            menuItemBorrar.setOnAction((ActionEvent e) ->{
+                onActionBorrar(e);
+            });
+            menuItemRefrescar.setOnAction((ActionEvent e) -> {
+                onActionRefrescar(e);
+            });
+            contextMenu.getItems().add(menuItemRefrescar);
+            contextMenu.getItems().add(menuItemBorrar);
+            tableApuntes.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e)->{
+                if(e.getButton() == MouseButton.SECONDARY){
+                    contextMenu.show(tableApuntes, e.getScreenX(), e.getScreenY());
+                }
+            });
             //Desabilitar botones
             this.btnModificar.setDisable(true);
             this.btnBorrar.setDisable(true);
+            
+            //Poner TOOLTIPS
+            this.textFieldTitulo.setTooltip(new Tooltip("Requisitos:\n-Mínimo caracteres: "
+                +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
+            this.textFieldDesc.setTooltip(new Tooltip("Requisitos:\n-Mínimo caracteres: "
+                +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
             stage.show();
         }catch(Exception e){
             LOGGER.severe("Error > GestorDeApuntesFXController > initStage: "+e.getMessage());
@@ -464,6 +504,7 @@ public class GestorDeApuntesFXController {
     
     @FXML
     private void onActionAbout(ActionEvent event){
+        showErrorAlert("About");
     }
     //Metodos de navigacion entre ventanas de administrador
     @FXML
@@ -549,6 +590,7 @@ public class GestorDeApuntesFXController {
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+        //return LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault()).toLocalDate();
     }
     /**
      * Tranforma LocalDate to date.
@@ -559,6 +601,7 @@ public class GestorDeApuntesFXController {
         return java.util.Date.from(date.atStartOfDay()
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
+        //return new Date(date.toEpochDay());
     }
     /**
      * Valida que el texto que se le pase entra en los caractes minimos y maximos.

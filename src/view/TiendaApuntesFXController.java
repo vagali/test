@@ -33,6 +33,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -40,7 +41,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -119,6 +123,7 @@ public class TiendaApuntesFXController {
     private Menu menuHelp;
     @FXML
     private MenuItem menuHelpAbout;
+    private ContextMenu contextMenu=new ContextMenu();
     
     /**
      * El metodo que inicializa la ventana.
@@ -146,6 +151,14 @@ public class TiendaApuntesFXController {
             menuVentanas.setText("_Ventanas");
             menuHelp.setMnemonicParsing(true);
             menuHelp.setText("_Help");
+            menuHelpAbout.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+A"));
+            menuCuentaCerrarSesion.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+C"));
+            menuCuentaSalir.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
+            menuVentanasMiBiblioteca.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+B"));
+            menuVentanasMiPerfil.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+P"));
+            menuVentanasSubirApunte.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+            menuVentanasTiendaApuntes.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+A"));
+            menuVentanasTiendaPacks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
             //<-Menu
             btnRefrescar.setMnemonicParsing(true);
             btnRefrescar.setText("_Refrescar");
@@ -161,7 +174,22 @@ public class TiendaApuntesFXController {
             //CARGAR EL COMBO BOX
             cargarComboBox();
             //DEJARLO EN EL PRIMERO
-            
+            //PREPARAR EL MENU DE CONTEXTO
+            MenuItem menuItemRefrescar = new MenuItem("Refresca");
+            MenuItem menuItemCompra = new MenuItem("Comprar apunte");
+            menuItemRefrescar.setOnAction((ActionEvent e )->{
+                onActionRefrescar(e);
+            });
+            menuItemCompra.setOnAction((ActionEvent e )->{
+                onActionComprar(e);
+            });
+            contextMenu.getItems().add(menuItemRefrescar);
+            contextMenu.getItems().add(menuItemCompra);
+            listViewApuntes.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e)->{
+                if(e.getButton() == MouseButton.SECONDARY){
+                    contextMenu.show(listViewApuntes, e.getScreenX(), e.getScreenY());
+                }
+            });
             //Pulsación de enter funcionando
             textFieldBuscar.setOnKeyPressed(this::keyPressBuscar);
             btnBuscar.setOnKeyPressed(this::keyPressBuscar);
