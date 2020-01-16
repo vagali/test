@@ -5,6 +5,7 @@
  */
 package service;
 
+import service.*;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
