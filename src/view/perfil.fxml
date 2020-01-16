@@ -11,6 +11,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -20,22 +21,22 @@
         <menus>
             <Menu fx:id="menuCuenta" mnemonicParsing="false" text="Cuenta">
               <items>
-                  <MenuItem fx:id="menuCuentaCerrarSesion" mnemonicParsing="false" text="Cerrar sesión" onAction="#onActionCerrarSesion"/>
-                <MenuItem fx:id="menuCuentaSalir" mnemonicParsing="false" text="Salir de la aplicación" onAction="#onActionSalir" />
+                  <MenuItem fx:id="menuCuentaCerrarSesion" mnemonicParsing="false" onAction="#onActionCerrarSesion" text="Cerrar sesión" />
+                <MenuItem fx:id="menuCuentaSalir" mnemonicParsing="false" onAction="#onActionSalir" text="Salir de la aplicación" />
               </items>
             </Menu>
             <Menu fx:id="menuVentanas" mnemonicParsing="false" text="Ventanas">
               <items>
-                  <MenuItem fx:id="menuVentanasMiBiblioteca" mnemonicParsing="false" text="Mi biblioteca" onAction="#onActionAbrirMiBiblioteca"/>
-                <MenuItem fx:id="menuVentanasTiendaApuntes" mnemonicParsing="false" text="Tienda de apuntes" onAction="#onActionAbrirTiendaApuntes" />
-                  <MenuItem fx:id="menuVentanasTiendaPacks" mnemonicParsing="false" text="Tienda de packs" onAction="#onActionAbrirTiendaPacks"/>
-                  <MenuItem fx:id="menuVentanasMiPerfil" mnemonicParsing="false" text="Mi perfil" onAction="#onActionAbrirMiPerfil"/>
-                  <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" text="Subir apuntes" onAction="#onActionAbrirMisApuntes"/>
+                  <MenuItem fx:id="menuVentanasMiBiblioteca" mnemonicParsing="false" onAction="#onActionAbrirMiBiblioteca" text="Mi biblioteca" />
+                <MenuItem fx:id="menuVentanasTiendaApuntes" mnemonicParsing="false" onAction="#onActionAbrirTiendaApuntes" text="Tienda de apuntes" />
+                  <MenuItem fx:id="menuVentanasTiendaPacks" mnemonicParsing="false" onAction="#onActionAbrirTiendaPacks" text="Tienda de packs" />
+                  <MenuItem fx:id="menuVentanasMiPerfil" mnemonicParsing="false" onAction="#onActionAbrirMiPerfil" text="Mi perfil" />
+                  <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" onAction="#onActionAbrirMisApuntes" text="Subir apuntes" />
               </items>
             </Menu>
           <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" text="About" onAction="#onActionAbout"/>
+              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" onAction="#onActionAbout" text="About" />
             </items>
           </Menu>
         </menus>
@@ -68,32 +69,45 @@
       </VBox>
    </left>
    <center>
-      <VBox fx:id="paneDerecha" prefHeight="699.0" prefWidth="883.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="paneDerecha" prefHeight="744.0" prefWidth="1299.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="paneCentro" prefHeight="705.0" prefWidth="899.0" style="-fx-border-color: grey;">
+            <HBox prefHeight="499.0" prefWidth="1296.0">
                <children>
-                  <Button fx:id="btnAceptarContrasenia" layoutX="601.0" layoutY="307.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="aceptar" visible="false" onAction="#aceptarContrasenia"/>
-                  <Label fx:id="lblNombre" layoutX="165.0" layoutY="95.0" prefHeight="17.0" prefWidth="219.0" text="Nombre" />
-                  <Label fx:id="lblApellido" layoutX="165.0" layoutY="140.0" prefHeight="17.0" prefWidth="219.0" text="Apellidos" />
-                  <Label fx:id="lblEmail" layoutX="165.0" layoutY="184.0" prefHeight="17.0" prefWidth="219.0" text="Email" />
-                  <TextField fx:id="txtNombre" disable="true" layoutX="537.0" layoutY="96.0" />
-                  <TextField fx:id="txtApellido" disable="true" layoutX="537.0" layoutY="141.0" />
-                  <TextField fx:id="txtEmail" disable="true" layoutX="537.0" layoutY="180.0" />
-                  <Label fx:id="lblCambiarContrasenia" layoutX="165.0" layoutY="229.0" onMouseClicked="#cambiarContrasenia" prefHeight="17.0" prefWidth="219.0" text="Cambiar contraseña" textFill="#745dba" />
-                  <TextField fx:id="pswContrasenia" layoutX="537.0" layoutY="225.0" visible="false" />
-                  <TextField fx:id="pswConfirmarContrasenia" layoutX="537.0" layoutY="272.0" prefWidth="149.0" visible="false" />
-                  <AnchorPane fx:id="paneSaldo" layoutX="54.0" layoutY="506.0" prefHeight="137.0" prefWidth="790.0" style="-fx-border-color: grey;">
+                  <AnchorPane fx:id="paneCentro" nodeOrientation="LEFT_TO_RIGHT" prefHeight="449.0" prefWidth="1301.0" style="-fx-border-color: grey;">
                      <children>
-                        <Label fx:id="lblSaldo" layoutX="110.0" layoutY="63.0" prefHeight="17.0" prefWidth="138.0" text="Saldo actual" />
-                        <Label fx:id="lblCantidadSaldo" layoutX="297.0" layoutY="63.0" prefHeight="17.0" prefWidth="92.0" />
-                        <Button fx:id="btnIngresarSaldo" layoutX="481.0" layoutY="59.0" mnemonicParsing="false" onAction="#ingresarSaldo" text="Ingresar saldo" />
+                        <Button fx:id="btnAceptarContrasenia" layoutX="643.0" layoutY="317.0" mnemonicParsing="false" onAction="#aceptarContrasenia" prefHeight="25.0" prefWidth="85.0" text="aceptar" visible="false" AnchorPane.rightAnchor="161.0" />
+                        <Label fx:id="lblNombre" layoutX="207.0" layoutY="105.0" prefHeight="17.0" prefWidth="219.0" text="Nombre" AnchorPane.leftAnchor="207.0" AnchorPane.rightAnchor="462.0" />
+                        <Label fx:id="lblApellido" layoutX="207.0" layoutY="150.0" prefHeight="17.0" prefWidth="219.0" text="Apellidos" AnchorPane.leftAnchor="207.0" AnchorPane.rightAnchor="462.0" />
+                        <Label fx:id="lblEmail" layoutX="207.0" layoutY="194.0" prefHeight="17.0" prefWidth="219.0" text="Email" AnchorPane.leftAnchor="208.0" AnchorPane.rightAnchor="463.0" />
+                        <TextField fx:id="txtNombre" disable="true" layoutX="579.0" layoutY="106.0" AnchorPane.leftAnchor="578.0" AnchorPane.rightAnchor="161.0" />
+                        <TextField fx:id="txtApellido" disable="true" layoutX="579.0" layoutY="151.0" AnchorPane.leftAnchor="579.0" AnchorPane.rightAnchor="162.0" />
+                        <TextField fx:id="txtEmail" disable="true" layoutX="579.0" layoutY="190.0" AnchorPane.leftAnchor="579.0" AnchorPane.rightAnchor="160.0" />
+                        <Label fx:id="lblCambiarContrasenia" layoutX="207.0" layoutY="239.0" onMouseClicked="#cambiarContrasenia" prefHeight="17.0" prefWidth="219.0" text="Cambiar contraseña" textFill="#745dba" AnchorPane.leftAnchor="207.0" AnchorPane.rightAnchor="462.0" />
+                        <TextField fx:id="pswContrasenia" layoutX="579.0" layoutY="235.0" visible="false" AnchorPane.leftAnchor="579.0" AnchorPane.rightAnchor="160.0" />
+                        <TextField fx:id="pswConfirmarContrasenia" layoutX="579.0" layoutY="282.0" prefWidth="149.0" visible="false" AnchorPane.leftAnchor="578.0" AnchorPane.rightAnchor="161.0" />
+                        <Button fx:id="btnCancelarPerfil" layoutX="291.0" layoutY="373.0" mnemonicParsing="false" onAction="#cancelarPerfil" text="Cancelar" visible="false" />
+                        <Button fx:id="btnAceptarPerfil" layoutX="628.0" layoutY="373.0" mnemonicParsing="false" onAction="#aceptarPerfil" text="Aceptar" visible="false" />
                      </children>
+                     <HBox.margin>
+                        <Insets right="10.0" top="50.0" />
+                     </HBox.margin>
                   </AnchorPane>
-                  <AnchorPane layoutX="1.0" layoutY="445.0" prefHeight="0.0" prefWidth="895.0" style="-fx-border-color: black;" />
-                  <Button fx:id="btnCancelarPerfil" layoutX="249.0" layoutY="363.0" mnemonicParsing="false" onAction="#cancelarPerfil" text="Cancelar" visible="false" />
-                  <Button fx:id="btnAceptarPerfil" layoutX="586.0" layoutY="363.0" mnemonicParsing="false" onAction="#aceptarPerfil" text="Aceptar" visible="false" />
                </children>
-            </AnchorPane>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="1296.0">
+               <children>
+                  <AnchorPane fx:id="paneSaldo" prefHeight="205.0" prefWidth="1273.0" style="-fx-border-color: grey;">
+                     <children>
+                        <Label fx:id="lblSaldo" layoutX="208.0" layoutY="93.0" prefHeight="17.0" prefWidth="138.0" text="Saldo actual" AnchorPane.leftAnchor="210.0" />
+                        <Label fx:id="lblCantidadSaldo" layoutX="400.0" layoutY="91.0" prefHeight="17.0" prefWidth="92.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="396.0" />
+                        <Button fx:id="btnIngresarSaldo" layoutX="592.0" layoutY="90.0" mnemonicParsing="false" onAction="#ingresarSaldo" text="Ingresar saldo" AnchorPane.rightAnchor="200.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="-105.0" right="10.0" />
+                     </HBox.margin>
+                  </AnchorPane>
+               </children>
+            </HBox>
          </children>
          <opaqueInsets>
             <Insets />
