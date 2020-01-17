@@ -45,11 +45,13 @@ import static view.ControladorGeneral.showErrorAlert;
 public class PerfilFXMLController{
     private static final Logger LOGGER = Logger.getLogger("escritorio.view.Perfil");
     private final ClienteManager logicCliente = createClienteManager("real");
-    private Stage stage;
-    private ClienteBean user;
     private final String CANCELAR_CONTRASENIA = "Cancelar modificacion de la contraseña";
     private final String CAMBIAR_CONTRASENIA = "Cambiar contraseña";
+    private Stage stage;
+    private ClienteBean user;
+    private int toques = 0;
     private byte[] bytes;// = user.getFoto();
+    
     @FXML private Circle imgCircle;
     @FXML private ImageView imagen;
     @FXML private Label lblCambiarContrasenia;
@@ -66,19 +68,16 @@ public class PerfilFXMLController{
     @FXML private TextField txtApellido;
     @FXML private TextField txtEmail;
     @FXML private AnchorPane paneCentro;
-    private int toques = 0;
+    
     public void setUser(ClienteBean user){
         this.user = user;
     }
     public void initStage(Parent root){
-        //LOGGER.info(user);
-        
-        //Crear scena y stage
         Scene scene = new Scene(root);
         stage=new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        //Enviar scena al stage.
         stage.setScene(scene);
+        //--Imagen
         if(user.getFoto()!=null)
             imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
         Ellipse ceiling = new Ellipse();
@@ -96,7 +95,10 @@ public class PerfilFXMLController{
         imagen.setClip(ceiling);
         stage.show();
     }
-    
+    /**
+     * Cambia y actualiza la contrasenia.
+     * @param m
+     */
     @FXML public void cambiarContrasenia(MouseEvent m){
         LOGGER.info("Voy a cmabiar contraseia");
         pswContrasenia.setVisible(true);
@@ -113,6 +115,9 @@ public class PerfilFXMLController{
         }
         
     }
+    /**
+     * Modifica y actualiza la imagen.
+     */
     @FXML public void modificarFotoPerfil(){
         try {
             FileChooser fileChooser = new FileChooser();
@@ -123,18 +128,22 @@ public class PerfilFXMLController{
             if(fileC!=null){
                 bytes=Files.readAllBytes(fileC.toPath());
                 user.setFoto(bytes);
-                LOGGER.log(Level.INFO, "------------------------------------------------file:///{0}", fileC.getPath());
                 try {
                     logicCliente.edit(user);
                 } catch (BusinessLogicException ex) {
                     Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
                 imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
             }
         } catch (IOException ex) {
             Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    /**
+     * Habilita los campos del perfil a modificar.
+     * @param e 
+     */
     @FXML public void modificarPerfil(ActionEvent e){
         LOGGER.info("cambiar perfil");
         txtNombre.setDisable(false);
@@ -149,6 +158,9 @@ public class PerfilFXMLController{
         btnAceptarPerfil.setVisible(true);
         btnCancelarPerfil.setVisible(true);
     }
+    /**
+     * Cancela la modificacion del perfil.
+     */
     public void cancelarPerfil(){
         txtNombre.setDisable(true);
         txtApellido.setDisable(true);
@@ -158,6 +170,9 @@ public class PerfilFXMLController{
         btnAceptarPerfil.setVisible(false);
         btnCancelarPerfil.setVisible(false);
     }
+    /**
+     * Acepta la accion de modificar el perfil.
+     */
     public void aceptarPerfil(){
         try {
             LOGGER.info("He aceptado perfil");
@@ -186,6 +201,9 @@ public class PerfilFXMLController{
         }
         
     }
+    /**
+     * Acepta la accion de modificar y actualizar la contraseña.
+     */
     public void aceptarContrasenia(){
         if(!pswContrasenia.getText().isEmpty() && !pswConfirmarContrasenia.getText().isEmpty() && pswContrasenia.getText().equals(pswConfirmarContrasenia.getText())){
             /*user.setContrasenia(pswContrasenia.getText());
@@ -201,6 +219,12 @@ public class PerfilFXMLController{
             lblCambiarContrasenia.setText(CAMBIAR_CONTRASENIA);
         }
     }
+    /**
+     * Abre ventana en la cual se actualiza el saldo del usuario.
+     * @param e
+     * @throws IOException
+     * @throws InterruptedException 
+     */
     @FXML private void ingresarSaldo(ActionEvent e) throws IOException, InterruptedException{
         LOGGER.info("Voy a ingresar saldo");
         FXMLLoader loader = new FXMLLoader(getClass()
