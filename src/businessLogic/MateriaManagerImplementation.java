@@ -1,6 +1,5 @@
 package businessLogic;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -28,7 +27,7 @@ public class MateriaManagerImplementation implements MateriaManager{
             throw new BusinessLogicException(e.getMessage());
         }
     }
-    
+
     @Override
     public void editMateria(MateriaBean materia) throws BusinessLogicException {
         try{
@@ -38,18 +37,17 @@ public class MateriaManagerImplementation implements MateriaManager{
             throw new BusinessLogicException(e.getMessage());
         }
     }
-    
+
     @Override
     public void deleteMateria(MateriaBean materia) throws BusinessLogicException {
         try{
             webClient.remove(materia.getIdMateria().toString());
         }catch(Exception e){
-            e.printStackTrace();
             LOGGER.severe("ERROR! MateriaManagerImpl -> DeleteMateria: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
     }
-    
+
     @Override
     public MateriaBean findMateria(MateriaBean materia) throws BusinessLogicException {
         MateriaBean mat = null;
@@ -61,16 +59,16 @@ public class MateriaManagerImplementation implements MateriaManager{
         }
         return materia;
     }
-    
+
     @Override
-    public Collection findAllMateria() throws BusinessLogicException {
-        
+    public Set<MateriaBean> findAllMateria() throws BusinessLogicException {
+        Set<MateriaBean> mat = null;
         try{
-            return webClient.findAll(new GenericType<Set<MateriaBean>>() {});
+            mat = webClient.findAll(new GenericType<Set<MateriaBean>>() {});
         }catch(Exception e){
             LOGGER.severe("ERROR! MateriaManagerImpl -> DeleteMateria: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
-        
+        return mat;
     }
 }

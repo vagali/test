@@ -114,26 +114,25 @@ public class PerfilFXMLController{
         
     }
     @FXML public void modificarFotoPerfil(){
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image files(*.jpg;*.jpeg;*.png)","*.jpg","*.jpeg","*.png");
-        fileChooser.getExtensionFilters().add(extFilter);
-        File fileC = fileChooser.showOpenDialog(stage);
         try {
-            bytes=Files.readAllBytes(fileC.toPath());
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image files(*.jpg;*.jpeg;*.png)","*.jpg","*.jpeg","*.png");
+            fileChooser.getExtensionFilters().add(extFilter);
+            File fileC = fileChooser.showOpenDialog(stage);
+            
+            if(fileC!=null){
+                bytes=Files.readAllBytes(fileC.toPath());
+                user.setFoto(bytes);
+                LOGGER.log(Level.INFO, "------------------------------------------------file:///{0}", fileC.getPath());
+                try {
+                    logicCliente.edit(user);
+                } catch (BusinessLogicException ex) {
+                    Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
+            }
         } catch (IOException ex) {
             Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if(fileC==null)
-            LOGGER.info("vacio");
-        else{
-            user.setFoto(bytes);
-            LOGGER.log(Level.INFO, "------------------------------------------------file:///{0}", fileC.getPath());
-            try {
-                logicCliente.edit(user);
-            } catch (BusinessLogicException ex) {
-                Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
         }
     }
     @FXML public void modificarPerfil(ActionEvent e){
@@ -162,7 +161,7 @@ public class PerfilFXMLController{
     public void aceptarPerfil(){
         try {
             LOGGER.info("He aceptado perfil");
-             if(!txtNombre.getText().isEmpty() && !txtEmail.getText().isEmpty()){
+            if(!txtNombre.getText().isEmpty() && !txtEmail.getText().isEmpty()){
                 user.setEmail(txtEmail.getText());
                 user.setNombreCompleto(txtNombre.getText());
                 logicCliente.edit(user);
@@ -175,13 +174,13 @@ public class PerfilFXMLController{
                 user.setNombreCompleto(txtNombre.getText());
                 logicCliente.edit(user);
             }
-             txtNombre.setDisable(true);
-             txtApellido.setDisable(true);
-             txtEmail.setDisable(true);
-             txtNombre.setText(user.getNombreCompleto());
-             txtEmail.setText(user.getEmail());
-             btnAceptarPerfil.setVisible(false);
-             btnCancelarPerfil.setVisible(false);
+            txtNombre.setDisable(true);
+            txtApellido.setDisable(true);
+            txtEmail.setDisable(true);
+            txtNombre.setText(user.getNombreCompleto());
+            txtEmail.setText(user.getEmail());
+            btnAceptarPerfil.setVisible(false);
+            btnCancelarPerfil.setVisible(false);
         } catch (BusinessLogicException ex) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         }
@@ -191,9 +190,9 @@ public class PerfilFXMLController{
         if(!pswContrasenia.getText().isEmpty() && !pswConfirmarContrasenia.getText().isEmpty() && pswContrasenia.getText().equals(pswConfirmarContrasenia.getText())){
             /*user.setContrasenia(pswContrasenia.getText());
             try {
-                logicCliente.actualizarContrasenia(user);
+            logicCliente.actualizarContrasenia(user);
             } catch (BusinessLogicException ex) {
-                Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }*/
             pswContrasenia.setVisible(false);
             pswConfirmarContrasenia.setVisible(false);
@@ -304,17 +303,23 @@ public class PerfilFXMLController{
         }*/
     }
     @FXML
-    private void onActionAbrirMiBiblioteca(ActionEvent event) throws IOException, BusinessLogicException{
-        FXMLLoader loader = new FXMLLoader(getClass()
-        .getResource("biblioteca.fxml"));
-        
-        Parent root = (Parent)loader.load();
-        BibliotecaClienteFXController controller =
-        ((BibliotecaClienteFXController)loader.getController());
-        controller.setUser(user);
-        controller.setStage(stage);
-        controller.initStage(root);
-        //stage.hide();
+    private void onActionAbrirMiBiblioteca(ActionEvent event){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("biblioteca.fxml"));
+            
+            Parent root = (Parent)loader.load();
+            BibliotecaClienteFXController controller =
+                    ((BibliotecaClienteFXController)loader.getController());
+            controller.setUser(user);
+            controller.setStage(stage);
+            controller.initStage(root);
+            //stage.hide();
+        } catch (IOException ex) {
+            Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BusinessLogicException ex) {
+            Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     @FXML
     private void onActionAbrirTiendaPacks(ActionEvent event){

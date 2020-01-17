@@ -5,7 +5,7 @@
  */
 package businessLogic;
 
-import java.util.Collection;
+import java.util.Set;
 import transferObjects.MateriaBean;
 
 /**
@@ -17,5 +17,5 @@ public interface MateriaManager {
     public void editMateria(MateriaBean materia) throws BusinessLogicException;
     public void deleteMateria(MateriaBean materia) throws BusinessLogicException;
     public MateriaBean findMateria(MateriaBean materia) throws BusinessLogicException;
-    public Collection findAllMateria() throws BusinessLogicException;
+    public Set<MateriaBean> findAllMateria() throws BusinessLogicException;
 }

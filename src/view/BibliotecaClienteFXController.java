@@ -54,10 +54,16 @@ import transferObjects.MateriaBean;
 public class BibliotecaClienteFXController{
     private static final Logger LOGGER = Logger.getLogger("escritorio.view.MisPuntesClienteFXController");
     public ClienteManager clienteLogic = createClienteManager("real");
-    private ClienteBean user;
     private final ApunteManager apuntesLogic = createApunteManager("real");
     private final MateriaManager materiaLogic = createMateriaManager("real");
+    private ClienteBean user;
     private Stage stage;
+    private Boolean voyAVotar = false;
+    private Parent root;
+    private ObservableList<ApunteBean>  apuntes;
+    private ObservableList<MateriaBean>  materias;
+    private ObservableList<String>  materias_titulo = FXCollections.observableArrayList();
+    
     @FXML private TableView<ApunteBean> tablaBiblioteca;
     @FXML private TableColumn columnaTitulo;
     @FXML private TableColumn columnaMateria;
@@ -69,10 +75,7 @@ public class BibliotecaClienteFXController{
     @FXML private ImageView imgLike;
     @FXML private ImageView imgDislike;
     @FXML private ImageView imgDescarga;
-    private Boolean heVotado = false;
-    private ObservableList<ApunteBean>  apuntes;
-    private ObservableList<MateriaBean>  materias;
-    private ObservableList<String>  materias_titulo = FXCollections.observableArrayList();
+    
     
     private final ContextMenu popupMenu = new ContextMenu();; //llamado tmb popup-menu, es decir lo declaramos
     private final MenuItem menu1 = new MenuItem("Añadir");
@@ -80,7 +83,7 @@ public class BibliotecaClienteFXController{
     private final MenuItem submenu1 = new MenuItem("Fila seleccionada");
     private final MenuItem submenu2 = new MenuItem("todas las filas");
     private final MenuItem menu3 = new MenuItem("Modificar");
-    private Parent root;
+    
     public void setStage(Stage stage){
         this.stage= stage;
     }
@@ -93,8 +96,7 @@ public class BibliotecaClienteFXController{
         this.root = root;
         //stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
-        // stage.setResizable(false);
-        stage.setTitle("tablaBiblioteca");
+        stage.setTitle("Mi Biblioteca");
         //popup-menu items definiendolas y añadiendolas al popup
         popupMenu.getItems().add(menu1);
         popupMenu.getItems().add(menu2);
@@ -102,42 +104,49 @@ public class BibliotecaClienteFXController{
         menu2.getItems().add(submenu2);
         popupMenu.getItems().add(new SeparatorMenuItem());//añadimos linea separadora entre los items
         popupMenu.getItems().add(menu3);
-        //--
+        //--Tabla
         comboFiltroBiblioteca.getSelectionModel().selectedItemProperty().addListener(this::comboControl);
         columnaTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
         columnaMateria.setCellValueFactory(new PropertyValueFactory<>("materia"));
-        columnaAutor.setCellValueFactory(new PropertyValueFactory<>("nombreCreador"));
+        columnaAutor.setCellValueFactory(new PropertyValueFactory<>("creador"));
         columnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        LOGGER.info(user.getId().toString());
         apuntes = FXCollections.observableArrayList(apuntesLogic.getApuntesByComprador(user.getId()));
-        apuntes.forEach((apunte) -> {
-            apunte.setNombreCreador(apunte.getCreador().getNombreCompleto());
-        });
-        
+        tablaBiblioteca.setItems(apuntes);
+        //combo
         materias = FXCollections.observableArrayList(materiaLogic.findAllMateria());
         materias_titulo.add("");
-        tablaBiblioteca.setItems(apuntes);
         materias.forEach((materia) -> {
             LOGGER.info(materia.getTitulo());
             materias_titulo.add(materia.getTitulo());
         });
         comboFiltroBiblioteca.setItems(materias_titulo);
+        //--Events
         tablaBiblioteca.addEventHandler(MouseEvent.MOUSE_CLICKED, this::puntuacion);
+       tablaBiblioteca.addEventHandler(MouseEvent.MOUSE_CLICKED, this::ocultarPopup);
         stage.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
         imgLike.addEventHandler(MouseEvent.MOUSE_CLICKED, this::puntuacion);
         imgDislike.addEventHandler(MouseEvent.MOUSE_CLICKED, this::puntuacion);
         imgDescarga.addEventHandler(MouseEvent.MOUSE_CLICKED, this::puntuacion);
+        
+        
         stage.show();
     }
+    /**
+     * cerrado del PopupMenu
+     * @param m 
+     */
+    public void ocultarPopup(MouseEvent m){
+        popupMenu.hide();
+    }
+    /**
+     * Control de los click dados en la pantalla
+     * @param m 
+     */
     public void clicks(MouseEvent m){
-        if(m.getButton()== MouseButton.SECONDARY){
-            LOGGER.info("AQUI VA EL MENU!!!!");
+        if(m.getButton()== MouseButton.SECONDARY)
             popupMenu.show(root, m.getScreenX(),m.getScreenY());
-        }
         else{
-            LOGGER.info("clicks");
-            
-            if(!heVotado){
+            if(!voyAVotar){
                 tablaBiblioteca.getSelectionModel().select(null);
                 txtDescripcion.setText("");
                 imgLike.setDisable(true);
@@ -147,9 +156,8 @@ public class BibliotecaClienteFXController{
                 imgDescarga.setDisable(true);
                 imgDescarga.setVisible(false);
             }
-            heVotado=false;
             popupMenu.hide();
-            
+            voyAVotar=false;
         }
     }/**
      * Control de las puntuciones de un apunte.
@@ -164,13 +172,10 @@ public class BibliotecaClienteFXController{
                 imgDislike.setVisible(true);
                 imgDescarga.setDisable(false);
                 imgDescarga.setVisible(true);
-                
                 txtDescripcion.setText(tablaBiblioteca.getSelectionModel().getSelectedItem().getDescripcion());
-                LOGGER.info(tablaBiblioteca.getSelectionModel().getSelectedItem().getDescripcion());
                 if(m.getTarget().equals(imgLike)){
-                    heVotado=true;
+                    voyAVotar=true;
                     if(!coprobarVoto()){
-                        LOGGER.info("voy a votar");
                         try {
                             apuntesLogic.votacion(user.getId(), 1, tablaBiblioteca.getSelectionModel().getSelectedItem());
                         } catch (BusinessLogicException ex) {
@@ -179,9 +184,8 @@ public class BibliotecaClienteFXController{
                     }
                 }
                 else if(m.getTarget().equals(imgDislike)){
-                    heVotado=true;
+                    voyAVotar=true;
                     if(!coprobarVoto()){
-                        LOGGER.info("voy a votar");
                         try {
                             apuntesLogic.votacion(user.getId(), -1, tablaBiblioteca.getSelectionModel().getSelectedItem());
                         } catch (BusinessLogicException ex) {
@@ -190,7 +194,6 @@ public class BibliotecaClienteFXController{
                     }
                 }
                 else if(m.getTarget().equals(imgDescarga)){
-                    heVotado=true;
                     FileChooser fileChooser = new FileChooser();
                     FileChooser.ExtensionFilter extFilter =new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
                     fileChooser.getExtensionFilters().add(extFilter);
@@ -203,18 +206,18 @@ public class BibliotecaClienteFXController{
         }
         
     }
+    /**
+     * Comprueba que no haya votado ya antes a ese apunte
+     * @return TRUE si ya ha votado || FALSE si no ha votado
+     */
     private Boolean coprobarVoto() {
         Boolean votado = false;
         try {
-            LOGGER.info(String.valueOf(tablaBiblioteca.getSelectionModel().getSelectedItem().getIdApunte()));
             Set<ClienteBean> clientes=clienteLogic.getVotantesId(tablaBiblioteca.getSelectionModel().getSelectedItem().getIdApunte());
             if(clientes!=null){
-                LOGGER.info("esta lleno");
                 for(ClienteBean cliente:clientes){
-                    if(cliente.getId().equals(user.getId())){
-                        LOGGER.info("ha votado------------------------");
+                    if(cliente.getId().equals(user.getId()))
                         votado = true;
-                    }
                 }
             }
             
@@ -223,15 +226,18 @@ public class BibliotecaClienteFXController{
         }
         return votado;
     }
-    
+    /**
+     * Guarda el archivo deseado en la ruta deseada
+     * @param archivo Apunte en bytes
+     * @param fileC Archivo del cual sacamos la ruta de almacenaje
+     */
     private void writeBytesToFile(byte[] archivo, File fileC) {
-         
         FileOutputStream fileOuputStream = null;
-        
         try {
-            fileOuputStream = new FileOutputStream(fileC.getPath());
-            fileOuputStream.write(archivo);
-            
+            if(fileC!=null){
+                fileOuputStream = new FileOutputStream(fileC.getPath());
+                fileOuputStream.write(archivo);
+            }
         } catch (IOException e) {
             LOGGER.severe("Error al descargar el apunte en un fichero: "+e.getMessage());
         } finally {
@@ -244,59 +250,54 @@ public class BibliotecaClienteFXController{
             }
         }
     }
+    /**
+     * Control del combo en caso de filtrar por materias.
+     * @param obvservable
+     * @param oldValue
+     * @param newValue 
+     */
     private void comboControl(ObservableValue obvservable, Object oldValue, Object newValue){
-        ObservableList<ApunteBean> arrayBusquedaPersona = FXCollections.observableArrayList();
-        LOGGER.info(String.valueOf(comboFiltroBiblioteca.getSelectionModel().getSelectedIndex()));
+        ObservableList<ApunteBean> apuntesFiltrados = FXCollections.observableArrayList();
         if(newValue !=null){
-            apuntes.stream().filter((apunte) -> (apunte.getMateria().toString().toUpperCase().equals(materias_titulo.get(comboFiltroBiblioteca.getSelectionModel().getSelectedIndex()).toUpperCase()))).map((apunte) -> {
-                arrayBusquedaPersona.add(apunte);
-                return apunte;
-            }).forEachOrdered((_item) -> {
-                LOGGER.info("he ENCONTRADO");
+            apuntes.stream().filter((apunte) -> (apunte.getMateria().toString().toUpperCase().equals(newValue.toString().toUpperCase()))).forEachOrdered((apunte) -> {
+                apuntesFiltrados.add(apunte);
             });
-            if(arrayBusquedaPersona.size()>0){
-                tablaBiblioteca.setItems(arrayBusquedaPersona);
+            if(apuntesFiltrados.size()>0){
+                tablaBiblioteca.setItems(apuntesFiltrados);
                 tablaBiblioteca.refresh();
             }
         }
         if(comboFiltroBiblioteca.getSelectionModel().getSelectedIndex()==0){
-            LOGGER.info("he entrados");
             tablaBiblioteca.setItems(apuntes);
             tablaBiblioteca.refresh();
         }
     }
-    @FXML
-    private void buscar(ActionEvent event){
-        LOGGER.info("He clicado buscar");
+    /**
+     * Filtra los apuntes segun la palabra o palabras a buscar.
+     * @param event 
+     */
+    @FXML private void buscar(ActionEvent event){
         String palabraBusqueda;
-        ObservableList<ApunteBean> arrayBusquedaPersona = FXCollections.observableArrayList();
+        ObservableList<ApunteBean> apuntesFiltrados = FXCollections.observableArrayList();
         if(txtBuscar.getText().isEmpty()){
             tablaBiblioteca.setItems(apuntes);
             tablaBiblioteca.refresh();
         }
         else{
             palabraBusqueda = txtBuscar.getText().toUpperCase();
-            LOGGER.info(palabraBusqueda);
             apuntes.stream().filter((apunte) -> (apunte.getTitulo().toUpperCase().contains(palabraBusqueda) ||
                     apunte.getMateria().toString().toUpperCase().contains(palabraBusqueda)||
                     apunte.getCreador().toString().toUpperCase().contains(palabraBusqueda) ||
                     apunte.getDescripcion().toUpperCase().contains(palabraBusqueda))).map((apunte) -> {
-                        arrayBusquedaPersona.add(apunte);
+                        apuntesFiltrados.add(apunte);
                         return apunte;
-                    }).forEachOrdered((_item) -> {
-                        LOGGER.info("he ENCONTRADO");
                     });
-            if(arrayBusquedaPersona.size()>0){
-                tablaBiblioteca.setItems(arrayBusquedaPersona);
+            if(apuntesFiltrados.size()>0){
+                tablaBiblioteca.setItems(apuntesFiltrados);
                 tablaBiblioteca.refresh();
             }
-            else
-                LOGGER.info("No se ha encontrado conicidencias");
             
         }
-    }
-    @FXML private void descargarApunte(MouseEvent m){
-        LOGGER.info("voy a descargr");
     }
     //Inicio de los metodos de navegación de la aplicación
     //Parte comun
@@ -311,7 +312,6 @@ public class BibliotecaClienteFXController{
             //Si acepta se cerrara esta ventana.
             alertCerrarSesion.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    LOGGER.info("Cerrando sesión.");
                     stage.hide();
                 }
             });
@@ -388,7 +388,7 @@ public class BibliotecaClienteFXController{
     private void onActionAbout(ActionEvent event){
     }
     //Fin de los metodos de navegación de la aplicación
-
+    
     
     
 }

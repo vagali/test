@@ -5,7 +5,6 @@
  */
 package service;
 
-import service.*;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -22,10 +21,9 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Usuario
  */
 public class ClienteRESTClient {
-
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/ServerA4/webresources";

@@ -5,11 +5,10 @@
  */
 package businessLogic;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
-import service.apunteRESTClient;
+import service.ApunteRESTClient;
 import transferObjects.ApunteBean;
 
 /**
@@ -17,11 +16,11 @@ import transferObjects.ApunteBean;
  * @author 2dam
  */
 public class ApunteManagerImplementation implements ApunteManager{
-    private apunteRESTClient webClient;
+    private ApunteRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("BusinessLogic.ClienteManagerImplementation");
     
     public ApunteManagerImplementation() {
-        webClient= new apunteRESTClient();
+        webClient= new ApunteRESTClient();
     }
     @Override
     public void create(ApunteBean apunte) throws BusinessLogicException {
@@ -32,7 +31,6 @@ public class ApunteManagerImplementation implements ApunteManager{
             throw new BusinessLogicException(e.getMessage());
         }
     }
-
     @Override
     public void edit(ApunteBean apunte) throws BusinessLogicException {
         try{
@@ -90,15 +88,15 @@ public class ApunteManagerImplementation implements ApunteManager{
     }
 
     @Override
-    public Collection getApuntesByComprador(Integer id) throws BusinessLogicException {
+    public Set<ApunteBean> getApuntesByComprador(Integer id) throws BusinessLogicException {
+        Set<ApunteBean> resultado=null;
         try{
-            webClient.getApuntesByComprador(new GenericType<Set<ApunteBean>>() {}, id.toString());
-           return webClient.getApuntesByComprador(new GenericType<Set<ApunteBean>>() {}, id.toString());
+           resultado=webClient.getApuntesByComprador(new GenericType<Set<ApunteBean>>() {}, id.toString());
         }catch(Exception e){
             LOGGER.severe("ERROR! ApunteManagerImplementation -> iniciarSesion: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
-        
+        return resultado;
     }
 
     @Override

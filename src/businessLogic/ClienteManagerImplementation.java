@@ -7,6 +7,7 @@ package businessLogic;
 
 import exceptions.LoginNotFoundException;
 import exceptions.PasswordWrongException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;

@@ -3,6 +3,8 @@ package view;
 import businessLogic.*;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
 import static businessLogic.UserManagerFactory.createUserManager;
+import encriptaciones.Encriptador;
+import encriptaciones.EncriptarException;
 import exceptions.LoginNotFoundException;
 import exceptions.NoEsUserException;
 import exceptions.PasswordWrongException;
@@ -45,6 +47,7 @@ import transferObjects.UserBean;
  */
 public class InicioFXController extends ControladorGeneral{
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeApuntesFXController");
+    private Encriptador encriptador=new Encriptador();
     /* MODIFICACIÓN DIN 14/11/2019 */
     /**
      * Botón Ayuda.
@@ -329,6 +332,7 @@ public class InicioFXController extends ControladorGeneral{
     String contra = tfContra.getText().toString();
     Object user=null;
     try{
+        //user = userLogic.iniciarSesion(nombre, encriptador.encriptar(contra));
         user = userLogic.iniciarSesion(nombre, contra);
         if(user != null){
             lblNombreUsuario.setTextFill(Color.web("black"));
