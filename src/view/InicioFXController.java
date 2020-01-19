@@ -401,7 +401,8 @@ public class InicioFXController extends ControladorGeneral{
                  LOGGER.severe("Error "+e.getMessage());
                  
             }
-        } catch (BusinessLogicException  ex1) {
+        //} catch (BusinessLogicException | EncriptarException  ex1) {
+        } catch (BusinessLogicException   ex1) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         } catch (PasswordWrongException ex1) {
             showErrorAlert("Contraseña incorrecta.");
@@ -420,7 +421,8 @@ public class InicioFXController extends ControladorGeneral{
             lblNombreUsuario.setTextFill(Color.web("red"));
             lblContra.setTextFill(Color.web("red"));
         }
-    } catch (BusinessLogicException  ex) {
+    //} catch (BusinessLogicException | EncriptarException  ex) {
+    } catch (BusinessLogicException ex) {
         showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
     }
     }
