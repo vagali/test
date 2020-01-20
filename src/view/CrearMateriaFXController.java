@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import transferObjects.MateriaBean;
 
 /**
@@ -16,6 +17,7 @@ import transferObjects.MateriaBean;
  * @author Luis
  */
 public class CrearMateriaFXController {
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDePacksFXController");
     GestorDeMateriasFXController fxMateria = null;
     private Stage stage;
     private MateriaBean materia;
@@ -29,6 +31,14 @@ public class CrearMateriaFXController {
     @FXML
     private TextArea taDescripcionCrearMateria;
     
+    public void setMateria(MateriaBean materia){
+        this.materia = materia;
+    }
+    
+    public void setFXMateria(GestorDeMateriasFXController fxController){
+        this.fxMateria = fxController;
+    }
+    
     @FXML
     public void initStage(Parent root) {
         try{
@@ -39,23 +49,25 @@ public class CrearMateriaFXController {
             stage.setTitle("Crear Materia");
             stage.setResizable(false);
             stage.setMaximized(false);
+            stage.setOnShowing(this::handleWindowShowing);
             stage.showAndWait();
         }catch(Exception e){
             ControladorGeneral.showErrorAlert("Ha ocurrido un error.");
         }
     }
     
-    public void setMateria(MateriaBean materia){
-        this.materia = materia;
-    }
-    
-    public void setFXMateria(GestorDeMateriasFXController fxController){
-        this.fxMateria = fxController;
+    private void handleWindowShowing(WindowEvent event){
+        try{
+            LOGGER.info("handlWindowShowing --> Gestor de Materia CREAR");
+            tfTituloCrearMateria.requestFocus();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+        }
     }
     
     @FXML
     public void onActionBtnCrearCrearMateria(ActionEvent event){
-        if(!tfTituloCrearMateria.getText().isEmpty() || !taDescripcionCrearMateria.getText().isEmpty()){
+        if(!tfTituloCrearMateria.getText().isEmpty() && !taDescripcionCrearMateria.getText().isEmpty()){
             materia.setTitulo(tfTituloCrearMateria.getText());
             materia.setDescripcion(taDescripcionCrearMateria.getText());
             fxMateria.setOpc(1);

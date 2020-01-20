@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.CompraApunteFXController">
+   <children>
+      <Separator layoutX="1.0" layoutY="63.0" prefHeight="0.0" prefWidth="600.0" />
+      <Label fx:id="labelTituloApunte" layoutX="27.0" layoutY="39.0" prefHeight="17.0" prefWidth="541.0" text="Label" />
+      <Text fx:id="textDescApunte" layoutX="30.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="texto" wrappingWidth="541.13671875" />
+      <Separator layoutX="-25.0" layoutY="267.0" prefHeight="3.0" prefWidth="631.0" />
+      <Label layoutX="27.0" layoutY="282.0" prefHeight="17.0" prefWidth="99.0" text="Tu saldo:" />
+      <Label layoutX="27.0" layoutY="308.0" prefHeight="17.0" prefWidth="99.0" text="Precio:" />
+      <Label layoutX="13.0" layoutY="338.0" prefHeight="17.0" prefWidth="125.0" text="Tu futuro saldo:" />
+      <Label fx:id="labelSaldo" layoutX="148.0" layoutY="282.0" prefHeight="17.0" prefWidth="114.0" text="saldo" />
+      <Label fx:id="labelPrecio" layoutX="148.0" layoutY="308.0" prefHeight="17.0" prefWidth="114.0" text="precio" />
+      <Label fx:id="labelResultado" layoutX="148.0" layoutY="338.0" prefHeight="17.0" prefWidth="114.0" text="resultado" />
+      <Line endX="100.0" endY="13.0" layoutX="115.0" layoutY="325.0" startX="-103.0" startY="13.0" />
+      <Button fx:id="btnCancelar" layoutX="322.0" layoutY="343.0" mnemonicParsing="false" onAction="#onActionCancelarCompra" prefHeight="25.0" prefWidth="84.0" text="Cancelar" />
+      <Button fx:id="btnComprarApunte" layoutX="462.0" layoutY="343.0" mnemonicParsing="false" onAction="#onActionComprarApunte" prefHeight="25.0" prefWidth="84.0" text="Comprar" />
+   </children>
+</Pane>

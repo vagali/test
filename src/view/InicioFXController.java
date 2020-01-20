@@ -3,6 +3,8 @@ package view;
 import businessLogic.*;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
 import static businessLogic.UserManagerFactory.createUserManager;
+import encriptaciones.Encriptador;
+import encriptaciones.EncriptarException;
 import exceptions.LoginNotFoundException;
 import exceptions.NoEsUserException;
 import exceptions.PasswordWrongException;
@@ -44,6 +46,7 @@ import transferObjects.UserBean;
  */
 public class InicioFXController extends ControladorGeneral{
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeApuntesFXController");
+    private Encriptador encriptador=new Encriptador();
     /* MODIFICACIÓN DIN 14/11/2019 */
     /**
      * Botón Ayuda.
@@ -326,6 +329,7 @@ public class InicioFXController extends ControladorGeneral{
     String contra = tfContra.getText().toString();
     Object user=null;
     try{
+        //user = userLogic.iniciarSesion(nombre, encriptador.encriptar(contra));
         user = userLogic.iniciarSesion(nombre, contra);
         if(user != null){
             lblNombreUsuario.setTextFill(Color.web("black"));
@@ -376,11 +380,29 @@ public class InicioFXController extends ControladorGeneral{
         lblContra.setTextFill(Color.web("red"));
     } catch (NoEsUserException ex) {
         try {
+            //user=clienteLogic.iniciarSesion(nombre, encriptador.encriptar(contra));
             user=clienteLogic.iniciarSesion(nombre, contra);
             ClienteBean cliente=new ClienteBean();
             cliente=(ClienteBean) user;
-            showErrorAlert(cliente.getLogin()+" "+cliente.getSaldo());
-        } catch (BusinessLogicException ex1) {
+            
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("tienda_apuntes.fxml"));
+
+                Parent root = (Parent)loader.load();
+
+                TiendaApuntesFXController controller =
+                ((TiendaApuntesFXController)loader.getController());
+                controller.setCliente(cliente);
+                controller.initStage(root);
+                tfContra.setText("");
+            }catch(IOException e){
+                 showErrorAlert("Error al cargar la ventana de Login.");
+                 LOGGER.severe("Error "+e.getMessage());
+                 
+            }
+        //} catch (BusinessLogicException | EncriptarException  ex1) {
+        } catch (BusinessLogicException   ex1) {
             showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
         } catch (PasswordWrongException ex1) {
             showErrorAlert("Contraseña incorrecta.");
@@ -399,6 +421,7 @@ public class InicioFXController extends ControladorGeneral{
             lblNombreUsuario.setTextFill(Color.web("red"));
             lblContra.setTextFill(Color.web("red"));
         }
+    //} catch (BusinessLogicException | EncriptarException  ex) {
     } catch (BusinessLogicException ex) {
         showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
     }

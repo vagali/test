@@ -136,6 +136,7 @@ public class GestorDeMateriasFXController {
     private void handleWindowShowing(WindowEvent event){
         try{
             LOGGER.info("handlWindowShowing --> Gestor de Materia");
+            tfFiltrarGestorMateria.requestFocus();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }
@@ -290,13 +291,29 @@ public class GestorDeMateriasFXController {
     
     @FXML
     private void onActionBuscarGestorMateria(ActionEvent event){
-        
+        if(!tfFiltrarGestorMateria.getText().trim().isEmpty()){
+            cargarDatos(tfFiltrarGestorMateria.getText().trim());
+        }else{
+            cargarDatos();
+        }
     }
     
     private void cargarDatos() {
         try {
             materias = manager.findAllMateria();
             List matList = materias.stream().sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
+            materiasObv = FXCollections.observableArrayList(new ArrayList<>(matList));
+            tablaMateria.setItems(materiasObv);
+        }catch (BusinessLogicException ex) {
+            LOGGER.severe("Error al cargar las materias :"+ex.getMessage());
+            showErrorAlert("Ha ocurrido un error cargando las materias.");
+        }
+    }
+    
+    private void cargarDatos(String string) {
+        try {
+            materias = manager.findAllMateria();
+            List matList = materias.stream().filter(materia -> materia.getTitulo().contains(string)).sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
             materiasObv = FXCollections.observableArrayList(new ArrayList<>(matList));
             tablaMateria.setItems(materiasObv);
         }catch (BusinessLogicException ex) {
@@ -318,7 +335,7 @@ public class GestorDeMateriasFXController {
                 controller.setFXMateria(this);
                 controller.initStage(root);
                 if(opcion == 1){
-                    //COMPROBAR QUE NO EXISTEN APUNTES EN ESTA MATERIA.
+                    comprobar(materia);
                     manager.removeMateria(materia);
                     tablaMateria.getItems().remove(materia);
                     //cargarDatos();
@@ -344,5 +361,9 @@ public class GestorDeMateriasFXController {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+    
+    private void comprobar(MateriaBean materia){
+        ApunteManager managerApunte = ApunteManagerFactory.createApunteManager("real");
     }
 }

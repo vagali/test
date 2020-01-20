@@ -6,12 +6,11 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.AddApuntePackFXController">
    <children>
       <Button fx:id="btnBuscarAddApunte" layoutX="534.0" layoutY="14.0" mnemonicParsing="false" text="Buscar" />
       <TextField fx:id="tfFiltarAddApunte" layoutX="366.0" layoutY="14.0" />
-      <TableView fx:id="tvApuntesAddApunte" prefHeight="305.0" prefWidth="572.0">
+      <TableView fx:id="tvApuntesAddApunte" layoutX="14.0" layoutY="48.0" prefHeight="305.0" prefWidth="572.0">
             <columns>
               <TableColumn fx:id="cIncluido" prefWidth="75.0" text="Incluido" />
               <TableColumn fx:id="cId" prefWidth="75.0" text="ID" />

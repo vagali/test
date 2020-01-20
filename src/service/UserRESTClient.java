@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -13,19 +14,19 @@ import javax.ws.rs.client.WebTarget;
  * Jersey REST client generated for REST resource:UserFacadeREST [user]<br>
  * USAGE:
  * <pre>
-        UserRESTClient client = new UserRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ *        UserRESTClient client = new UserRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
+ * </pre>
  *
- * @author 2dam
+ * @author Usuario
  */
 public class UserRESTClient {
-
+    private static ResourceBundle configFile=ResourceBundle.getBundle("service.configService");
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:1747/ServerA4/webresources";
+    private static final String BASE_URI = configFile.getString("base_uri");
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

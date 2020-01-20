@@ -7,7 +7,6 @@ package businessLogic;
 
 import exceptions.LoginNotFoundException;
 import exceptions.PasswordWrongException;
-import java.util.List;
 import java.util.Set;
 import transferObjects.ClienteBean;
 
@@ -21,9 +20,10 @@ public interface ClienteManager {
     public void remove(Integer id) throws BusinessLogicException;
     public ClienteBean find( Integer id) throws BusinessLogicException;
     public Set<ClienteBean> findAll() throws BusinessLogicException;
-    public List <ClienteBean> getVotantesId( Integer id) throws BusinessLogicException;
+    public Set <ClienteBean> getVotantesId( Integer id) throws BusinessLogicException;
     public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogicException;
     public void comprarApunte(ClienteBean cliente, Integer idApunte) throws BusinessLogicException;
     public boolean passwordForgot( String login) throws BusinessLogicException;
     public ClienteBean iniciarSesion(String login,String contrasenia)throws BusinessLogicException, PasswordWrongException, LoginNotFoundException;
+    
 }

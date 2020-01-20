@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import transferObjects.MateriaBean;
 
 /**
@@ -16,6 +17,7 @@ import transferObjects.MateriaBean;
  * @author Luis
  */
 public class ModificarMateriaFXController {
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.ModificarMateriaFXController");
     GestorDeMateriasFXController fxMateria = null;
     private Stage stage;
     private MateriaBean materia;
@@ -41,11 +43,21 @@ public class ModificarMateriaFXController {
             stage.setTitle("Modificar Materia");
             stage.setResizable(false);
             stage.setMaximized(false);
+            stage.setOnShowing(this::handleWindowShowing);
             tfTituloModificarMateria.setText(materia.getTitulo());
             taDescripcionModificarMateria.setText(materia.getDescripcion());
             stage.showAndWait();
         }catch(Exception e){
             ControladorGeneral.showErrorAlert("Ha ocurrido un error.");
+        }
+    }
+    
+    private void handleWindowShowing(WindowEvent event){
+        try{
+            LOGGER.info("handlWindowShowing --> Gestor de Materia MODIFICAR");
+            tfTituloModificarMateria.requestFocus();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
         }
     }
     

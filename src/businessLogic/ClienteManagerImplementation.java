@@ -7,11 +7,13 @@ package businessLogic;
 
 import exceptions.LoginNotFoundException;
 import exceptions.PasswordWrongException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.GenericType;
 import service.ClienteRESTClient;
 import transferObjects.ClienteBean;
 
@@ -41,7 +43,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         try{
             webClient.edit(cliente);
         }catch(Exception e){
-            LOGGER.severe("ERROR! ClienteManagerImplementation -> CreateUser: "+e.getMessage());
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> edit: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
     }
@@ -51,7 +53,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         try{
            webClient.remove(id.toString());
         }catch(Exception e){
-            LOGGER.severe("ERROR! ClienteManagerImplementation -> CreateUser: "+e.getMessage());
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> remove: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
     }
@@ -62,7 +64,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         try{
             resultado=webClient.find(ClienteBean.class, id.toString());
         }catch(Exception e){
-            LOGGER.severe("ERROR! ClienteManagerImplementation -> iniciarSesion: "+e.getMessage());
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> find: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
         return resultado;
@@ -72,27 +74,44 @@ public class ClienteManagerImplementation implements ClienteManager {
     public Set<ClienteBean> findAll() throws BusinessLogicException {
         Set<ClienteBean> resultado=null;
         try{
-          // resultado=webClient.findAll(new GenericType<Set<ClienteBean>>() {});
+           resultado=webClient.findAll(new GenericType<Set<ClienteBean>>() {});
         }catch(Exception e){
-            LOGGER.severe("ERROR! ClienteManagerImplementation -> iniciarSesion: "+e.getMessage());
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> findAll: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
         return resultado;
     }
 
     @Override
-    public List<ClienteBean> getVotantesId(Integer id) throws BusinessLogicException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Set<ClienteBean> getVotantesId(Integer id) throws BusinessLogicException {
+        Set<ClienteBean> resultado=null;
+        try{
+           resultado=webClient.getVotantesId(new GenericType<Set<ClienteBean>>() {}, id.toString());
+        }catch(Exception e){
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> getVotantesId: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
+        return resultado;
     }
 
     @Override
     public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogicException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+           webClient.actualizarContrasenia(cliente);
+        }catch(Exception e){
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> actualizarContrasenia: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
     }
 
     @Override
     public void comprarApunte(ClienteBean cliente, Integer idApunte) throws BusinessLogicException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+           webClient.comprarApunte(cliente, idApunte.toString());
+        }catch(Exception e){
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> comprarApunte: "+e.getMessage());
+            throw new BusinessLogicException(e.getMessage());
+        }
     }
 
     @Override
@@ -101,7 +120,7 @@ public class ClienteManagerImplementation implements ClienteManager {
         try{
            resultado=webClient.passwordForgot(Boolean.class, login);
         }catch(Exception e){
-            LOGGER.severe("ERROR! ClienteManagerImplementation -> iniciarSesion: "+e.getMessage());
+            LOGGER.severe("ERROR! ClienteManagerImplementation -> passwordForgot: "+e.getMessage());
             throw new BusinessLogicException(e.getMessage());
         }
         return resultado;

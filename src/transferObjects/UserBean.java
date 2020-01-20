@@ -7,6 +7,7 @@ package transferObjects;
 
 import java.io.Serializable;
 import java.util.Date;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -21,6 +22,7 @@ public class UserBean implements Serializable{
     private String login;
     private String email;
     private String nombreCompleto;
+    //private final SimpleStringProperty nombreCompleto;
     private UserStatus status;
     private UserPrivilege privilegio;
     private String contrasenia;
@@ -74,6 +76,7 @@ public class UserBean implements Serializable{
      */
     public String getNombreCompleto() {
         return nombreCompleto;
+        //return nombreCompleto.get();
     }
 
     /**
@@ -81,6 +84,7 @@ public class UserBean implements Serializable{
      */
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
+        //this.nombreCompleto.set(nombreCompleto);
     }
 
     /**
@@ -154,6 +158,7 @@ public class UserBean implements Serializable{
     }
 
     public UserBean() {
+       // this.nombreCompleto=new SimpleStringProperty();
     }
 
     public UserBean(Integer id, String login, String email, String nombreCompleto, UserStatus status, UserPrivilege privilegio, String contrasenia, Date ultimoAcceso, Date ultimoCambioContrasenia) {
@@ -161,6 +166,7 @@ public class UserBean implements Serializable{
         this.login = login;
         this.email = email;
         this.nombreCompleto = nombreCompleto;
+        //this.nombreCompleto= new SimpleStringProperty(nombreCompleto);
         this.status = status;
         this.privilegio = privilegio;
         this.contrasenia = contrasenia;
@@ -168,7 +174,10 @@ public class UserBean implements Serializable{
         this.ultimoCambioContrasenia = ultimoCambioContrasenia;
     }
 
-    
+    @Override
+    public String toString() {
+        return nombreCompleto;
+    }
     
     
     

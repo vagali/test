@@ -9,15 +9,16 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javax.swing.table.TableColumn;
+import javafx.stage.WindowEvent;
 
 /**
  *
- * @author 2dam
+ * @author Luis
  */
 public class AddApuntePackFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.AddApuntePackFXController");
@@ -43,6 +44,10 @@ public class AddApuntePackFXController {
     @FXML
     private Button btnModificarAddApunte;
     
+    public void setFXModificarPack(ModificarPackFXController fxController){
+        this.fxModificarPack = fxController;
+    }
+    
     @FXML
     public void initStage(Parent root) {
         try{
@@ -53,6 +58,7 @@ public class AddApuntePackFXController {
             stage.setTitle("Modificar Pack");
             stage.setResizable(false);
             stage.setMaximized(false);
+            stage.setOnShowing(this::handleWindowShowing);
             //Tabla
             /*cId.setCellValueFactory(new PropertyValueFactory<>("idMateria"));
             cTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
@@ -65,7 +71,12 @@ public class AddApuntePackFXController {
         }
     }
     
-    public void setFXModificarPack(ModificarPackFXController fxController){
-        this.fxModificarPack = fxController;
+    private void handleWindowShowing(WindowEvent event){
+        try{
+            LOGGER.info("handlWindowShowing --> Gestor de Pack MODIFICAR Añadir apunte");
+            tfFiltarAddApunte.requestFocus();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+        }
     }
 }

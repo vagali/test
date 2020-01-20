@@ -131,7 +131,8 @@ public class GestorDePacksFXController {
     
     private void handleWindowShowing(WindowEvent event){
         try{
-            LOGGER.info("handlWindowShowing --> Gestor de Materia");
+            LOGGER.info("handlWindowShowing --> Gestor de Pack");
+            tfFiltrarGestorPack.requestFocus();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }
@@ -287,13 +288,29 @@ public class GestorDePacksFXController {
     
     @FXML
     private void onActionBuscarGestorPack(ActionEvent event){
-        
+        if(!tfFiltrarGestorPack.getText().trim().isEmpty()){
+            cargarDatos(tfFiltrarGestorPack.getText().trim());
+        }else{
+            cargarDatos();
+        }
     }
     
     private void cargarDatos() {
         try {
             packs = manager.findAllPack();
             List packList = packs.stream().sorted(Comparator.comparing(PackBean::getIdPack)).collect(Collectors.toList());
+            packsObv = FXCollections.observableArrayList(new ArrayList<>(packList));
+            tablaPack.setItems(packsObv);
+        }catch (BusinessLogicException ex) {
+            LOGGER.severe("Error al cargar los packs :"+ex.getMessage());
+            showErrorAlert("Ha ocurrido un error cargando los packs.");
+        }
+    }
+    
+    private void cargarDatos(String string) {
+        try {
+            packs = manager.findAllPack();
+            List packList = packs.stream().filter(pack -> pack.getTitulo().contains(string)).sorted(Comparator.comparing(PackBean::getIdPack)).collect(Collectors.toList());
             packsObv = FXCollections.observableArrayList(new ArrayList<>(packList));
             tablaPack.setItems(packsObv);
         }catch (BusinessLogicException ex) {

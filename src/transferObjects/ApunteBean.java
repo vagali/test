@@ -7,13 +7,10 @@ package transferObjects;
 
 import java.io.Serializable;
 import java.util.Date;
-import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableSet;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -194,6 +191,20 @@ public class ApunteBean implements Serializable {
         this.precio = new SimpleFloatProperty(precio);
         this.creador = new SimpleObjectProperty(creador);
         this.materia = new SimpleObjectProperty(materia);
+    }
+
+    public ApunteBean() {
+        this.idApunte = new SimpleIntegerProperty();
+        this.titulo = new SimpleStringProperty();
+        this.descripcion = new SimpleStringProperty();
+        // this.archivo = new SimpleObjectProperty(archivo);
+        
+        this.fechaValidacion = new SimpleObjectProperty();
+        this.likeCont = new SimpleIntegerProperty();
+        this.dislikeCont = new SimpleIntegerProperty();
+        this.precio = new SimpleFloatProperty();
+        this.creador = new SimpleObjectProperty();
+        this.materia = new SimpleObjectProperty();
     }
 
     public ApunteBean() {
