@@ -4,7 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
@@ -43,9 +46,9 @@ public class ModificarMateriaFXController {
             stage.setTitle("Modificar Materia");
             stage.setResizable(false);
             stage.setMaximized(false);
-            stage.setOnShowing(this::handleWindowShowing);
             tfTituloModificarMateria.setText(materia.getTitulo());
             taDescripcionModificarMateria.setText(materia.getDescripcion());
+            stage.setOnShowing(this::handleWindowShowing);
             stage.showAndWait();
         }catch(Exception e){
             ControladorGeneral.showErrorAlert("Ha ocurrido un error.");
@@ -83,9 +86,17 @@ public class ModificarMateriaFXController {
     
     @FXML
     public void onActionBtnEliminarModificarMateria(ActionEvent event){
-        //PEDIR CONFIRMACIÓN
-        fxMateria.setOpc(1);
-        stage.hide();
+        Alert alertCerrarAplicacion = new Alert(AlertType.CONFIRMATION,"",ButtonType.NO,ButtonType.YES);
+        //Añadimos titulo a la ventana como el alert.
+        alertCerrarAplicacion.setTitle("Eliminar");
+        alertCerrarAplicacion.setHeaderText("¿Estas seguro que lo deseas eliminar?");
+        //Si acepta cerrara la aplicación.
+        alertCerrarAplicacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                fxMateria.setOpc(1);
+                stage.hide();
+            }
+        });
     }
     
     @FXML

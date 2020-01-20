@@ -206,20 +206,4 @@ public class ApunteBean implements Serializable {
         this.creador = new SimpleObjectProperty();
         this.materia = new SimpleObjectProperty();
     }
-
-    public ApunteBean() {
-        this.idApunte = new SimpleIntegerProperty();
-        this.titulo = new SimpleStringProperty();
-        this.descripcion = new SimpleStringProperty();
-        // this.archivo = new SimpleObjectProperty(archivo);
-        
-        this.fechaValidacion = new SimpleObjectProperty();
-        this.likeCont = new SimpleIntegerProperty();
-        this.dislikeCont = new SimpleIntegerProperty();
-        this.precio = new SimpleFloatProperty();
-        this.creador = new SimpleObjectProperty();
-        this.materia = new SimpleObjectProperty();
-    }
-    
-    
 }

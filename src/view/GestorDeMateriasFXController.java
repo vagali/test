@@ -1,5 +1,7 @@
 package view;
 
+import businessLogic.ApunteManager;
+import businessLogic.ApunteManagerFactory;
 import businessLogic.BusinessLogicException;
 import businessLogic.MateriaManager;
 import businessLogic.MateriaManagerFactory;
@@ -29,6 +31,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import transferObjects.ApunteBean;
 import transferObjects.MateriaBean;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
@@ -301,7 +304,7 @@ public class GestorDeMateriasFXController {
     private void cargarDatos() {
         try {
             materias = manager.findAllMateria();
-            List matList = materias.stream().sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
+            List<MateriaBean> matList = materias.stream().sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
             materiasObv = FXCollections.observableArrayList(new ArrayList<>(matList));
             tablaMateria.setItems(materiasObv);
         }catch (BusinessLogicException ex) {
@@ -313,7 +316,7 @@ public class GestorDeMateriasFXController {
     private void cargarDatos(String string) {
         try {
             materias = manager.findAllMateria();
-            List matList = materias.stream().filter(materia -> materia.getTitulo().contains(string)).sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
+            List<MateriaBean> matList = materias.stream().filter(materia -> materia.getTitulo().contains(string)).sorted(Comparator.comparing(MateriaBean::getIdMateria)).collect(Collectors.toList());
             materiasObv = FXCollections.observableArrayList(new ArrayList<>(matList));
             tablaMateria.setItems(materiasObv);
         }catch (BusinessLogicException ex) {
@@ -363,7 +366,18 @@ public class GestorDeMateriasFXController {
         }
     }
     
-    private void comprobar(MateriaBean materia){
+    private boolean comprobar(MateriaBean materia){
         ApunteManager managerApunte = ApunteManagerFactory.createApunteManager("real");
+        boolean estaVacio = false;
+        try{
+            List<ApunteBean> apuntes = (List<ApunteBean>) managerApunte.findAll().stream().filter(apunte -> apunte.getMateria().equals(materia)).collect(Collectors.toList());
+            if(apuntes.isEmpty()){
+                estaVacio = true;
+            }
+        }catch(BusinessLogicException e){
+            e.printStackTrace();
+            showErrorAlert("Ha ocurrido un error.");
+        }
+        return estaVacio;
     }
 }

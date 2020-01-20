@@ -111,17 +111,17 @@ public class ModificarPackFXController {
     @FXML
     public void onActionBtnModificarApuntesModificarPack(ActionEvent event){
         try{
-                FXMLLoader loader = new FXMLLoader(getClass()
-                        .getResource("add_apunte_pack.fxml"));
-                Parent root = (Parent)loader.load();
-                AddApuntePackFXController controller =
-                        ((AddApuntePackFXController)loader.getController());
-                controller.setFXModificarPack(this);
-                controller.initStage(root);
-            }catch(Exception e){
-                e.printStackTrace();
-                ControladorGeneral.showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor. "+e.getMessage());
-            }
+            FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("add_apunte_pack.fxml"));
+            Parent root = (Parent)loader.load();
+            AddApuntePackFXController controller =
+                ((AddApuntePackFXController)loader.getController());
+            controller.setFXModificarPack(this);
+            controller.initStage(root);
+        }catch(Exception e){
+            e.printStackTrace();
+            ControladorGeneral.showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor. "+e.getMessage());
+        }
     }
     
     public Date localDateToDate(LocalDate date) {
