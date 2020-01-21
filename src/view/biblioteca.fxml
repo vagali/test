@@ -29,11 +29,11 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Ventanas">
               <items>
-                  <MenuItem mnemonicParsing="false" text="Mi biblioteca" />
-                  <MenuItem mnemonicParsing="false" text="Tienda de apuntes" />
-                  <MenuItem mnemonicParsing="false" text="Tienda de packs" />
-                  <MenuItem mnemonicParsing="false" onAction="#onActionAbrirMiPerfil" text="Mi perfil" />
-                  <MenuItem mnemonicParsing="false" text="Subir apuntes" />
+                  <MenuItem fx:id="menuVentanasMiBiblioteca" mnemonicParsing="false" text="Mi biblioteca" onAction="#onActionAbrirMiBiblioteca"/>
+                <MenuItem fx:id="menuVentanasTiendaApuntes" mnemonicParsing="false" text="Tienda de apuntes" onAction="#onActionAbrirTiendaApuntes" />
+                  <MenuItem fx:id="menuVentanasTiendaPacks" mnemonicParsing="false" text="Tienda de packs" onAction="#onActionAbrirTiendaPacks"/>
+                  <MenuItem fx:id="menuVentanasMiPerfil" mnemonicParsing="false" text="Mi perfil" onAction="#onActionAbrirMiPerfil"/>
+                  <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" text="Subir apuntes" onAction="#onActionAbrirMisApuntes"/>
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">

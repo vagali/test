@@ -72,11 +72,16 @@ public class PerfilFXMLController{
     public void setUser(ClienteBean user){
         this.user = user;
     }
+    
+    void setStage(Stage stage) {
+       
+        this.stage = stage;
+    }
     public void initStage(Parent root){
         Scene scene = new Scene(root);
-        stage=new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
+        //stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
+        stage.setTitle("Mi perfil.");
         //--Imagen
         if(user.getFoto()!=null)
             imagen.setImage(new Image(new ByteArrayInputStream(user.getFoto())));
@@ -250,7 +255,11 @@ public class PerfilFXMLController{
     //----------------------------
     
     //Inicio de los metodos de navegación de la aplicación
-    //Parte comun
+     //Parte comun
+    /**
+     * Metodo que permite cerrar sesión.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionCerrarSesion(ActionEvent event){
         try{
@@ -270,6 +279,10 @@ public class PerfilFXMLController{
             LOGGER.severe(e.getMessage());
         }
     }
+    /**
+     * Metodo que permite salirse de la aplicación.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionSalir(ActionEvent event){
         try{
@@ -292,40 +305,52 @@ public class PerfilFXMLController{
     }
     
     //Inicio de los metodos de navegación de la aplicación
+    /**
+     * Abre la ventana mis apuntes.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionAbrirMisApuntes(ActionEvent event){
-        /* try{
-        FXMLLoader loader = new FXMLLoader(getClass()
-        .getResource("cliente_misApuntes.fxml"));
-        Parent root = (Parent)loader.load();
-        MisApuntesClienteFXController controller =
-        ((MisApuntesClienteFXController)loader.getController());
-        
-        //controller.setUser(user);
-        controller.setStage(stage);
-        controller.initStage(root);
-        stage.hide();
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("cliente_misApuntes.fxml"));
+            Parent root = (Parent)loader.load();
+            MisApuntesClienteFXController controller =
+                    ((MisApuntesClienteFXController)loader.getController());
+            
+            controller.setCliente(user);
+            controller.setStage(stage);
+            controller.initStage(root);
+            stage.hide();
         }catch(Exception e){
-        showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
-        }*/
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+        }
     }
+    /**
+     * Metodo que abre la tienda de apuntes.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionAbrirTiendaApuntes(ActionEvent event){
-        /*try{
-        FXMLLoader loader = new FXMLLoader(getClass()
-        .getResource("tienda_apuntes.fxml"));
-        Parent root = (Parent)loader.load();
-        TiedaApuntesFXController controller =
-        ((TiedaApuntesFXController)loader.getController());
-        
-        //controller.setUser(user);
-        controller.setStage(stage);
-        controller.initStage(root);
-        stage.hide();
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("tienda_apuntes.fxml"));
+            Parent root = (Parent)loader.load();
+            TiendaApuntesFXController controller =
+                    ((TiendaApuntesFXController)loader.getController());
+            
+            controller.setCliente(user);
+            controller.setStage(stage);
+            controller.initStage(root);
+            stage.hide();
         }catch(Exception e){
-        showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
-        }*/
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+        }
     }
+    /**
+     * Abre la ventana mi biblioteca.
+     * @param event El evento de pulsación del botón.
+     */
     @FXML
     private void onActionAbrirMiBiblioteca(ActionEvent event){
         try {
@@ -333,27 +358,70 @@ public class PerfilFXMLController{
                     .getResource("biblioteca.fxml"));
             
             Parent root = (Parent)loader.load();
+            
             BibliotecaClienteFXController controller =
                     ((BibliotecaClienteFXController)loader.getController());
             controller.setUser(user);
             controller.setStage(stage);
             controller.initStage(root);
-            //stage.hide();
+            stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (BusinessLogicException ex) {
-            Logger.getLogger(PerfilFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+    /**
+     * Abre la ventana tienda packs.
+     * @param event El evento de pulsación del botón.
+     */
+    @FXML
+    private void onActionAbrirTiendaPacks(ActionEvent event){
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("tienda_pack.fxml"));
+            
+            Parent root = (Parent)loader.load();
+            
+            TiendaPackFXController controller =
+                    ((TiendaPackFXController)loader.getController());
+            controller.setCliente(user);
+            controller.setStage(stage);
+            controller.initStage(root);
+            stage.hide();
+        } catch (IOException ex) {
+            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Abre la ventna mi perfil.
+     * @param event El evento de pulsación del botón.
+     */
+    @FXML
+    private void onActionAbrirMiPerfil(ActionEvent event){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("perfil.fxml"));
+            
+            Parent root = (Parent)loader.load();
+            
+            PerfilFXMLController controller =
+                    ((PerfilFXMLController)loader.getController());
+            controller.setUser(user);
+            controller.setStage(stage);
+            controller.initStage(root);
+            stage.hide();
+        } catch (IOException ex) {
+            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     @FXML
-    private void onActionAbrirTiendaPacks(ActionEvent event){
-    }
-    @FXML
-    private void onActionAbrirMiPerfil(ActionEvent event){
-    }
-    @FXML
     private void onActionAbout(ActionEvent event){
+        
     }
     //Fin de los metodos de navegación de la aplicación
+
 }
 
