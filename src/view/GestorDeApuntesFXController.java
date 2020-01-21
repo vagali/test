@@ -10,9 +10,8 @@ import static businessLogic.ApunteManagerFactory.createApunteManager;
 import businessLogic.BusinessLogicException;
 import businessLogic.MateriaManager;
 import static businessLogic.MateriaManagerFactory.createMateriaManager;
-import java.time.Instant;
+import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,10 +45,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -56,8 +60,6 @@ import transferObjects.ApunteBean;
 import transferObjects.ClienteBean;
 import transferObjects.MateriaBean;
 import transferObjects.UserBean;
-import static view.ControladorGeneral.MAX_CARACTERES;
-import static view.ControladorGeneral.MIN_CARACTERES;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
@@ -77,6 +79,7 @@ public class GestorDeApuntesFXController {
     private ApunteBean apunteProvisional;
     private final int MIN_CARACTERES=3;
     private final int MAX_CARACTERES=250;
+    private Stage stageAyuda;
     @FXML
     private TableView tableApuntes;
     @FXML
@@ -223,9 +226,9 @@ public class GestorDeApuntesFXController {
             
             //Poner TOOLTIPS
             this.textFieldTitulo.setTooltip(new Tooltip("Requisitos:\n-Mínimo caracteres: "
-                +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
+                    +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
             this.textFieldDesc.setTooltip(new Tooltip("Requisitos:\n-Mínimo caracteres: "
-                +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
+                    +MIN_CARACTERES+"\n-Máximo caracteres: "+MAX_CARACTERES));
             stage.show();
         }catch(Exception e){
             LOGGER.severe("Error > GestorDeApuntesFXController > initStage: "+e.getMessage());
@@ -266,8 +269,6 @@ public class GestorDeApuntesFXController {
             apuntes=apunteLogic.findAll();
             apuntesData=FXCollections.observableArrayList(new ArrayList<>(apuntes));
             tableApuntes.setItems(apuntesData);
-            //ArrayList <ApunteBean> apuntesInfo=new ArrayList<>(apuntes);
-            //LOGGER.info("INf. "+apuntesInfo.get(0).getCreador().getNombreCompleto());
         } catch (BusinessLogicException ex) {
             LOGGER.severe("Error al intentar cargar los apuntes :"+ex.getMessage());
             showErrorAlert("No se ha podido cargar los apuntes.");
@@ -410,18 +411,18 @@ public class GestorDeApuntesFXController {
                 apunteProvisional.setDescripcion(this.textFieldDesc.getText().trim());
                 apunteProvisional.setFechaValidacion(localDateToDate(this.datePickerFecha.getValue()));
                 apunteProvisional.setMateria((MateriaBean) this.comboBoxMaterias.getSelectionModel().getSelectedItem());
-                               
+                
                 try {
                     apunteLogic.edit(apunteProvisional);
                     Alert alert=new Alert(Alert.AlertType.INFORMATION,
-                                            "El apunte "+this.apunteProvisional.getTitulo()+" fue modificado.",
-                                            ButtonType.OK);
-                                    alert.showAndWait();
+                            "El apunte "+this.apunteProvisional.getTitulo()+" fue modificado.",
+                            ButtonType.OK);
+                    alert.showAndWait();
                     apuntesData.set(this.tableApuntes.getSelectionModel().getFocusedIndex(), apunteProvisional);
                     this.tableApuntes.getSelectionModel().clearSelection();
                     this.tableApuntes.refresh();
                     vaciar();
-                     
+                    
                 } catch (BusinessLogicException ex) {
                     LOGGER.severe("Error enviar la modificación del apunte: "+ex.getMessage());
                     showErrorAlert("Hubo un error al modificar el apunte.");
@@ -456,6 +457,10 @@ public class GestorDeApuntesFXController {
         }
     }
     //Parte comun
+    /**
+     * Permite cerrar sesíón.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionCerrarSesion(ActionEvent event){
         try{
@@ -476,6 +481,10 @@ public class GestorDeApuntesFXController {
             showErrorAlert("Error al cerrar sesión.");
         }
     }
+    /**
+     * Permite salir de la aplicación,
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionSalir(ActionEvent event){
         try{
@@ -500,13 +509,63 @@ public class GestorDeApuntesFXController {
     
     //Inicio de los metodos de navegación de la aplicación
     
-    
-    
+    /**
+     * Abre ala ventana de ayuda de la clase GestorDeApuntesFXController.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbout(ActionEvent event){
-        showErrorAlert("About");
+        try{
+            final WebView browser = new WebView();
+            final WebEngine webEngine = browser.getEngine();
+            
+            URL url = this.getClass().getResource("/ayuda/ayuda_gestor_apuntes.html");
+            webEngine.load(url.toString());
+            
+            stageAyuda=new Stage();
+            stageAyuda.setTitle(webEngine.getTitle());
+            
+            Button ayudaCerrar=new Button("Cerrar");
+            ayudaCerrar.setOnAction(this::cerrarAyuda);
+            ayudaCerrar.setMnemonicParsing(true);
+            ayudaCerrar.setText("_Cerrar");
+            /* Al pulsar enter encima del boton se ejecute */
+            ayudaCerrar.setOnKeyPressed((key) ->{
+                if(key.getCode().equals(KeyCode.ENTER)) {
+                    ayudaCerrar.fire();
+                }
+            });
+            stageAyuda.setOnShowing(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    ayudaCerrar.requestFocus();
+                }
+            });
+            VBox root = new VBox();
+            root.getChildren().addAll(browser,ayudaCerrar);
+            
+            Scene escenaAyuda=new Scene(root);
+            stageAyuda.setScene(escenaAyuda);
+            stageAyuda.initModality(Modality.APPLICATION_MODAL);
+            
+            stageAyuda.show();
+        }catch(Exception e){
+            LOGGER.severe("Error al abrir la ventana de ayuda: "+e.getMessage());
+            showErrorAlert("A ocurrido un error al abrir la ventana de ayuda");
+        }
+    }
+    /**
+     * Cierra la ventana de ayuda.
+     * @param event El evento de pulsación.
+     */
+    public void cerrarAyuda(ActionEvent event){
+        stageAyuda.hide();
     }
     //Metodos de navigacion entre ventanas de administrador
+    /**
+     * Abre la ventana de gestion de apuntes.
+     * @param event  El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirGestorApuntes(ActionEvent event){
         try{
@@ -521,10 +580,14 @@ public class GestorDeApuntesFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
-            LOGGER.severe("Error al intentar abrir Gestor de apuntes.");
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            LOGGER.severe("Error al intentar abrir Gestor de apuntes."+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
+    /**
+     * Abre la ventana gestor de packs.
+     * @param event  El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirGestorPacks(ActionEvent event){
         try{
@@ -539,10 +602,14 @@ public class GestorDeApuntesFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
-            LOGGER.severe("Error al intentar abrir Gestor de packs");
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            LOGGER.severe("Error al intentar abrir Gestor de packs"+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
+    /**
+     * Abre la ventna gestor de ofertas.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirGestorOfertas(ActionEvent event){
         try{
@@ -557,10 +624,14 @@ public class GestorDeApuntesFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
-            LOGGER.severe("Error al intentar abrir Gestor de ofertas");
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            LOGGER.severe("Error al intentar abrir Gestor de ofertas"+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
+    /**
+     * Abre la ventana de gestor de materias.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirGesstorMaterias(ActionEvent event){
         try{
@@ -575,7 +646,7 @@ public class GestorDeApuntesFXController {
             controller.initStage(root);
             stage.hide();
         }catch(Exception e){
-            LOGGER.severe("Error al intentar abrrir Gestor de Materias");
+            LOGGER.severe("Error al intentar abrir Gestor de Materias"+e.getMessage());
             showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }

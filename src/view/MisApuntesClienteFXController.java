@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -46,6 +48,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -63,6 +68,7 @@ public class MisApuntesClienteFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.MisApuntesClienteFXController");
     private ClienteBean cliente;
     private Stage stage;
+    private Stage stageAyuda;
     
     
     private ApunteManager apunteLogic = createApunteManager("real");
@@ -404,18 +410,12 @@ public class MisApuntesClienteFXController {
         if(newValue!=null && newValue!=oldValue){
             MateriaBean materia=(MateriaBean) newValue;
             if(materia.getIdMateria()!=-1){
-                //Filtrar
-                //this.filtrarMateria=true;
                 this.materiaFiltrada=materia;
             }else{
-                //this.filtrarMateria=false;
                 this.materiaFiltrada=null;
-                //quitar filtrado por materia
             }
             filtrarLosApuntes();
         }else{
-            //No filtrar
-            //PROVISIONAL
             this.listViewMateria.getSelectionModel().select(0);
         }
     }
@@ -493,18 +493,11 @@ public class MisApuntesClienteFXController {
                 apuntesConElNombre.add(apunte);
             });
         }
-        //ESTA PARTE SE CAMBIA  Y LO QUE HARA SERA LLAMAR AL METODO ORDENAR
         if(this.filtrado){
-            
-            this.apuntesDeTiendaFiltrado=apuntesConElNombre;//quizas quitar
-            /*
-            this.apuntesDataFiltrado=FXCollections.observableArrayList(new ArrayList<>(apuntesConElNombre));
-            this.listViewApuntes.setItems(this.apuntesDataFiltrado);
-            */
+            this.apuntesDeTiendaFiltrado=apuntesConElNombre;
             ordenarApuntes();
             
         }else{
-            //this.listViewApuntes.setItems(apuntesData);
             ordenarApuntes();
         }
         
@@ -512,6 +505,10 @@ public class MisApuntesClienteFXController {
     
     //Inicio de los metodos de navegación de la aplicación
     //Parte comun
+    /**
+     * Permite cerrar sesión.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionCerrarSesion(ActionEvent event){
         try{
@@ -532,6 +529,10 @@ public class MisApuntesClienteFXController {
             showErrorAlert("Error al cerrar sesion.");
         }
     }
+    /**
+     * Cierra la aplicación.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionSalir(ActionEvent event){
         try{
@@ -555,6 +556,10 @@ public class MisApuntesClienteFXController {
     }
     
     //Inicio de los metodos de navegación de la aplicación
+    /**
+     * Abre la ventana mis apuntes.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirMisApuntes(ActionEvent event){
         try{
@@ -570,9 +575,13 @@ public class MisApuntesClienteFXController {
             stage.hide();
         }catch(Exception e){
             LOGGER.severe("Error al abrir la ventana MisApuntes: "+e.getMessage());
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
+    /**
+     * Abre la ventana de tienda de pauntes.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirTiendaApuntes(ActionEvent event){
         try{
@@ -588,20 +597,76 @@ public class MisApuntesClienteFXController {
             stage.hide();
         }catch(Exception e){
             LOGGER.severe("Error al abrir la ventana Tienda apuntes: "+e.getMessage());
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor."+e.getMessage());
+            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
         }
     }
+    /**
+     * Abre la ventana mi biblioteca.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirMiBiblioteca(ActionEvent event){
     }
+    /**
+     * Abre la ventana tienda de packs.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirTiendaPacks(ActionEvent event){
     }
+    /**
+     * Abre la ventana mi perfil.
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbrirMiPerfil(ActionEvent event){
     }
+    /**
+     * Abre la ventana de ayuda
+     * @param event El evento de pulsación.
+     */
     @FXML
     private void onActionAbout(ActionEvent event){
+        final WebView browser = new WebView();
+        final WebEngine webEngine = browser.getEngine();
+        
+        URL url = this.getClass().getResource("/ayuda/ayuda_subir_apunte.html");
+        webEngine.load(url.toString());
+        
+        stageAyuda=new Stage();
+        stageAyuda.setTitle(webEngine.getTitle());
+        
+        Button ayudaCerrar=new Button("Cerrar");
+        ayudaCerrar.setOnAction(this::cerrarAyuda);
+        ayudaCerrar.setMnemonicParsing(true);
+        ayudaCerrar.setText("_Cerrar");
+        /* Al pulsar enter encima del boton se ejecute */
+        ayudaCerrar.setOnKeyPressed((key) ->{
+            if(key.getCode().equals(KeyCode.ENTER)) {
+                ayudaCerrar.fire();
+            }
+        });
+        stageAyuda.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                ayudaCerrar.requestFocus();
+            }
+        });
+        VBox root = new VBox();
+        root.getChildren().addAll(browser,ayudaCerrar);
+        
+        Scene escenaAyuda=new Scene(root);
+        stageAyuda.setScene(escenaAyuda);
+        stageAyuda.initModality(Modality.APPLICATION_MODAL);
+        
+        stageAyuda.show();
+    }
+    /**
+     * Cierra la ventan de ayuda.
+     * @param event El evento de pulsación.
+     */
+    public void cerrarAyuda(ActionEvent event){
+        stageAyuda.hide();
     }
     //Fin de los metodos de navegación de la aplicación
     /**
@@ -618,7 +683,11 @@ public class MisApuntesClienteFXController {
     public void setCliente(ClienteBean cliente){
         this.cliente=cliente;
     }
-    public static void setResultadoApunteModificado(int resultado){/////////////////////////////////////
+    /**
+     * Devuelve el resultado de la ventana modal.
+     * @param resultado El resultado.
+     */
+    public static void setResultadoApunteModificado(int resultado){
         MisApuntesClienteFXController.resultado=resultado;
     }
     

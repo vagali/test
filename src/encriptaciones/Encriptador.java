@@ -5,6 +5,7 @@ package encriptaciones;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.URL;
@@ -16,6 +17,7 @@ import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipInputStream;
 import javax.crypto.Cipher;
@@ -48,32 +50,48 @@ public class Encriptador {
         InputStream in = null;
         //byte[] bytes=null; //semibien
         //ZipInputStream zin=null;
+        FileInputStream fis=null;
         Path path=null;
         try {
+            /*
+            LOGGER.severe("infor path "+this.getClass().getResource("/encriptaciones/public.key"));
+            fis=new FileInputStream("/encriptaciones/public.key");
+            bytes=new byte[fis.available()];
+            fis.read(bytes);
+            */
             /*
             URL url=this.getClass().getResource("/encriptaciones/public.key");
             in= getClass().getResourceAsStream(url.getFile());
             bytes=new byte[in.available()];
             in.read(bytes);
             */
-            /*SEMI BIEN
+            //SEMI BIEN
+            /*
             in = getClass().getResourceAsStream("/encriptaciones/public.key");
             bytes=new byte[in.available()];
             in.read(bytes);
             */
             //byte[] bytes=Files.readAllBytes(Paths.get("/encriptaciones/public.key"));
-            path=Paths.get("public.key");
-            byte[] bytes=Files.readAllBytes(Paths.get("public.key"));
+            //
+            
+            //URL url=this.getClass().getResource("/encriptaciones/public.key");
+            //new FileInputStream(url.getFile())
             /*
-            URL url=this.getClass().getResource("/encriptaciones/public.key");
-            zin = new ZipInputStream(new FileInputStream(url.getFile()));
+            zin = new ZipInputStream(Encriptador.class.getClassLoader().getResourceAsStream("/src/public.key"));
             bytes=new byte[zin.available()];
             zin.read(bytes);
             */
+            /*        
+            File file=new File("/encriptaciones/public.key");//se tiene que cambiar
+            byte[] bytes=Files.readAllBytes(file.toPath());*/
+            
+            
+            //version netbeans
             /*
-            File file=new File("public.key");//se tiene que cambiar
-            byte[] bytes=Files.readAllBytes(file.toPath());
+            path=Paths.get("public.key");
+            byte[] bytes=Files.readAllBytes(Paths.get("public.key"));
             */
+            byte[] bytes=Files.readAllBytes(Paths.get(rutaPublica));
             
             EncodedKeySpec publicKeySpec = new  X509EncodedKeySpec(bytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -87,10 +105,15 @@ public class Encriptador {
             
             
         } catch (Exception ex) {
-            LOGGER.severe(ex.getCause()+" "+ex.getMessage()+" "+path.toAbsolutePath().toString());
+            LOGGER.severe(ex.getMessage()+" "+ex.getCause());
             throw new EncriptarException(ex.getMessage());
         }finally{
-            
+            if(fis!=null)
+                try {
+                    fis.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Encriptador.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return encriptado;
     }

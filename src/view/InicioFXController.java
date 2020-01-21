@@ -423,6 +423,7 @@ public class InicioFXController extends ControladorGeneral{
             lblNombreUsuario.setTextFill(Color.web("red"));
             lblContra.setTextFill(Color.web("red"));
         }
+    //} catch (BusinessLogicException | EncriptarException  ex) {
     } catch (BusinessLogicException ex) {
         showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
     }
