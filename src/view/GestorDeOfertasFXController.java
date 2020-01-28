@@ -11,6 +11,8 @@ import static businessLogic.OfertaManagerFactory.createOfertaManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,7 +40,7 @@ import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
- *
+ * Administrador podra gestionar las ofertas, creando, eliminando o actualizandolas.
  * @author Sergio
  */
 public class GestorDeOfertasFXController {
@@ -74,9 +76,7 @@ public class GestorDeOfertasFXController {
     
     
     public void initStage(Parent root) {
-        
         try{
-            LOGGER.info("Iniciando la ventana LogOut");
             Scene scene=new Scene(root);
             stage=new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -130,6 +130,9 @@ public class GestorDeOfertasFXController {
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
     }
+    /**
+     * Modifica y actualiza en la BBDD los campos de la fila seleccionada
+     */
     @FXML public void modificar(){
         opcion = 1;
         LOGGER.info("he clicado remplazar fila");
@@ -153,7 +156,10 @@ public class GestorDeOfertasFXController {
         }
         
     }
-    @FXML public void insertar() throws BusinessLogicException{
+    /**
+     * Hace visible los campos necesarios a insertar oferta.
+     */
+    @FXML public void insertar(){
         opcion =2;
         txtOfertaNombre.setVisible(true);
         txtDescuento.setVisible(true);
@@ -163,74 +169,93 @@ public class GestorDeOfertasFXController {
         
         
     }
-    @FXML public void borrar() throws BusinessLogicException{
+    /**
+     * Elimina oferta de la BBDD respecto a la fila seleccionada en la tabla.
+     */
+    @FXML public void borrar(){
         OfertaBean ofertaBorrar = null;
         LOGGER.info("he clicado remplazar fila");
         int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
         
         if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
-            ofertaBorrar = ofertas.get(indiceFilaSeleccionada);
-            ofertaLogic.borrarOferta(ofertaBorrar.getIdOferta());
-            tablaGestorOfertas.getItems().remove(tablaGestorOfertas.getSelectionModel().getSelectedItem());
-            tablaGestorOfertas.refresh();
-
+            try {
+                ofertaBorrar = ofertas.get(indiceFilaSeleccionada);
+                ofertaLogic.borrarOferta(ofertaBorrar.getIdOferta());
+                tablaGestorOfertas.getItems().remove(tablaGestorOfertas.getSelectionModel().getSelectedItem());
+                tablaGestorOfertas.refresh();
+            } catch (BusinessLogicException ex) {
+                Logger.getLogger(GestorDeOfertasFXController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
-    @FXML public void aceptar() throws BusinessLogicException{
+    /**
+     * Acepta la accion dependiendo del caso de uso
+     * CASE 1: Actualiza los datos de la oferta seleccionada | CASE 2: Crea oferta nueva.
+     */
+    @FXML public void aceptar(){
         Date fFin  = localDateToDate(dateInicio.getValue());
         Date fInicio  = localDateToDate(dateFin.getValue());
         String oofertaNombre  = txtOfertaNombre.getText();
         Float descuento  = Float.valueOf(txtDescuento.getText());
-        LOGGER.info(Float.valueOf(txtDescuento.getText()).toString());
         switch(opcion){
             case 1:
                 OfertaBean ofertaMOdificada = null;
                 //ObservableSet<PackBean> comboPacks = null;
-                
-                
                 int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
                 ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
                 ofertaMOdificada.setFechaFin(fFin);
                 ofertaMOdificada.setFechaInicio(fInicio);
                 ofertaMOdificada.setRebaja(descuento);
                 ofertaMOdificada.setTitulo(oofertaNombre);
-                
-                ofertaLogic.actualizarOferta(ofertaMOdificada);
-                ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
-                txtOfertaNombre.setText("");
-                txtDescuento.setText("");
-                dateInicio.setValue(null);
-                dateFin.setValue(null);
-                //  btnAceptar.setVisible(false);
-                tablaGestorOfertas.refresh();
-                opcion = 0;
+                try {
+                    ofertaLogic.actualizarOferta(ofertaMOdificada);
+                    ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
+                    txtOfertaNombre.setText("");
+                    txtDescuento.setText("");
+                    dateInicio.setValue(null);
+                    dateFin.setValue(null);
+                    //  btnAceptar.setVisible(false);
+                    tablaGestorOfertas.refresh();
+                    opcion = 0;
+                } catch (BusinessLogicException ex) {
+                    LOGGER.log(Level.SEVERE,
+                            "GestorDeOfertasFXController: Error Actualizar oferta",
+                            ex.getMessage());
+                }
                 break;
             case 2:
                 OfertaBean nuevaOferta = new OfertaBean();
-               //nuevaOferta.setIdOferta(null);
-                LOGGER.info("-------------------------"+nuevaOferta.getIdOferta().toString());
-                // nuevaOferta = new OfertaBean(, oofertaNombre, fInicio, fFin, null, descuento);
-                //ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
-                //nuevaOferta.setIdOferta(null);
                 nuevaOferta.setFechaFin(fFin);
                 nuevaOferta.setFechaInicio(fInicio);
                 nuevaOferta.setRebaja(descuento);
                 nuevaOferta.setTitulo(oofertaNombre);
                 LOGGER.info(nuevaOferta.getIdOferta().toString());
-                ofertaLogic.createOferta(nuevaOferta);
-                //ofertas.add(nuevaOferta);
-                ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
-                tablaGestorOfertas.setItems(ofertas);
-                tablaGestorOfertas.refresh();
-                txtOfertaNombre.setText("");
-                txtDescuento.setText("");
-                dateInicio.setValue(null);
-                dateFin.setValue(null);
-                opcion = 0;
-                
+                try {
+                    ofertaLogic.createOferta(nuevaOferta);
+                    try {
+                        ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
+                        tablaGestorOfertas.setItems(ofertas);
+                        tablaGestorOfertas.refresh();
+                        txtOfertaNombre.setText("");
+                        txtDescuento.setText("");
+                        dateInicio.setValue(null);
+                        dateFin.setValue(null);
+                        opcion = 0;
+                    } catch (BusinessLogicException ex) {
+                        LOGGER.log(Level.SEVERE,
+                                "GestorDeOfertasFXController: Error recoger todas las ofertas",
+                                ex.getMessage());
+                    }
+                } catch (BusinessLogicException ex) {
+                    LOGGER.log(Level.SEVERE,
+                            "GestorDeOfertasFXController: Error crear oferta.",
+                            ex.getMessage());
+                }
                 break;
                 
         }
+        
     }
     //Parte comun
     @FXML

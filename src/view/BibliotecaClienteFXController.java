@@ -15,6 +15,7 @@ import static businessLogic.MateriaManagerFactory.createMateriaManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,7 @@ import transferObjects.MateriaBean;
 import static view.ControladorGeneral.showErrorAlert;
 
 /**
- *
+ * Biblioteca del Cliente donde podra ver y descargar los apuntes comprados y valorar la calidad del mismo.
  * @author Sergio
  */
 public class BibliotecaClienteFXController{
@@ -87,12 +88,8 @@ public class BibliotecaClienteFXController{
     private final MenuItem submenu2 = new MenuItem("todas las filas");
     private final MenuItem menu3 = new MenuItem("Modificar");
     
-    public void setStage(Stage stage){
-        this.stage= stage;
-    }
-    public void setUser(ClienteBean user){
-        this.user=user;
-    }
+    public void setStage(Stage stage){this.stage= stage;}
+    public void setUser(ClienteBean user){this.user=user;}
     
     
     public void initStage(Parent root) throws BusinessLogicException{
@@ -165,7 +162,7 @@ public class BibliotecaClienteFXController{
             voyAVotar=false;
         }
     }/**
-     * Control de las puntuciones de un apunte.
+     * Control de las puntuciones de un apunte mas la descarga del mismo.
      * @param m
      */
     public void puntuacion(MouseEvent m){
@@ -184,7 +181,9 @@ public class BibliotecaClienteFXController{
                         try {
                             apuntesLogic.votacion(user.getId(), 1, tablaBiblioteca.getSelectionModel().getSelectedItem());
                         } catch (BusinessLogicException ex) {
-                            Logger.getLogger(BibliotecaClienteFXController.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE,
+                        "BibliotecaClienteFXController: Error votar like",
+                        ex.getMessage());
                         }
                     }
                 }
@@ -194,7 +193,9 @@ public class BibliotecaClienteFXController{
                         try {
                             apuntesLogic.votacion(user.getId(), -1, tablaBiblioteca.getSelectionModel().getSelectedItem());
                         } catch (BusinessLogicException ex) {
-                            Logger.getLogger(BibliotecaClienteFXController.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE,
+                        "BibliotecaClienteFXController: Error votar dislike",
+                        ex.getMessage());
                         }
                     }
                 }
@@ -212,7 +213,7 @@ public class BibliotecaClienteFXController{
         
     }
     /**
-     * Comprueba que no haya votado ya antes a ese apunte
+     * Comprueba que no haya votado al mismo apunte mas de una vez.
      * @return TRUE si ya ha votado || FALSE si no ha votado
      */
     private Boolean coprobarVoto() {
@@ -220,14 +221,16 @@ public class BibliotecaClienteFXController{
         try {
             Set<ClienteBean> clientes=clienteLogic.getVotantesId(tablaBiblioteca.getSelectionModel().getSelectedItem().getIdApunte());
             if(clientes!=null){
-                for(ClienteBean cliente:clientes){
+                for (ClienteBean cliente : clientes) {
                     if(cliente.getId().equals(user.getId()))
                         votado = true;
                 }
             }
             
         } catch (BusinessLogicException ex) {
-            Logger.getLogger(BibliotecaClienteFXController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE,
+                        "BibliotecaClienteFXController: Error Comprobar Clientes votantes de un apunte.",
+                        ex.getMessage());
         }
         return votado;
     }
