@@ -7,44 +7,44 @@ package transferObjects;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableSet;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Usuario
+ * @author Sergio
  */
 @XmlRootElement(name="oferta")
 public class OfertaBean implements Serializable {
-    //private static final long serialVersionUID=1L;
+    private static final long serialVersionUID=1L;
 
     private final SimpleIntegerProperty idOferta;
     private final SimpleStringProperty titulo;
     private final SimpleObjectProperty<Date> fechaInicio;
     private final SimpleObjectProperty<Date> fechaFin;
     private final SimpleFloatProperty rebaja;
-    private final SimpleSetProperty<PackBean> packs;
+    private Set<PackBean> packs;
     
     public OfertaBean() {
         this.idOferta=new SimpleIntegerProperty();
         this.titulo=new SimpleStringProperty();
         this.fechaInicio=new SimpleObjectProperty();
         this.fechaFin=new SimpleObjectProperty();
-        this.packs=new SimpleSetProperty();
         this.rebaja=new SimpleFloatProperty();
+        packs = new HashSet<>();
     }
-    public OfertaBean(Integer idOferta,String titulo, Date fechaInicio, Date fechaFin, ObservableSet<PackBean> packs, Float rebaja) {
+    public OfertaBean(Integer idOferta,String titulo, Date fechaInicio, Date fechaFin, Set<PackBean> packs, Float rebaja) {
         this.idOferta = new SimpleIntegerProperty(idOferta);
         this.titulo = new SimpleStringProperty(titulo);
         this.fechaInicio = new SimpleObjectProperty(fechaInicio);
         this.fechaFin = new SimpleObjectProperty(fechaFin);
-        this.packs = new SimpleSetProperty(packs);
+        this.packs = packs;
         this.rebaja = new SimpleFloatProperty(rebaja);     
     }
     
@@ -107,15 +107,15 @@ public class OfertaBean implements Serializable {
      * @return the packs
      */
     //@XmlTransient
-    public ObservableSet<PackBean> getPacks() {
-        return packs.get();
+    public Set<PackBean> getPacks() {
+        return packs;
     }
 
     /**
      * @param packs the packs to set
      */
     public void setPacks(SetProperty<PackBean> packs) {
-        this.packs.set(packs);
+        this.packs=packs;
     }
        /**
      * @return the rebaja

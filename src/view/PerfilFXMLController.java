@@ -8,6 +8,8 @@ package view;
 import businessLogic.BusinessLogicException;
 import businessLogic.ClienteManager;
 import static businessLogic.ClienteManagerFactory.createClienteManager;
+import exceptions.LoginNotFoundException;
+import exceptions.PasswordWrongException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,11 +27,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -74,6 +80,18 @@ public class PerfilFXMLController{
     @FXML private TextField txtLogin;
     @FXML private TextField txtEmail;
     @FXML private AnchorPane paneCentro;
+    @FXML private MenuBar menuBar;
+    @FXML private Menu menuCuenta;
+    @FXML private MenuItem menuCuentaCerrarSesion;
+    @FXML private MenuItem menuCuentaSalir;
+    @FXML private Menu menuVentanas;
+    @FXML private MenuItem menuVentanasMiBiblioteca;
+    @FXML private MenuItem menuVentanasTiendaApuntes;
+    @FXML private MenuItem menuVentanasTiendaPacks;
+    @FXML private MenuItem menuVentanasMiPerfil;
+    @FXML private MenuItem menuVentanasSubirApunte;
+    @FXML private Menu menuHelp;
+    @FXML private MenuItem menuHelpAbout;
     
     public void setUser(ClienteBean user){this.user = user;}
     public void setStage(Stage stage) {this.stage = stage;}
@@ -89,6 +107,22 @@ public class PerfilFXMLController{
         ceiling.radiusYProperty().bind(imagen.fitHeightProperty());
         ceiling.radiusXProperty().bind(imagen.fitHeightProperty());
         ceiling.radiusYProperty().bind(imagen.fitHeightProperty());
+        //menu---rick esto es postu
+        menuCuenta.setMnemonicParsing(true);
+        menuCuenta.setText("_Cuenta");
+        menuVentanas.setMnemonicParsing(true);
+        menuVentanas.setText("_Ventanas");
+        menuHelp.setMnemonicParsing(true);
+        menuHelp.setText("_Help");
+        menuHelpAbout.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+A"));
+        menuCuentaCerrarSesion.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+C"));
+        menuCuentaSalir.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
+        menuVentanasMiBiblioteca.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+B"));
+        menuVentanasMiPerfil.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+P"));
+        menuVentanasSubirApunte.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+        menuVentanasTiendaApuntes.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+A"));
+        menuVentanasTiendaPacks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
+        //--
         //eventos
         txtNombre.textProperty().addListener(this::HandleTextChanged);
         txtEmail.textProperty().addListener(this::HandleTextChanged);
@@ -180,61 +214,76 @@ public class PerfilFXMLController{
      */
     public void aceptarPerfil(){
         Boolean actualizado= false;
-        try {
-            if(!txtEmail.getText().isEmpty()){
-                if(txtEmail.getText().length()<=250){
-                    if(esEmail(txtEmail.getText().trim())){
-                        user.setEmail(txtEmail.getText());
-                        txtEmail.setStyle("-fx-text-inner-color: " + "black" + ";");
-                        actualizado= true;
-                    }else{
-                        showErrorAlert("Formato de Email erroneo");
-                        txtEmail.setStyle("-fx-text-inner-color: " + "red" + ";");
-                        txtEmail.requestFocus();
-                        actualizado= false;
-                    }  
+        if(!txtEmail.getText().isEmpty()){
+            if(txtEmail.getText().length()<=250){
+                if(esEmail(txtEmail.getText().trim())){
+                    user.setEmail(txtEmail.getText());
+                    txtEmail.setStyle("-fx-text-inner-color: " + "black" + ";");
+                    actualizado= true;
                 }else{
-                    showErrorAlert("Has superado el máximo tamaño del Email"
-                            + ", "+250+".");
+                    showErrorAlert("Formato de Email erroneo");
                     txtEmail.setStyle("-fx-text-inner-color: " + "red" + ";");
                     txtEmail.requestFocus();
                     actualizado= false;
-                }   
-            }if(!txtNombre.getText().isEmpty()){
-                if(txtNombre.getText().length()<=250){
-                    user.setNombreCompleto(txtNombre.getText());
-                    txtNombre.setStyle("-fx-text-inner-color: " + "black" + ";");
-                    actualizado= true;
-                }else{
-                    txtNombre.setText(txtNombre.getText().trim()
-                            .substring(0, 250));
-                    showErrorAlert("Has superado el máximo tamaño de nombre de usuario"
-                            + ", "+250+".");
-                    txtNombre.setStyle("-fx-text-inner-color: " + "red" + ";");
-                    txtNombre.requestFocus();
-                    actualizado= false;
-                }    
-            }if(!txtLogin.getText().isEmpty()){
-                if(txtLogin.getText().length()<=250){
-                    user.setNombreCompleto(txtLogin.getText());
-                    txtLogin.setStyle("-fx-text-inner-color: " + "black" + ";");
-                    actualizado= true;
-                }else{
-                    txtLogin.setText(txtLogin.getText().trim()
-                            .substring(0, 250));
-                    showErrorAlert("Has superado el máximo tamaño del login"
-                            + ", "+250+".");
-                    txtLogin.setStyle("-fx-text-inner-color: " + "red" + ";");
-                    txtLogin.requestFocus();
-                    actualizado= false;
-                }   
+                }
+            }else{
+                showErrorAlert("Has superado el máximo tamaño del Email"
+                        + ", "+250+".");
+                txtEmail.setStyle("-fx-text-inner-color: " + "red" + ";");
+                txtEmail.requestFocus();
+                actualizado= false;
             }
-            if(actualizado){
-                logicCliente.edit(user);
-                limpiarCamposPerfil();
-            }  
-        } catch (BusinessLogicException ex) {
-            showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
+        }
+        if(!txtNombre.getText().isEmpty()){
+            if(txtNombre.getText().length()<=250){
+                user.setNombreCompleto(txtNombre.getText());
+                txtNombre.setStyle("-fx-text-inner-color: " + "black" + ";");
+                actualizado= true;
+            }else{
+                txtNombre.setText(txtNombre.getText().trim()
+                        .substring(0, 250));
+                showErrorAlert("Has superado el máximo tamaño de nombre de usuario"
+                        + ", "+250+".");
+                txtNombre.setStyle("-fx-text-inner-color: " + "red" + ";");
+                txtNombre.requestFocus();
+                actualizado= false;
+            }
+        }
+        if(!txtLogin.getText().isEmpty()){
+            if(txtLogin.getText().length()<=250){
+                user.setLogin(txtLogin.getText());
+                txtLogin.setStyle("-fx-text-inner-color: " + "black" + ";");
+                actualizado= true;
+            }else{
+                txtLogin.setText(txtLogin.getText().trim()
+                        .substring(0, 250));
+                showErrorAlert("Has superado el máximo tamaño del login"
+                        + ", "+250+".");
+                txtLogin.setStyle("-fx-text-inner-color: " + "red" + ";");
+                txtLogin.requestFocus();
+                actualizado= false;
+            }
+        }
+        if(actualizado){
+            try{
+                logicCliente.iniciarSesion(user.getLogin(),"-1");
+            }catch (LoginNotFoundException ex1) {
+                try {                 
+                    logicCliente.edit(user);
+                    limpiarCamposPerfil();
+                } catch (BusinessLogicException ex) {
+                    Logger.getLogger(RegistrarseFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (PasswordWrongException ex) {                
+                Alert alert=new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Informacion de resgistro");
+                alert.setHeaderText("Nombre de usuario ya existente");
+                alert.showAndWait();
+                txtLogin.requestFocus();
+            }catch(BusinessLogicException e){
+                showErrorAlert("Ha ocurrido un error en el servidor, intentelo otra vez o vuelva mas tarde.");
+            }
+
         }
     }
     /**
@@ -267,7 +316,7 @@ public class PerfilFXMLController{
             txtLogin.setStyle("-fx-text-inner-color: " + "black" + ";");
         }
     }
-     /**
+    /**
      * Habilita y deshabilita los campos para actualizar contrasenia
      */
     @FXML public void cambiarContrasenia(){
@@ -287,7 +336,7 @@ public class PerfilFXMLController{
     /**
      * Acepta la accion de modificar y actualizar la contraseña.
      */
-    public void aceptarContrasenia(){
+    @FXML public void aceptarContrasenia(){
         if(!pswContrasenia.getText().isEmpty() && !pswConfirmarContrasenia.getText().isEmpty() && pswContrasenia.getText().equals(pswConfirmarContrasenia.getText())){
             user.setContrasenia(pswContrasenia.getText());
             try {
@@ -301,10 +350,10 @@ public class PerfilFXMLController{
             toques=0;
             lblCambiarContrasenia.setText(CAMBIAR_CONTRASENIA);
         }else{
-             showErrorAlert("Contraseñas no coinciden");
-             pswContrasenia.setText("");
-             pswConfirmarContrasenia.setText("");
-             pswContrasenia.requestFocus();
+            showErrorAlert("Contraseñas no coinciden");
+            pswContrasenia.setText("");
+            pswConfirmarContrasenia.setText("");
+            pswContrasenia.requestFocus();
         }
     }
     /**
@@ -458,6 +507,7 @@ public class PerfilFXMLController{
         stageAyuda.setScene(scene);
         stageAyuda.setTitle("Ventana de ayuda");
         stageAyuda.setResizable(false);
+        stageAyuda.setMinWidth(1285);
         stageAyuda.initModality(Modality.APPLICATION_MODAL);
         stageAyuda.show();
     }
@@ -577,8 +627,6 @@ public class PerfilFXMLController{
             stage.hide();
         } catch (IOException ex) {
             Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BusinessLogicException ex) {
-            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -629,7 +677,7 @@ public class PerfilFXMLController{
     }
     @FXML
     private void onActionAbout(ActionEvent event){
-        
+        ayuda();
     }
     //Fin de los metodos de navegación de la aplicación
     

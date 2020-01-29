@@ -409,8 +409,6 @@ public class TiendaApuntesFXController {
             stage.hide();
         } catch (IOException ex) {
             Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BusinessLogicException ex) {
-            Logger.getLogger(TiendaApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         

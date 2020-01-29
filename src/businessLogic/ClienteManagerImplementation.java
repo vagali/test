@@ -59,7 +59,7 @@ public class ClienteManagerImplementation implements ClienteManager {
     }
 
     @Override
-    public ClienteBean find(Integer id) throws BusinessLogicException {
+    public ClienteBean find(Integer id) throws BusinessLogicException{
         ClienteBean resultado=null;
         try{
             resultado=webClient.find(ClienteBean.class, id.toString());

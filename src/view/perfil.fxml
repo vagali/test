@@ -34,9 +34,9 @@
                   <MenuItem fx:id="menuVentanasSubirApunte" mnemonicParsing="false" onAction="#onActionAbrirMisApuntes" text="Subir apuntes" />
               </items>
             </Menu>
-          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
+          <Menu fx:id="menuHelp" mnemonicParsing="true" text="Help">
             <items>
-              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="false" onAction="#onActionAbout" text="About" />
+              <MenuItem fx:id="menuHelpAbout" mnemonicParsing="true" onAction="#onActionAbout" text="About" />
             </items>
           </Menu>
         </menus>

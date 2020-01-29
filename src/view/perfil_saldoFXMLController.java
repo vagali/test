@@ -14,8 +14,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import transferObjects.ClienteBean;
@@ -31,26 +34,24 @@ public class perfil_saldoFXMLController{
     private Stage stage;
     private ClienteBean user;
     @FXML private TextField txtSaldo;
-    public void setUser(ClienteBean user){
-        this.user = user;
-    }
-    public ClienteBean getUser(){
-        return user;
-    }
-    public void setStage(Stage stage){
-        this.stage = stage;
-    }
+    @FXML private Button btnAceptarSaldo; 
+    @FXML private Button btnCancelarSaldo; 
+    public void setUser(ClienteBean user){this.user = user;}
+    public ClienteBean getUser(){return user;}
+    public void setStage(Stage stage){this.stage = stage;}
     public void initStage(Parent root){
-       
+        txtSaldo.setOnKeyPressed(this::keyPress);
+        btnAceptarSaldo.setOnKeyPressed(this::keyPress);
+        btnCancelarSaldo.setOnKeyPressed(this::keyPress);
     }
-    
+    /**
+     * Actualiza el saldo del cliente
+     */
     @FXML public void aceptarSaldo(){
         LOGGER.info("He ingresado mi saldo");
-        Alert alertIngresarSaldo = new Alert(Alert.AlertType.CONFIRMATION,"¨Seguro de ingresar esta cantidad?.",ButtonType.NO,ButtonType.YES);
-        //Añadimos titulo a la ventana como el alert.
+        Alert alertIngresarSaldo = new Alert(Alert.AlertType.CONFIRMATION,"Seguro de ingresar esta cantidad?.",ButtonType.NO,ButtonType.YES);
         alertIngresarSaldo.setTitle("Ingresar Saldo");
         alertIngresarSaldo.setHeaderText("¿Quieres ingresar saldo?.");
-        //Si acepta ingresa saldo
         alertIngresarSaldo.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 try {
@@ -66,5 +67,18 @@ public class perfil_saldoFXMLController{
     @FXML public void cancelarSaldo(){
         LOGGER.info("He cancelado mi saldo");
         stage.hide();
+    }
+    /**
+     * Atajos
+     * @param key
+     */
+    public void keyPress(KeyEvent key){
+        if(key.getCode().equals(KeyCode.ENTER)) {
+            if(txtSaldo.isFocused() || btnAceptarSaldo.isFocused())
+                aceptarSaldo();
+            else
+                stage.hide();
+        }else if(key.getCode().equals(KeyCode.ESCAPE))
+            stage.hide();
     }
 }

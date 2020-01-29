@@ -18,7 +18,7 @@ public interface ClienteManager {
     public void create(ClienteBean cliente) throws BusinessLogicException;
     public void edit( ClienteBean cliente) throws BusinessLogicException;
     public void remove(Integer id) throws BusinessLogicException;
-    public ClienteBean find( Integer id) throws BusinessLogicException;
+    public ClienteBean find( Integer id) throws BusinessLogicException;;
     public Set<ClienteBean> findAll() throws BusinessLogicException;
     public Set <ClienteBean> getVotantesId( Integer id) throws BusinessLogicException;
     public void actualizarContrasenia(ClienteBean cliente) throws BusinessLogicException;

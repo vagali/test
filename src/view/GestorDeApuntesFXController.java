@@ -10,6 +10,7 @@ import static businessLogic.ApunteManagerFactory.createApunteManager;
 import businessLogic.BusinessLogicException;
 import businessLogic.MateriaManager;
 import static businessLogic.MateriaManagerFactory.createMateriaManager;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -612,7 +613,8 @@ public class GestorDeApuntesFXController {
      */
     @FXML
     private void onActionAbrirGestorOfertas(ActionEvent event){
-        try{
+        
+        try {
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("gestor_de_ofertas.fxml"));
             Parent root = (Parent)loader.load();
@@ -623,10 +625,10 @@ public class GestorDeApuntesFXController {
             controller.setStage(stage);
             controller.initStage(root);
             stage.hide();
-        }catch(Exception e){
-            LOGGER.severe("Error al intentar abrir Gestor de ofertas"+e.getMessage());
-            showErrorAlert("A ocurrido un error, reinicie la aplicación porfavor.");
+        } catch (IOException ex) {
+            Logger.getLogger(GestorDeApuntesFXController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     /**
      * Abre la ventana de gestor de materias.

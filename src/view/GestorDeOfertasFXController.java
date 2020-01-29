@@ -11,6 +11,7 @@ import static businessLogic.OfertaManagerFactory.createOfertaManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -35,7 +36,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import transferObjects.ApunteBean;
 import transferObjects.OfertaBean;
+import transferObjects.PackBean;
 import transferObjects.UserBean;
 import static view.ControladorGeneral.showErrorAlert;
 
@@ -45,6 +48,8 @@ import static view.ControladorGeneral.showErrorAlert;
  */
 public class GestorDeOfertasFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeOfertasFXController");
+    private ObservableList<String>  packs_titulo = FXCollections.observableArrayList();
+    private ObservableList<PackBean>  packs;
     public OfertaManager ofertaLogic = createOfertaManager("real");
     private int opcion=0;
     private UserBean user;
@@ -73,6 +78,8 @@ public class GestorDeOfertasFXController {
     @FXML private TextField txtDescuento;
     @FXML private ComboBox<String> comboPacks;
     @FXML private Button btnAceptar;
+    @FXML private Button btnBuscar;
+    @FXML private TextField txtBuscar;
     
     
     public void initStage(Parent root) {
@@ -135,24 +142,44 @@ public class GestorDeOfertasFXController {
      */
     @FXML public void modificar(){
         opcion = 1;
+        Set<PackBean> packs;
         LOGGER.info("he clicado remplazar fila");
+        LOGGER.log(Level.INFO,"ENcontraos todas las ofertas.");
+            for(int i=0;i<ofertas.size();i++){
+                if(ofertas.get(i).getPacks()==null)
+                    LOGGER.log(Level.INFO, "vacio{0}", ofertas.get(i).getTitulo());
+                else{
+                    LOGGER.log(Level.INFO, "lleno{0}", ofertas.get(i).getTitulo());
+                    packs = ofertas.get(i).getPacks();
+                    for(PackBean pack:packs)
+                        LOGGER.log(Level.INFO,pack.getTitulo());
+                }
+            }
         int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
         
         if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
             txtOfertaNombre.setText(ofertas.get(indiceFilaSeleccionada).getTitulo());
             txtDescuento.setText(Float.toString(ofertas.get(indiceFilaSeleccionada).getRebaja()));
-            
             dateInicio.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaInicio()));
             dateFin.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaFin()));
-            
-            /*for(PackBean pack:ofertas.get(indiceFilaSeleccionada).getPacks()){
-            comboPacks.setItems(FXCollections.observableArrayList(pack.getNombre));
-            }*/
+            if(ofertas.get(indiceFilaSeleccionada).getPacks() == null){
+                LOGGER.info("vacio");
+                
+            }else{
+                LOGGER.info("LLENo");
+                packs_titulo.add("");
+                ofertas.get(indiceFilaSeleccionada).getPacks().forEach((pack) -> {
+                    LOGGER.info(pack.getTitulo());
+                    packs_titulo.add(pack.getTitulo());
+                });
+            }
+            comboPacks.setItems(packs_titulo);
             txtOfertaNombre.setVisible(true);
             txtDescuento.setVisible(true);
             dateInicio.setVisible(true);
             dateFin.setVisible(true);
             btnAceptar.setVisible(true);
+            comboPacks.setVisible(true);
         }
         
     }
@@ -256,6 +283,32 @@ public class GestorDeOfertasFXController {
                 
         }
         
+    }
+    /**
+     * Filtra los apuntes segun la palabra o palabras a buscar.
+     * @param event
+     */
+    @FXML private void buscar(ActionEvent event){
+        String palabraBusqueda;
+        ObservableList<OfertaBean> apuntesFiltrados = FXCollections.observableArrayList();
+        if(txtBuscar.getText().isEmpty()){
+            LOGGER.info("primer if");
+            tablaGestorOfertas.setItems(ofertas);
+            tablaGestorOfertas.refresh();
+        }
+        else{
+            palabraBusqueda = txtBuscar.getText().toUpperCase();
+            ofertas.stream().filter((apunte) -> (apunte.getTitulo().toUpperCase().contains(palabraBusqueda))).forEachOrdered((apunte) -> {
+                apuntesFiltrados.add(apunte);
+            });
+            if(apuntesFiltrados.size()>0){
+                tablaGestorOfertas.setItems(apuntesFiltrados);
+                tablaGestorOfertas.refresh();
+            }else{
+                tablaGestorOfertas.setItems(null);
+                tablaGestorOfertas.refresh();
+            }
+        }
     }
     //Parte comun
     @FXML
