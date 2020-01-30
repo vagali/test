@@ -8,13 +8,19 @@ package view;
 import clientea4.ClienteA4;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import static javafx.scene.input.KeyCombination.keyCombination;
 import javafx.scene.text.Text;
 
 import javafx.stage.Stage;
 import static org.hamcrest.CoreMatchers.not;
+import org.junit.Assert;
 import static org.junit.Assert.assertNotNull;
 import org.junit.FixMethodOrder;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -24,6 +30,7 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.loadui.testfx.GuiTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import transferObjects.ApunteBean;
 
@@ -36,6 +43,10 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
    private TableView<ApunteBean> table; 
    private Text buscar;
    private Button btnBuscar;
+   private ImageView imgLike;
+   private ImageView imgDislike;
+   private ImageView imgDescarga;
+   private ComboBox combo;
    public BibliotecaClienteFXControllerIT() {
     }
     @Override
@@ -43,23 +54,28 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
         new ClienteA4().start(stage);
         table = lookup("#tablaBiblioteca").queryTableView();
         buscar = lookup("#txtDescripcion").query();
+        imgLike = (ImageView) lookup("#imgLike").query();
+        imgDislike = (ImageView) lookup("#imgDislike").query();
+        imgDescarga = (ImageView) lookup("#imgDescarga").query();
+        combo = lookup("#comboFiltroBiblioteca").queryComboBox();
     }
     @Test
     public void testA_Login() {
         clickOn("#tfNombreUsuario");
-        write("pildora");
+        write("carlota");
         clickOn("#tfContra");
-        write("abcd*1234");
+        write("1234");
         clickOn("#btnAcceder");
         
     }
     @Test
-    public void testA_inicio() {
-        verifyThat("#imgLike", isVisible());
-        verifyThat("#imgDislike", isVisible());
-        verifyThat("#imgDescarga",  isVisible());
-        verifyThat("#txtDescripcion", hasText(""));
-        
+    public void testA_inicio() throws Exception {
+        Assert.assertFalse(imgLike.isVisible());
+        Assert.assertFalse(imgLike.isVisible());
+        Assert.assertFalse(imgLike.isVisible());
+        if(!buscar.getText().trim().equals("")){
+            throw new Exception("No esta vacio");
+        }
     }
     @Test
     public void testB_seleccionarFilaDeTablaSabiendoQuehayEnLaBBDDErgoSiempreTendraDatos()  throws Exception{
@@ -73,7 +89,7 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
         }
         
     }
-    @Test
+   @Test
     public void testC_votarLikeUnApunteQueNoSeHayaVotadoYSeleccionadoPreviamente(){
         clickOn("#imgLike");
         verifyThat("Se ha votado correctamente", isVisible());
@@ -97,5 +113,47 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
         verifyThat("No puedes volver a votar ya que ya has votado este apunte.", isVisible());
         press(KeyCode.ENTER);   
     }
-    
+    @Test
+    public void testG_descargarUnApuntePdfSuponiendoQueSiempreHabraUnoParaEsteTest() throws Exception{
+        clickOn("#txtBuscar");
+        write("apunte");
+        doubleClickOn("#txtBuscar");
+        push(KeyCode.CONTROL, KeyCode.X);
+        clickOn(imgDescarga);
+        push(KeyCode.CONTROL, KeyCode.V);
+        press(KeyCode.ENTER); 
+        Assert.assertFalse(imgLike.isVisible());
+        Assert.assertFalse(imgLike.isVisible());
+        Assert.assertFalse(imgLike.isVisible());
+        if(!buscar.getText().trim().equals("")){
+            throw new Exception("No esta vacio");
+        }
+        
+    }
+    @Test
+    public void testH_busquedaPorCoincidencia() throws Exception{
+        int rowCountSearch=0;
+        int rowCount=table.getItems().size();
+        clickOn("#txtBuscar");
+        write("yyy");
+        clickOn("#btnBuscar");
+        rowCountSearch =table.getItems().size();
+        if(rowCount == rowCountSearch)
+             throw new Exception("No ha buscado.");
+    }
+    @Test
+    public void testI_filtroPorMaterias()throws Exception{
+        String materia;
+        int rowCountSearch=0;
+        int rowCount=table.getItems().size();
+        doubleClickOn("#txtBuscar");
+        press(KeyCode.DELETE);
+        clickOn(combo);
+        press(KeyCode.DOWN);
+        press(KeyCode.ENTER);
+        materia = (String) combo.getItems().get(1);
+        rowCountSearch =table.getItems().size();
+        if(rowCount == rowCountSearch)
+             throw new Exception("No ha Filtrado.");
+    }
 }
