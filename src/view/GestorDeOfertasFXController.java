@@ -11,7 +11,6 @@ import static businessLogic.OfertaManagerFactory.createOfertaManager;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -32,11 +31,17 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import transferObjects.ApunteBean;
 import transferObjects.OfertaBean;
 import transferObjects.PackBean;
 import transferObjects.UserBean;
@@ -48,12 +53,17 @@ import static view.ControladorGeneral.showErrorAlert;
  */
 public class GestorDeOfertasFXController {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger("view.GestorDeOfertasFXController");
+    private final String RUTA_AYUDA = getClass().getResource("/ayuda/ayuda_perfil.html").toExternalForm();
+    private final String INFO_MODIFI = "Seleccionar previamente una fila de la tabla..";
     private ObservableList<String>  packs_titulo = FXCollections.observableArrayList();
     private ObservableList<PackBean>  packs;
     public OfertaManager ofertaLogic = createOfertaManager("real");
     private int opcion=0;
     private UserBean user;
     private Stage stage;
+    private int clickModificars=0;
+    private int clickInsertar=0;
+    OfertaBean ofertaBorrar = null;
     
     @FXML private Menu menuCuenta;
     @FXML private MenuItem menuCuentaCerrarSesion;
@@ -79,8 +89,10 @@ public class GestorDeOfertasFXController {
     @FXML private ComboBox<String> comboPacks;
     @FXML private Button btnAceptar;
     @FXML private Button btnBuscar;
+    @FXML private Button btnModificar;
+    @FXML private Button btnBorrar;
     @FXML private TextField txtBuscar;
-    
+    public void setUser(UserBean user){this.user=user;}
     
     public void initStage(Parent root) {
         try{
@@ -92,7 +104,6 @@ public class GestorDeOfertasFXController {
             stage.setResizable(true);
             stage.setMaximized(true);
             //Vamos a rellenar los datos en la ventana.
-            stage.setOnShowing(this::handleWindowShowing);
             columnaId.setCellValueFactory(new PropertyValueFactory<>("idOferta"));
             columnaFechaInicio.setCellValueFactory(new PropertyValueFactory<>("fechaInicio"));
             columnaFechaFin.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
@@ -110,76 +121,85 @@ public class GestorDeOfertasFXController {
             menuHelp.setMnemonicParsing(true);
             menuHelp.setText("_Help");
             //<-Menu
+            //eventos
+            stage.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
+            txtDescuento.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
+            txtOfertaNombre.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
+            dateInicio.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
+            dateFin.addEventHandler(MouseEvent.MOUSE_CLICKED, this::clicks);
+            
+            txtBuscar.setOnKeyPressed(this::keyPress);
+            btnBuscar.setOnKeyPressed(this::keyPress);
+            txtBuscar.setPromptText("Buscar por titulo");
+            btnModificar.setTooltip(new Tooltip(INFO_MODIFI));
+            btnBorrar.setTooltip(new Tooltip(INFO_MODIFI));
             stage.show();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }
         
     }
-    private void handleWindowShowing(WindowEvent event){
-        try{
-            LOGGER.info("handlWindowShowing --> LogOut");
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-        }
-    }
-    public void setUser(UserBean user){
-        this.user=user;
-    }
+    /**
+     * Castea una fecha de date a localDate
+     * @param date
+     * @return
+     */
     public LocalDate dateToLocalDate(Date date) {
         return date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
     }
+    /**
+     * castea una fecha de LocalDate a Date
+     * @param date
+     * @return
+     */
     public Date localDateToDate(LocalDate date) {
-        
         return java.util.Date.from(date.atStartOfDay()
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
     }
     /**
+     * Atajos
+     * @param key
+     */
+    public void keyPress(KeyEvent key){
+        if(key.getCode().equals(KeyCode.ENTER))
+            btnBuscar.fire();
+    }
+    /**
      * Modifica y actualiza en la BBDD los campos de la fila seleccionada
      */
     @FXML public void modificar(){
-        opcion = 1;
-        Set<PackBean> packs;
-        LOGGER.info("he clicado remplazar fila");
-        LOGGER.log(Level.INFO,"ENcontraos todas las ofertas.");
-            for(int i=0;i<ofertas.size();i++){
-                if(ofertas.get(i).getPacks()==null)
-                    LOGGER.log(Level.INFO, "vacio{0}", ofertas.get(i).getTitulo());
-                else{
-                    LOGGER.log(Level.INFO, "lleno{0}", ofertas.get(i).getTitulo());
-                    packs = ofertas.get(i).getPacks();
-                    for(PackBean pack:packs)
-                        LOGGER.log(Level.INFO,pack.getTitulo());
-                }
-            }
-        int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
-        
-        if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
+        clickInsertar=0;
+        if(clickModificars==0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
+            opcion = 1;
+            int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
+            LOGGER.info(String.valueOf(indiceFilaSeleccionada));
+            
             txtOfertaNombre.setText(ofertas.get(indiceFilaSeleccionada).getTitulo());
             txtDescuento.setText(Float.toString(ofertas.get(indiceFilaSeleccionada).getRebaja()));
             dateInicio.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaInicio()));
             dateFin.setValue(dateToLocalDate(ofertas.get(indiceFilaSeleccionada).getFechaFin()));
-            if(ofertas.get(indiceFilaSeleccionada).getPacks() == null){
-                LOGGER.info("vacio");
-                
-            }else{
-                LOGGER.info("LLENo");
-                packs_titulo.add("");
-                ofertas.get(indiceFilaSeleccionada).getPacks().forEach((pack) -> {
-                    LOGGER.info(pack.getTitulo());
-                    packs_titulo.add(pack.getTitulo());
-                });
-            }
-            comboPacks.setItems(packs_titulo);
+            
             txtOfertaNombre.setVisible(true);
             txtDescuento.setVisible(true);
             dateInicio.setVisible(true);
             dateFin.setVisible(true);
             btnAceptar.setVisible(true);
-            comboPacks.setVisible(true);
+            
+            clickModificars++;
+        }else{
+            clickModificars=0;
+            txtOfertaNombre.setVisible(false);
+            txtDescuento.setVisible(false);
+            dateInicio.setVisible(false);
+            dateFin.setVisible(false);
+            btnAceptar.setVisible(false);
+            txtOfertaNombre.setText("");
+            txtDescuento.setText("");
+            dateInicio.setValue(null);
+            dateFin.setValue(null);
         }
         
     }
@@ -187,32 +207,51 @@ public class GestorDeOfertasFXController {
      * Hace visible los campos necesarios a insertar oferta.
      */
     @FXML public void insertar(){
+        clickModificars=0;
         opcion =2;
-        txtOfertaNombre.setVisible(true);
-        txtDescuento.setVisible(true);
-        dateInicio.setVisible(true);
-        dateFin.setVisible(true);
-        btnAceptar.setVisible(true);
-        
+        if(clickInsertar==0){
+            txtOfertaNombre.setVisible(true);
+            txtDescuento.setVisible(true);
+            dateInicio.setVisible(true);
+            dateFin.setVisible(true);
+            btnAceptar.setVisible(true);
+            txtOfertaNombre.setText("");
+            txtDescuento.setText("");
+            dateInicio.setValue(null);
+            dateFin.setValue(null);
+            clickInsertar++;
+        }else{
+            limpiarDatos();
+            clickInsertar=0;
+        }
         
     }
     /**
      * Elimina oferta de la BBDD respecto a la fila seleccionada en la tabla.
      */
     @FXML public void borrar(){
-        OfertaBean ofertaBorrar = null;
+        
         LOGGER.info("he clicado remplazar fila");
         int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
         
         if(tablaGestorOfertas.getSelectionModel().getSelectedIndex()>=0 && tablaGestorOfertas.getSelectionModel().getSelectedIndex()<ofertas.size()){
-            try {
-                ofertaBorrar = ofertas.get(indiceFilaSeleccionada);
-                ofertaLogic.borrarOferta(ofertaBorrar.getIdOferta());
-                tablaGestorOfertas.getItems().remove(tablaGestorOfertas.getSelectionModel().getSelectedItem());
-                tablaGestorOfertas.refresh();
-            } catch (BusinessLogicException ex) {
-                Logger.getLogger(GestorDeOfertasFXController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
+            Alert alertIngresarSaldo = new Alert(Alert.AlertType.CONFIRMATION,"¿Seguro que quiere borrar esta oferta?.",ButtonType.NO,ButtonType.YES);
+            alertIngresarSaldo.setTitle("¨Borrado de oferta");
+            alertIngresarSaldo.setHeaderText("Borrando la oferta.");
+            alertIngresarSaldo.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.YES) {
+                    ofertaBorrar = ofertas.get(indiceFilaSeleccionada);
+                    try {
+                        ofertaLogic.borrarOferta(ofertaBorrar.getIdOferta());
+                    } catch (BusinessLogicException ex) {
+                        Logger.getLogger(GestorDeOfertasFXController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    tablaGestorOfertas.getItems().remove(tablaGestorOfertas.getSelectionModel().getSelectedItem());
+                    tablaGestorOfertas.refresh();
+                    limpiarDatos();
+                }
+            });
             
         }
     }
@@ -221,68 +260,94 @@ public class GestorDeOfertasFXController {
      * CASE 1: Actualiza los datos de la oferta seleccionada | CASE 2: Crea oferta nueva.
      */
     @FXML public void aceptar(){
+        Boolean correcto = false;
         Date fFin  = localDateToDate(dateInicio.getValue());
         Date fInicio  = localDateToDate(dateFin.getValue());
         String oofertaNombre  = txtOfertaNombre.getText();
-        Float descuento  = Float.valueOf(txtDescuento.getText());
-        switch(opcion){
-            case 1:
-                OfertaBean ofertaMOdificada = null;
-                //ObservableSet<PackBean> comboPacks = null;
-                int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
-                ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
-                ofertaMOdificada.setFechaFin(fFin);
-                ofertaMOdificada.setFechaInicio(fInicio);
-                ofertaMOdificada.setRebaja(descuento);
-                ofertaMOdificada.setTitulo(oofertaNombre);
-                try {
-                    ofertaLogic.actualizarOferta(ofertaMOdificada);
-                    ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
-                    txtOfertaNombre.setText("");
-                    txtDescuento.setText("");
-                    dateInicio.setValue(null);
-                    dateFin.setValue(null);
-                    //  btnAceptar.setVisible(false);
-                    tablaGestorOfertas.refresh();
-                    opcion = 0;
-                } catch (BusinessLogicException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "GestorDeOfertasFXController: Error Actualizar oferta",
-                            ex.getMessage());
-                }
-                break;
-            case 2:
-                OfertaBean nuevaOferta = new OfertaBean();
-                nuevaOferta.setFechaFin(fFin);
-                nuevaOferta.setFechaInicio(fInicio);
-                nuevaOferta.setRebaja(descuento);
-                nuevaOferta.setTitulo(oofertaNombre);
-                LOGGER.info(nuevaOferta.getIdOferta().toString());
-                try {
-                    ofertaLogic.createOferta(nuevaOferta);
+        if(oofertaNombre.length()<251)
+            correcto=true;
+        else{
+            showErrorAlert("esceso de caracteres, limite 250.");
+            correcto=false;
+            txtOfertaNombre.requestFocus();
+        }
+        Float descuento = null;
+        try {
+            descuento=Float.parseFloat(txtDescuento.getText());
+            correcto=true;
+        }
+        catch(NumberFormatException e) {
+            showErrorAlert("numero de decuento erronea, (contiene caracteres erroneos)");
+            txtDescuento.requestFocus();
+            correcto=false;
+        }
+        if(correcto){
+            switch(opcion){
+                case 1:
+                    OfertaBean ofertaMOdificada = null;
+                    int indiceFilaSeleccionada = tablaGestorOfertas.getSelectionModel().getSelectedIndex();
+                    ofertaMOdificada = ofertas.get(indiceFilaSeleccionada);
+                    ofertaMOdificada.setFechaFin(fFin);
+                    ofertaMOdificada.setFechaInicio(fInicio);
+                    ofertaMOdificada.setRebaja(descuento);
+                    ofertaMOdificada.setTitulo(oofertaNombre);
                     try {
-                        ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
-                        tablaGestorOfertas.setItems(ofertas);
+                        ofertaLogic.actualizarOferta(ofertaMOdificada);
+                        ofertas.set(indiceFilaSeleccionada, ofertaMOdificada);
+                        limpiarDatos();
+                        clickModificars=0;
                         tablaGestorOfertas.refresh();
-                        txtOfertaNombre.setText("");
-                        txtDescuento.setText("");
-                        dateInicio.setValue(null);
-                        dateFin.setValue(null);
                         opcion = 0;
                     } catch (BusinessLogicException ex) {
                         LOGGER.log(Level.SEVERE,
-                                "GestorDeOfertasFXController: Error recoger todas las ofertas",
+                                "GestorDeOfertasFXController: Error Actualizar oferta",
                                 ex.getMessage());
                     }
-                } catch (BusinessLogicException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "GestorDeOfertasFXController: Error crear oferta.",
-                            ex.getMessage());
-                }
-                break;
-                
+                    break;
+                case 2:
+                    OfertaBean nuevaOferta = new OfertaBean();
+                    nuevaOferta.setFechaFin(fFin);
+                    nuevaOferta.setFechaInicio(fInicio);
+                    nuevaOferta.setRebaja(descuento);
+                    nuevaOferta.setTitulo(oofertaNombre);
+                    LOGGER.info(nuevaOferta.getIdOferta().toString());
+                    try {
+                        ofertaLogic.createOferta(nuevaOferta);
+                        try {
+                            ofertas = FXCollections.observableArrayList(ofertaLogic.todasOfertas());
+                            tablaGestorOfertas.setItems(ofertas);
+                            tablaGestorOfertas.refresh();
+                            limpiarDatos();
+                            clickInsertar=0;
+                            opcion = 0;
+                        } catch (BusinessLogicException ex) {
+                            LOGGER.log(Level.SEVERE,
+                                    "GestorDeOfertasFXController: Error recoger todas las ofertas",
+                                    ex.getMessage());
+                        }
+                    } catch (BusinessLogicException ex) {
+                        LOGGER.log(Level.SEVERE,
+                                "GestorDeOfertasFXController: Error crear oferta.",
+                                ex.getMessage());
+                    }
+                    break;
+            }
         }
         
+    }
+    /**
+     * Limpia (vacia) los campos.
+     */
+    private void limpiarDatos() {
+        txtOfertaNombre.setVisible(false);
+        txtDescuento.setVisible(false);
+        dateInicio.setVisible(false);
+        dateFin.setVisible(false);
+        btnAceptar.setVisible(false);
+        txtOfertaNombre.setText("");
+        txtDescuento.setText("");
+        dateInicio.setValue(null);
+        dateFin.setValue(null);
     }
     /**
      * Filtra los apuntes segun la palabra o palabras a buscar.
@@ -309,6 +374,35 @@ public class GestorDeOfertasFXController {
                 tablaGestorOfertas.refresh();
             }
         }
+    }
+    /**
+     * evento para deselccionar fila.
+     * @param m
+     */
+    public void clicks(MouseEvent m){
+        if(m.getButton()==MouseButton.PRIMARY){
+            if(!(!txtDescuento.isFocused() || !txtOfertaNombre.isFocused()|| !dateFin.isFocused() || !dateInicio.isFocused()))
+                tablaGestorOfertas.getSelectionModel().select(null);
+        }
+        
+    }
+    /**
+     * Crea y muestra la ventana ayuda.
+     */
+    public void ayuda(){
+        Stage stageAyuda = new Stage();
+        WebView webView = new WebView();
+        final WebEngine webEngine = webView.getEngine();
+        webEngine.load(RUTA_AYUDA);
+        VBox root = new VBox();
+        root.getChildren().add(webView);
+        Scene scene = new Scene(root);
+        stageAyuda.setScene(scene);
+        stageAyuda.setTitle("Ventana de ayuda");
+        stageAyuda.setResizable(false);
+        stageAyuda.setMinWidth(1285);
+        stageAyuda.initModality(Modality.APPLICATION_MODAL);
+        stageAyuda.show();
     }
     //Parte comun
     @FXML
@@ -356,6 +450,7 @@ public class GestorDeOfertasFXController {
     
     @FXML
     private void onActionAbout(ActionEvent event){
+        ayuda();
     }
     //Fin de los metodos de navegación de la aplicación
     @FXML
@@ -429,6 +524,8 @@ public class GestorDeOfertasFXController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    
+    
     
     
 }
