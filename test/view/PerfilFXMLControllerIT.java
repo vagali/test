@@ -1,30 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package view;
 
 import clientea4.ClienteA4;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import static org.hamcrest.Matchers.not;
 
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
-import static org.testfx.matcher.base.NodeMatchers.isEnabled;
-import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 /**
@@ -68,15 +62,15 @@ public class PerfilFXMLControllerIT extends ApplicationTest{
         btnModificarPerfil = lookup("#btnModificarPerfil").query();
         lblCambiarContrasenia = lookup("#lblCambiarContrasenia").query();
         btnIngresarSaldo = lookup("#btnIngresarSaldo").query();
-        lblCantidadSaldo = lookup("#lblCantidadSaldo").query(); 
+        lblCantidadSaldo = lookup("#lblCantidadSaldo").query();
     }
     @Test
     public void testA_Login() {
         clickOn("#tfNombreUsuario");
-        write("carlota");
+        write("test19993");
         clickOn("#tfContra");
-        write("abcd*1234");
-        clickOn("#btnAcceder");  
+        write("123");
+        clickOn("#btnAcceder");
         press(KeyCode.ALT);
         press(KeyCode.RIGHT);
         press(KeyCode.DOWN);
@@ -115,13 +109,13 @@ public class PerfilFXMLControllerIT extends ApplicationTest{
         Assert.assertTrue(txtNombre.isDisabled());
         Assert.assertTrue(txtLogin.isDisabled());
         Assert.assertTrue(txtEmail.isDisabled());
-
+        
     }
     @Test
     public void testD_alertaDeLoginYaExisteAlActualizarLogin(){
         clickOn(btnModificarPerfil);
         clickOn(txtLogin);
-        write(LOGIN_REPETIDO);    
+        write(LOGIN_REPETIDO);
         clickOn(btnAceptarPerfil);
         verifyThat("Nombre de usuario ya existente", isVisible());
         press(KeyCode.ENTER);
@@ -142,7 +136,7 @@ public class PerfilFXMLControllerIT extends ApplicationTest{
         
         Assert.assertFalse(pswContrasenia.isVisible());
         Assert.assertFalse(pswConfirmarContrasenia.isVisible());
-        Assert.assertFalse(btnAceptarContrasenia.isVisible()); 
+        Assert.assertFalse(btnAceptarContrasenia.isVisible());
     }
     @Test
     public void testF_ingresarSaldo() throws Exception{
@@ -153,7 +147,20 @@ public class PerfilFXMLControllerIT extends ApplicationTest{
         press(KeyCode.ENTER);
         saldoActualizado=lblCantidadSaldo.getText();
         if(Float.valueOf(saldoActual)==Float.valueOf(saldoActualizado))
-          throw new Exception("Saldo no actualizado");
+            throw new Exception("Saldo no actualizado");
         
+    }
+    @Test
+    public void testD_volviendoDatos(){
+        clickOn(btnModificarPerfil);
+        clickOn(txtLogin);
+        write("test19993");      
+        clickOn(btnAceptarPerfil);
+        clickOn(lblCambiarContrasenia);
+        clickOn(pswContrasenia);
+        write("123");
+        clickOn(pswConfirmarContrasenia);
+        write("123");
+        clickOn(btnAceptarContrasenia);
     }
 }

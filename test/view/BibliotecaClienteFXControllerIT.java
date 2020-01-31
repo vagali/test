@@ -10,27 +10,18 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import static javafx.scene.input.KeyCombination.keyCombination;
 import javafx.scene.text.Text;
 
 import javafx.stage.Stage;
-import static org.hamcrest.CoreMatchers.not;
 import org.junit.Assert;
 import static org.junit.Assert.assertNotNull;
 import org.junit.FixMethodOrder;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
-import static org.testfx.matcher.base.NodeMatchers.isDisabled;
-import static org.testfx.matcher.base.NodeMatchers.isEnabled;
-import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.loadui.testfx.GuiTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import transferObjects.ApunteBean;
 
@@ -62,9 +53,9 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
     @Test
     public void testA_Login() {
         clickOn("#tfNombreUsuario");
-        write("carlota");
+        write("test19993");
         clickOn("#tfContra");
-        write("1234");
+        write("123");
         clickOn("#btnAcceder");
         
     }
@@ -128,7 +119,6 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
         if(!buscar.getText().trim().equals("")){
             throw new Exception("No esta vacio");
         }
-        
     }
     @Test
     public void testH_busquedaPorCoincidencia() throws Exception{
@@ -144,7 +134,7 @@ public class BibliotecaClienteFXControllerIT extends ApplicationTest{
     @Test
     public void testI_filtroPorMaterias()throws Exception{
         String materia;
-        int rowCountSearch=0;
+        int rowCountSearch;
         int rowCount=table.getItems().size();
         doubleClickOn("#txtBuscar");
         press(KeyCode.DELETE);
